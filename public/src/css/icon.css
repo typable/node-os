@@ -1,0 +1,31 @@
+.icon {
+  padding: 9px;
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color: 0.1s;
+  border: 1px solid #EEE;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+}
+
+.icon-out {
+  border: 1px solid transparent;
+  box-shadow: none;
+}
+
+.icon-out .material-icons {
+  color: #AAA;
+}
+
+.icon-out:hover {
+  border: 1px solid #EEE;
+}
+
+.icon-out:hover .material-icons {
+  color: var(--text);
+}
+
+.icon:hover {
+  background-color: #FBFBFB;
+}

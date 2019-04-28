@@ -8,11 +8,14 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.UUID;
 
+import main.NodeOS;
 import os.server.classes.Header;
 import os.server.type.ContentType;
 import os.server.type.RequestMethod;
 import os.server.type.Status;
+import os.util.URLParser;
 import os.util.Utils;
 
 public class Handler {
@@ -22,6 +25,7 @@ public class Handler {
 	private Header header;
 	private HashMap<String, String> parameter;
 	private HashMap<String, String> attributes;
+	private HashMap<String, String> templates;
 	private String url;
 	private byte[] body;
 	
@@ -40,8 +44,10 @@ public class Handler {
 		header = new Header();
 		parameter = new HashMap<String, String>();
 		attributes = new HashMap<String, String>();
+		templates = new HashMap<String, String>();
 	}
 	
+	/** request() **/
 	public void request() throws IOException {
 		
 		String line;
@@ -69,13 +75,11 @@ public class Handler {
 				
 				String body = String.valueOf(chars);
 
-				body = body.replace("+", " ");
-				body = body.replace("%40", "@");
-				body = body.replace("%21", "!");
+				body = URLParser.parseURL(body);
 				
-				if(body.contains("\n")) {
+				if(body.contains("&")) {
 					
-					for(String bodyLine : body.split("\n")) {
+					for(String bodyLine : body.split("&")) {
 						
 						if(bodyLine.contains("=")) {
 							
@@ -96,6 +100,7 @@ public class Handler {
 		}
 	}
 	
+	/** respond() **/
 	public void respond() throws IOException {
 		
 		if(status != null) {
@@ -121,9 +126,14 @@ public class Handler {
 					
 					String html = new String(body);
 					
+					for(String key : templates.keySet()) {
+						
+						html = html.replaceAll("\\@\\{" + key + "\\}", templates.get(key));
+					}
+					
 					for(String key : attributes.keySet()) {
 						
-						html = html.replaceAll("\\$\\{" + key + "\\}", attributes.get(key));
+						html = html.replaceAll("\\@\\{" + key + "\\}", attributes.get(key));
 					}
 					
 					setBody(html);
@@ -135,42 +145,49 @@ public class Handler {
 		}
 	}
 	
+	/** emit() **/
 	public void emit(String line) throws IOException {
 		
 		out.write((line + "\n").getBytes());
 	}
 	
+	/** emit() **/
 	public void emit(byte[] data) throws IOException {
 		
 		out.write(data);
 	}
 	
+	/** redirect() **/
 	public void redirect(String url) {
 		
 		setStatus(Status.FOUND);
 		header.setLocation(url);
 	}
 	
+	/** notFound() **/
 	public void notFound() {
 		
 		setStatus(Status.NOT_FOUND);
 	}
 	
+	/** ok() **/
 	public void ok() {
 		
 		setStatus(Status.OK);
 	}
 	
+	/** addAttribute() **/
 	public void addAttribute(String key, String value) {
 		
 		attributes.put(key, value);
 	}
 	
+	/** showPage() **/
 	public void showPage(String path, ContentType type) {
 		
 		try {
 			
-			File file = new File(Utils.getCurrentPath() + "/public" + path);
+			File file = new File(NodeOS.getCurrentPath() + "/public" + path);
 			setBody(Files.readAllBytes(file.toPath()));
 			header.setContentType(type);
 			ok();
@@ -181,11 +198,35 @@ public class Handler {
 		}
 	}
 	
+	/** showBody() **/
 	public void showBody(String body, ContentType type) {
 		
 		setBody(body);
 		header.setContentType(type);
 		ok();
+	}
+	
+	/** addTemplate() **/
+	public void addTemplate(String key, String path) {
+		
+		try {
+			
+			File file = new File(NodeOS.getCurrentPath() + "/public" + path);
+			templates.put(key, String.join("", Files.readAllLines(file.toPath())));
+		}
+		catch(IOException e) {
+			
+			e.printStackTrace();
+			
+			// TODO LOG
+		}
+	}
+	
+	/** requestKey **/
+	public String requestKey(String username, String password) {
+		
+		// TODO
+		return UUID.randomUUID().toString();
 	}
 
 	public RequestMethod getMethod() {
@@ -236,6 +277,16 @@ public class Handler {
 	public void setAttributes(HashMap<String, String> attributes) {
 		
 		this.attributes = attributes;
+	}
+	
+	public HashMap<String, String> getTemplates() {
+		
+		return templates;
+	}
+	
+	public void setTemplate(HashMap<String, String> templates) {
+		
+		this.templates = templates;
 	}
 	
 	public String getUrl() {

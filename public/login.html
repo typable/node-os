@@ -1,0 +1,102 @@
+<!DOCTYPE text/html>
+<html lang="de">
+<head>
+<title>Prototype Studio - Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="Prototype Studio">
+<meta charset="utf-8">
+<meta name="keywords" content="">
+<!-- TODO: Keywords -->
+<meta name="description" content="">
+<!-- TODO: Description -->
+<link rel="shortcut icon" type="image/icon" href="res/favicon.ico">
+<!-- TODO: Favicon -->
+<link rel="stylesheet" href="src/css/master.css">
+<link rel="stylesheet" href="src/css/main.css">
+<link rel="stylesheet" href="src/css/icon.css">
+<link rel="stylesheet" href="src/css/tooltip.css">
+<link rel="stylesheet" href="src/css/dialog.css">
+</head>
+<body>
+	@{nav}
+	<main class="container-fluid">
+	<section class="container">
+		<div class="row mt-8 mb-3">
+			<div class="col-4"></div>
+			<div class="col-4">
+				<div class="row mb-3 mt-10">
+					<label class="col-12 text text-center text-black h2">Login</label>
+				</div>
+				<form action="/login" method="post" class="row">
+					<div class="row col-12">
+						<label class="h6 ml-1 mt-1 ui-label">Username or E-mail
+							address</label>
+					</div>
+					<div class="row col-12">
+						<input name="username" type="text" spellcheck="false"
+							required="true" class="col-12 text m-1">
+					</div>
+					<div class="row col-12">
+						<label class="h6 ml-1 mt-1 ui-label">Password</label>
+					</div>
+					<div class="row col-12">
+						<input name="password" type="password" spellcheck="false"
+							required="true" class="col-12 text m-1">
+					</div>
+					<div class="row col-12 al-center pt-3">
+						<input type="submit" value="Login"
+							class="text m-1 h6 cursor-click">
+					</div>
+				</form>
+			</div>
+			<div class="col-4"></div>
+		</div>
+	</section>
+	</main>
+	<style type="text/css">
+.ui-label {
+	color: #666;
+	padding-left: 1px;
+}
+
+input, textarea {
+	padding: 14px 12px;
+	border: 1px solid #E8E8E8;
+	border-radius: 2px;
+	outline: none;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+}
+
+input:focus, textarea:focus {
+	border: 1px solid #DDD;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, .10);
+}
+
+input::placeholder, textarea::placeholder {
+	color: #BBB;
+}
+
+textarea {
+	resize: none;
+	height: 250px;
+}
+
+input[type='submit'] {
+	box-shadow: none;
+	border-radius: 3px;
+	background-color: #4285f4;
+	color: #fff;
+	width: 150px;
+	border-radius: 2px;
+	border-color: #3d7ee5;
+	transition: background-color 0.1s;
+}
+
+input[type='submit']:hover {
+	box-shadow: none;
+	background-color: #3874d8;
+	border-color: #356dcc;
+}
+</style>
+</body>
+</html>

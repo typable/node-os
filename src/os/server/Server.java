@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import os.server.handler.Handler;
 import os.server.note.Request;
+import os.server.type.ContentType;
 
 public class Server {
 
@@ -54,11 +55,12 @@ public class Server {
 						
 						if(requestHandler.getUrl() != null) {
 							
+							String url = requestHandler.getUrl();							
 							Method method = null;
 							
 							for(Request request : requestList.keySet()) {
 								
-								if(request.url().equals(requestHandler.getUrl()) && request.method() == requestHandler.getMethod()) {
+								if(request.url().equals(url) && request.method() == requestHandler.getMethod()) {
 									
 									method = requestList.get(request);
 								}
@@ -67,6 +69,10 @@ public class Server {
 							if(method != null) {
 								
 								method.invoke(this, requestHandler, responseHandler);
+							}
+							else if(url.startsWith("/src/")) {
+								
+								responseHandler.showPage(url, ContentType.getByFile(url));
 							}
 							else {
 								
