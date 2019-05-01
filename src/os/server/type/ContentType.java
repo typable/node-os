@@ -46,6 +46,11 @@ public enum ContentType {
 	
 	public static ContentType getByType(String type) {
 		
+		if(type.contains(" ")) {
+			
+			type = type.split(" ")[0];
+		}
+		
 		for(ContentType contentType : ContentType.values()) {
 			
 			if(contentType.getType().equals(type)) {

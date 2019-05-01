@@ -8,35 +8,57 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 
-import os.server.handler.Handler;
-import os.server.note.Request;
+import os.server.Logger.Messages;
+import os.server.handler.Request;
+import os.server.handler.Response;
+import os.server.note.RequestHandler;
 import os.server.type.ContentType;
+import os.util.PropertyFile;
+import os.util.Utils;
 
 public class Server {
 
 	private ServerSocket serverSocket;
 	
-	private HashMap<Request, Method> requestList = new HashMap<Request, Method>();
+	private HashMap<RequestHandler, Method> requestList = new HashMap<RequestHandler, Method>();
+	private Logger logger = new Logger();
+	
+	public static final String CONFIG_PATH = "/config.properties";
+	public static final String RESOURCE_PATH = "/src";
+	
+	public static HashMap<String, String> configurations = new HashMap<String, String>();
+	
+	private int port;
+	private String rootPath;
 	
 	public Server() {
 		
-		for(Method method : this.getClass().getMethods())
+		for(Method method : this.getClass().getDeclaredMethods()) {
+			
 			for(Annotation annotation : method.getAnnotations()) {
 
-			if(annotation instanceof Request) {
+				if(annotation instanceof RequestHandler) {
 
-				requestList.put((Request) annotation, method);
+					requestList.put((RequestHandler) annotation, method);
+				}
 			}
 		}
 	}
 	
-	public void launch(int port) {
+	public void launch() {
 		
 		try {
 			
-			/** Starting Server **/
+			loadConfigurations();
+			
+			if(!loadRequirements()) {
+				
+				close();
+			}
 			
 			serverSocket = new ServerSocket(port);
+			
+			logger.info(Messages.SERVER_STARTED.getMessage("" + port));
 			
 			while(!serverSocket.isClosed()) {
 				
@@ -46,47 +68,47 @@ public class Server {
 					
 					try {
 						
-						/** Handling Socket **/
+						Request request = new Request(this, socket);
+						request.request();
 						
-						Handler requestHandler = new Handler(socket);
-						requestHandler.request();
+						Response response = new Response(this, socket);
 						
-						Handler responseHandler = new Handler(socket);
-						
-						if(requestHandler.getUrl() != null) {
+						if(request.getUrl() != null) {
 							
-							String url = requestHandler.getUrl();							
+							String url = request.getUrl();							
 							Method method = null;
 							
-							for(Request request : requestList.keySet()) {
+							for(RequestHandler requestHandler : requestList.keySet()) {
 								
-								if(request.url().equals(url) && request.method() == requestHandler.getMethod()) {
+								if(requestHandler.url().equals(url) && requestHandler.method() == request.getMethod()) {
 									
-									method = requestList.get(request);
+									method = requestList.get(requestHandler);
 								}
 							}
 							
 							if(method != null) {
 								
-								method.invoke(this, requestHandler, responseHandler);
+								method.invoke(this, request, response);
 							}
 							else if(url.startsWith("/src/")) {
 								
-								responseHandler.showPage(url, ContentType.getByFile(url));
+								response.showPage(url, ContentType.getByFile(url));
 							}
 							else {
 								
-								responseHandler.notFound();
+								logger.warn(Messages.NOT_FOUND.getMessage(url));
+								response.notFound();
 							}
 						}
 						
-						responseHandler.respond();
-						
-						socket.close();
+						response.commit();
 					}
 					catch(IOException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 						
+						logger.error(Messages.FATAL_ERROR.getMessage());
 						e.printStackTrace();
+						
+						close();
 					}
 					
 				}).start();
@@ -94,12 +116,144 @@ public class Server {
 		}
 		catch(IOException e) {
 			
+			logger.error(Messages.FATAL_ERROR.getMessage());
 			e.printStackTrace();
+			
+			close();
 		}
 	}
 	
 	public void close() {
 		
+		logger.info(Messages.SERVER_STOPPED.getMessage());
+		
 		System.exit(0);
+	}
+	
+	private void loadConfigurations() throws IOException {
+		
+		PropertyFile configFile = new PropertyFile(Utils.getCurrentPath() + CONFIG_PATH);
+		
+		if(configFile.exists()) {
+			
+			try {
+				
+				configFile.load();
+				
+				configurations = configFile.getProps();
+				
+				logger.info("Configurations loaded");
+			}
+			catch(IOException e) {
+				
+				logger.warn("Failed to load Configurations!");
+				e.printStackTrace();
+			}
+		}
+		else {
+			
+			try {
+				
+				configFile.create();
+				
+				if(configFile.exists()) {
+					
+					logger.info("Configuration file created");
+					
+					HashMap<String, String> props = new HashMap<String, String>();
+					props.put("port", "80");
+					props.put("root", "*/public");
+					
+					configFile.setProps(props);
+					configFile.save();
+					
+					loadConfigurations();
+				}
+				else {
+					
+					logger.error("Failed to create new file!");
+				}
+			}
+			catch(IOException e) {
+				
+				logger.error("Failed to create new file!");
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private boolean loadRequirements() throws IOException {
+		
+		boolean succeeded = true;
+		
+		String portProperty = getProperty("port");
+		
+		if(Utils.notEmpty(portProperty)) {
+			
+			port = Integer.parseInt(portProperty);
+		}
+		else {
+			
+			logger.warn(Messages.UNDEFINED.getMessage("port"));
+			
+			close();
+		}
+		
+		String rootProperty = getProperty("root");
+		
+		if(Utils.notEmpty(rootProperty)) {
+			
+			if(rootProperty.contains("*")) {
+				
+				rootProperty = rootProperty.replaceAll("\\*", Utils.getCurrentPath());
+			}
+			
+			rootPath = rootProperty;
+			
+			logger.info("Required properties loaded");
+		}
+		else {
+			
+			logger.warn(Messages.UNDEFINED.getMessage("root"));
+			
+			succeeded = false;
+		}
+		
+		return succeeded;
+	}
+	
+	public String getProperty(String key) {
+		
+		if(configurations != null && configurations.containsKey(key)) {
+			
+			return configurations.get(key);
+		}
+
+		return null;
+	}
+
+	public ServerSocket getServerSocket() {
+	
+		return serverSocket;
+	}
+	
+	public HashMap<RequestHandler, Method> getRequestList() {
+	
+		return requestList;
+	}
+	
+	public Logger getLogger() {
+	
+		return logger;
+	}
+	
+	public int getPort() {
+		
+		return port;
+	}
+	
+	public String getRootPath() {
+		
+		return rootPath;
 	}
 }
