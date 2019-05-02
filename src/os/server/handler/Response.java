@@ -18,7 +18,8 @@ public class Response extends Handler {
 	
 	public Response(Server server, Socket socket) throws IOException {
 
-		super(server, socket);
+		super(server);
+		super.setSocket(socket);
 	}
 	
 	public void commit() throws IOException {

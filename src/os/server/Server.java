@@ -6,11 +6,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import os.server.Logger.Messages;
+import os.server.handler.Handler;
 import os.server.handler.Request;
 import os.server.handler.Response;
+import os.server.note.Controller;
 import os.server.note.RequestHandler;
 import os.server.type.ContentType;
 import os.util.PropertyFile;
@@ -20,7 +24,8 @@ public class Server {
 
 	private ServerSocket serverSocket;
 	
-	private HashMap<RequestHandler, Method> requestList = new HashMap<RequestHandler, Method>();
+	private List<Class<?>> controllerList = new ArrayList<Class<?>>();
+	private List<Handler> handlerList = new ArrayList<Handler>();
 	private Logger logger = new Logger();
 	
 	public static final String CONFIG_PATH = "/config.properties";
@@ -33,19 +38,35 @@ public class Server {
 	
 	public Server() {
 		
-		for(Method method : this.getClass().getDeclaredMethods()) {
-			
-			for(Annotation annotation : method.getAnnotations()) {
-
-				if(annotation instanceof RequestHandler) {
-
-					requestList.put((RequestHandler) annotation, method);
-				}
-			}
-		}
+		
 	}
 	
 	public void launch() {
+		
+		for(Class<?> controller : controllerList) {
+			
+			for(Annotation anno : controller.getAnnotations()) {
+				
+				if(anno instanceof Controller) {
+					
+					for(Method method : controller.getDeclaredMethods()) {
+						
+						for(Annotation annotation : method.getAnnotations()) {
+
+							if(annotation instanceof RequestHandler) {
+
+								Handler handler = new Handler(this);
+								handler.setHandler((RequestHandler) annotation);
+								handler.setController(controller);
+								handler.setExecutor(method);
+								
+								handlerList.add(handler);
+							}
+						}
+					}
+				}
+			}
+		}
 		
 		try {
 			
@@ -75,20 +96,22 @@ public class Server {
 						
 						if(request.getUrl() != null) {
 							
-							String url = request.getUrl();							
+							String url = request.getUrl();		
+							Class<?> controller = null;
 							Method method = null;
 							
-							for(RequestHandler requestHandler : requestList.keySet()) {
+							for(Handler handler : handlerList) {
 								
-								if(requestHandler.url().equals(url) && requestHandler.method() == request.getMethod()) {
+								if(handler.getHandler().url().equals(url) && handler.getHandler().method() == request.getMethod()) {
 									
-									method = requestList.get(requestHandler);
+									method = handler.getExecutor();
+									controller = handler.getController();
 								}
 							}
 							
 							if(method != null) {
 								
-								method.invoke(this, request, response);
+								method.invoke(controller.getConstructor().newInstance(), request, response);
 							}
 							else if(url.startsWith("/src/")) {
 								
@@ -103,7 +126,7 @@ public class Server {
 						
 						response.commit();
 					}
-					catch(IOException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					catch(IOException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException | NoSuchMethodException | SecurityException e) {
 						
 						logger.error(Messages.FATAL_ERROR.getMessage());
 						e.printStackTrace();
@@ -128,6 +151,11 @@ public class Server {
 		logger.info(Messages.SERVER_STOPPED.getMessage());
 		
 		System.exit(0);
+	}
+	
+	public void registerController(Class<?> controller) {
+		
+		controllerList.add(controller);
 	}
 	
 	private void loadConfigurations() throws IOException {
@@ -237,9 +265,9 @@ public class Server {
 		return serverSocket;
 	}
 	
-	public HashMap<RequestHandler, Method> getRequestList() {
+	public List<Handler> getHandlerList() {
 	
-		return requestList;
+		return handlerList;
 	}
 	
 	public Logger getLogger() {

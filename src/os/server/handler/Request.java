@@ -15,7 +15,8 @@ public class Request extends Handler {
 	
 	public Request(Server server, Socket socket) throws IOException {
 
-		super(server, socket);
+		super(server);
+		super.setSocket(socket);
 	}
 	
 	public void request() throws IOException {

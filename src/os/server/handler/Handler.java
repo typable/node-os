@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.HashMap;
 
 import os.server.Server;
+import os.server.note.RequestHandler;
 import os.server.type.RequestMethod;
 import os.server.type.Status;
 
@@ -17,6 +19,10 @@ public class Handler {
 	private Socket socket;
 	private BufferedReader in;
 	private OutputStream out;
+	
+	private RequestHandler handler;
+	private Class<?> controller;
+	private Method executor;
 	
 	private RequestMethod method;
 	private Status status;
@@ -28,13 +34,9 @@ public class Handler {
 	private byte[] body;
 	private boolean committed = false;
 	
-	public Handler(Server server, Socket socket) throws IOException {
+	public Handler(Server server) {
 		
 		this.server = server;
-		this.socket = socket;
-		
-		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		out = socket.getOutputStream();
 		
 		header = new HashMap<String, String>();
 		parameter = new HashMap<String, String>();
@@ -61,6 +63,14 @@ public class Handler {
 	
 		return socket;
 	}
+	
+	public void setSocket(Socket socket) throws IOException {
+		
+		this.socket = socket;
+		
+		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		out = socket.getOutputStream();
+	}
 
 	public BufferedReader getIn() {
 	
@@ -70,6 +80,36 @@ public class Handler {
 	public OutputStream getOut() {
 	
 		return out;
+	}
+	
+	public RequestHandler getHandler() {
+		
+		return handler;
+	}
+	
+	public void setHandler(RequestHandler handler) {
+		
+		this.handler = handler;
+	}
+	
+	public Class<?> getController() {
+		
+		return controller;
+	}
+	
+	public void setController(Class<?> controller) {
+		
+		this.controller = controller;
+	}
+	
+	public Method getExecutor() {
+		
+		return executor;
+	}
+	
+	public void setExecutor(Method executor) {
+		
+		this.executor = executor;
 	}
 	
 	public RequestMethod getMethod() {

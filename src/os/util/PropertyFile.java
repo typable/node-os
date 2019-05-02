@@ -4,26 +4,24 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+public class PropertyFile extends File {
 
-public class PropertyFile {
-
-	private File file;
+	private static final long serialVersionUID = 1L;
+	
 	private Properties props = new Properties();
 
 	public PropertyFile(String filePath) {
 
-		this.file = new File(filePath);
+		super(filePath);
 	}
 
 	public void load() throws IOException {
 
-		FileInputStream fileInput = new FileInputStream(file);
+		FileInputStream fileInput = new FileInputStream(this);
 
 		props.load(fileInput);
 
@@ -32,21 +30,16 @@ public class PropertyFile {
 
 	public void save() throws IOException {
 
-		FileOutputStream fileOutput = new FileOutputStream(file);
+		FileOutputStream fileOutput = new FileOutputStream(this);
 
 		props.store(fileOutput, "");
 
 		fileOutput.close();
 	}
 	
-	public boolean exists() {
-		
-		return file.exists();
-	}
-	
 	public void create() throws IOException {
 		
-		file.createNewFile();
+		createNewFile();
 	}
 
 	public void setProps(HashMap<String, String> properties) {
@@ -73,10 +66,5 @@ public class PropertyFile {
 		}
 		
 		return properties;
-	}
-
-	public File getFile() {
-
-		return file;
 	}
 }

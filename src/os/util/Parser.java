@@ -22,4 +22,14 @@ public class Parser {
 		
 		return code;
 	}
+	
+	public static JsonObject parse(String json) {
+		
+		return null;
+	}
+	
+	public static String parse(JsonObject json) {
+		
+		return null;
+	}
 }
