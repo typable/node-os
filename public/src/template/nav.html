@@ -12,7 +12,9 @@
 				<div class="row al-right">
 					<div class="search m-1">
 						<div class="material-icons">search</div>
-						<input type="text" spellcheck="false" autocomplete="off" class="input" placeholder="Search">
+						<form action="/search" method="post">
+							<input name="q" type="text" spellcheck="false" autocomplete="off" class="input" placeholder="Search">
+						</form>
 					</div>
 					@{login}
 				</div>

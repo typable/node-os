@@ -1,22 +1,26 @@
 package main.controller;
 
+import java.io.IOException;
+
 import os.server.Server;
 import os.server.classes.Cookie;
+import os.server.classes.Email;
 import os.server.handler.Request;
 import os.server.handler.Response;
 import os.server.note.Controller;
 import os.server.note.RequestHandler;
+import os.server.protocol.SMTPConnection;
 import os.server.type.RequestMethod;
 
 @Controller
-public class MainController {
+public class EmailController {
 
 	private final String COOKIE_NAME = "uuid";
 	
 	private final String TEMPLATE_PATH = Server.RESOURCE_PATH + "/template";
 	
-	@RequestHandler(url = "/")
-	public void getRoot(Request request, Response response) {
+	@RequestHandler(url = "/email")
+	public void getEmail(Request request, Response response) {
 		
 		Cookie cookie = request.getCookie(COOKIE_NAME);
 		String code = "";
@@ -36,14 +40,35 @@ public class MainController {
 		
 		response.addTemplate("nav", TEMPLATE_PATH + "/nav.html");
 		response.addAttribute("login", code);
-		response.showPage("/index.html");
+		response.showPage("/email.html");
 	}
 	
-	@RequestHandler(url = "/search", method = RequestMethod.POST)
-	public void postSearch(Request request, Response response) {
+	@RequestHandler(url = "/email", method = RequestMethod.POST)
+	public void postEmail(Request request, Response response) throws IOException {
 		
-		String query = request.getParameter().get("q");
+		String subject = request.getParameter().get("subject");
+		String address = request.getParameter().get("email");
+		String message = request.getParameter().get("message");
 		
-		response.redirect("/" + query);
+		new Thread(() -> {
+			
+			Email email = new Email("byblockhd@gmail.com", "andy.sitzler@gmail.com");
+			email.setSubject(subject);
+			email.setBody("<h2>" + address + "</h2><div>" + message + "</div>");
+			
+			SMTPConnection smtp = new SMTPConnection("smtp.gmail.com", 465, true);
+			
+			try {
+				
+				smtp.send(email, "byblockhd@gmail.com", "VcR98uE4");
+			}
+			catch(IOException e) {
+				
+				e.printStackTrace();
+			}
+			
+		}).start();
+		
+		response.redirect("/");
 	}
 }

@@ -1,137 +1,159 @@
 package os.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 public class JsonObject {
 
-	private HashMap<String, Object> objectMap = new HashMap<String, Object>();
+	private HashMap<String, Object> objects;
 	
 	public JsonObject() {
 		
-		
+		objects = new HashMap<String, Object>();
 	}
 	
-	public void set(String key, Object object) {
+	public static JsonObject parse(String json) {
 		
-		objectMap.put(key, object);
-	}
-	
-	public void json(String json) {
+		JsonObject obj = new JsonObject();
 		
-		HashMap<String, String> map = new HashMap<String, String>();
+		json = json.substring(1, json.length() - 1);
 		
-		json = json.substring(1, json.length() - 2);
+		String[] splits = split(json, ',', new char[] {'{', '['}, new char[] {'}', ']'});
 		
-		String[] jsonParts = json.split("(?![^{]*(}|])),");
-		
-		for(String part : jsonParts) {
+		for(String s : splits) {
 			
-			String[] mapParts = part.split("(?![^{]*(}|])):");
+			int index_ = s.indexOf(":");
+			String key = s.substring(1, index_ - 1);
+			String value = s.substring(index_ + 2, s.length());
 			
-			if(mapParts.length == 2) {
+			char start = value.charAt(0);
+			char end = value.charAt(value.length() - 1);
+			
+			Object obj_ = null;
+			
+			if(start == '{' && end == '}') {
 				
-				map.put(mapParts[0].replaceAll("\"", ""), mapParts[1]);
+				value = value.substring(1, value.length() - 1);
+				
+				obj_ = parse(value);
 			}
-		}
-		
-		for(String key : map.keySet()) {
-			
-			String value = map.get(key);
-			
-			if(value.startsWith("\"")) {
+			else if(start == '[' && end == ']') {
 				
-				set(key, value.replaceAll("\"", ""));
-			}
-			else if(value.startsWith("{")) {
+				value = value.substring(1, value.length() - 1);
 				
-				JsonObject json_ = new JsonObject();
+				String[] splits_ = split(value, ',', new char[] {'{', '['}, new char[] {'}', ']'});
 				
-				json_.json(value);
+				JsonObject[] obj__ = new JsonObject[splits_.length];
 				
-				set(key, json_);
-			}
-			else if(value.startsWith("[")) {
-				
-				value = value.replaceAll("\\[", "");
-				value = value.replaceAll("]", "");
-				
-				String[] parts = value.split("(?![^{]*(}|])),");
-				
-				JsonObject[] jsonArray = new JsonObject[parts.length];
-				
-				for(int i = 0; i < parts.length; i++) {
+				for(int i = 0; i < splits_.length; i++) {
 					
-					JsonObject json_ = new JsonObject();
-					json_.json(parts[i]);
-					
-					jsonArray[i] = json_;
+					obj__[i] = parse(splits_[i]);
 				}
 				
-				set(key, jsonArray);
+				obj_ = obj__;
+			}
+			else if(start == '"' && end == '"') {
+				
+				value = value.substring(1, value.length() - 1);
+				
+				obj_ = value;
 			}
 			else {
 				
-				if(value.contains("true") || value.contains("false")) {
+				if(value.equals("true") || value.equals("false")) {
 					
-					value = value.replaceAll(",", "");
-					set(key, Boolean.parseBoolean(value));
+					obj_ = Boolean.valueOf(value);
 				}
 				else if(value.contains(".")) {
 					
-					value = value.replaceAll(",", "");
-					set(key, Double.parseDouble(value));
+					obj_ = Double.parseDouble(value);
 				}
 				else {
 					
-					value = value.replaceAll(",", "");
-					set(key, Integer.parseInt(value));
+					obj_ = Integer.parseInt(value);
 				}
 			}
+			
+			obj.set(key, obj_);
 		}
+		
+		return obj;
 	}
 	
 	public String stringify() {
 		
-		String code = "{";
+		String json = "";
 		
-		for(String key : objectMap.keySet()) {
+		json += "{";
+		
+		int i = 0;
+		int len = this.keys().size() - 1;
+		
+		for(String key : keys()) {
 			
-			code += "\"" + key + "\":";
+			Object obj_ = values().get(key);
 			
-			Object obj = objectMap.get(key);
+			json += "\"" + key + "\": ";
 			
-			if(obj instanceof String) {
+			if(obj_ instanceof JsonObject) {
 				
-				code += "\"" + (String) obj + "\",";
+				json += ((JsonObject) obj_).stringify();
 			}
-			else if(obj instanceof Integer || obj instanceof Double || obj instanceof Boolean) {
+			else if(obj_ instanceof JsonObject[]) {
 				
-				code += obj.toString() + ",";
-			}
-			else if(obj instanceof JsonObject) {
+				json += "[";
 				
-				code += ((JsonObject) obj).stringify();
-			}
-			else if(obj instanceof JsonObject[]) {
+				int i_ = 0;
+				int len_ = ((JsonObject[]) obj_).length - 1;
 				
-				code += "[";
-				
-				for(JsonObject obj_ : ((JsonObject[]) obj)) {
+				for(JsonObject obj__ : ((JsonObject[]) obj_)) {
 					
-					code += obj_.stringify();
+					if(obj__ != null) {
+						
+						json += obj__.stringify();
+						
+						if(i_ < len_) {
+							
+							json += ", ";
+						}
+						
+						i_++;
+					}
 				}
 				
-				code += "],";
+				json += "]";
+			}
+			else if(obj_ instanceof String) {
+				
+				json += "\"" + (String) obj_ + "\"";
+			}
+			else if(obj_ instanceof Integer || obj_ instanceof Double || obj_ instanceof Boolean) {
+				
+				json += String.valueOf(obj_);
 			}
 			else {
 				
-				code += obj.toString() + ",";
+				json += "null";
 			}
+			
+			if(i < len) {
+				
+				json += ", ";
+			}
+			
+			i++;
 		}
 		
-		code += "},";
+		json += "}";
 		
-		return code;
+		return json;
+	}
+	
+	public void set(String key, JsonObject value) {
+		
+		objects.put(key, value);
 	}
 	
 	public JsonObject getObject(String key) {
@@ -139,9 +161,19 @@ public class JsonObject {
 		return get(key, JsonObject.class);
 	}
 	
+	public void set(String key, JsonObject[] value) {
+		
+		objects.put(key, value);
+	}
+	
 	public JsonObject[] getArray(String key) {
 		
 		return get(key, JsonObject[].class);
+	}
+	
+	public void set(String key, String value) {
+		
+		objects.put(key, value);
 	}
 	
 	public String getString(String key) {
@@ -149,9 +181,19 @@ public class JsonObject {
 		return get(key, String.class);
 	}
 	
+	public void set(String key, int value) {
+		
+		objects.put(key, value);
+	}
+	
 	public int getInt(String key) {
 		
 		return get(key, Integer.class);
+	}
+	
+	public void set(String key, double value) {
+		
+		objects.put(key, value);
 	}
 	
 	public double getDouble(String key) {
@@ -159,20 +201,96 @@ public class JsonObject {
 		return get(key, Double.class);
 	}
 	
+	public void set(String key, boolean value) {
+		
+		objects.put(key, value);
+	}
+	
 	public boolean getBoolean(String key) {
 		
 		return get(key, Boolean.class);
 	}
 	
-	public <T extends Object> T get(String key, Class<T> type) {
+	public void set(String key, Object value) {
+		
+		objects.put(key, value);
+	}
+	
+	private <T extends Object> T get(String key, Class<T> type) {
 		
 		try {
 			
-			return type.cast(objectMap.get(key));
+			return type.cast(objects.get(key));
 		}
 		catch(ClassCastException ex) {
 			
-			throw new ClassCastException("Cannot cast " + objectMap.get(key).getClass().getName() + " to " + type.getName());
+			throw new ClassCastException("Cannot cast " + objects.get(key).getClass().getName() + " to " + type.getName());
 		}
+	}
+	
+	public Set<String> keys() {
+		
+		return objects.keySet();
+	}
+	
+	public HashMap<String, Object> values() {
+		
+		return objects;
+	}
+	
+	private static String[] split(String line, char splitter, char[] start, char[] end) {
+		
+		List<Integer> splits = new ArrayList<Integer>();
+		int i = 0;
+		int scope = 0;
+		
+		for(char c : line.toCharArray()) {
+			
+			for(char cs : start) {
+				
+				if(c == cs) {
+					
+					scope++;
+				}
+			}
+			
+			for(char ce : end) {
+				
+				if(c == ce) {
+					
+					scope--;
+				}
+			}
+			
+			if(c == splitter && scope == 0) {
+				
+				splits.add(i);
+			}
+			
+			i++;
+		}
+		
+		int last = 0;
+		int index = 0;
+		
+		String[] json_ = new String[splits.size() + 1];
+		
+		for(int i_ = 0; i_ < splits.size() + 1; i_++) {
+			
+			if(i_ < splits.size()) {
+				
+				index = splits.get(i_);
+			}
+			else {
+				
+				index = line.length();
+			}
+			
+			json_[i_] = line.substring(last, index);
+			
+			last = index + 2;
+		}
+		
+		return json_;
 	}
 }

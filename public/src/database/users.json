@@ -1,4 +1,1 @@
-{"users": [
-	{"name": "Andreas Sitzler", "email": "andy.sitzler@gmail.com", "password": "123"},
-	{"name": "Luca Reisinger", "email": "lucareisinger@gmail.com", "password": "321"}
-]}
+{"unique": true, "users": [{"password": "123", "name": "Andreas Sitzler", "email": "andy.sitzler@gmail.com"}, {"password": "321", "name": "Luca Reisinger", "email": "lucareisinger@gmail.com"}]}

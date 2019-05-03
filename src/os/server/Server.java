@@ -7,7 +7,6 @@ import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import os.server.Logger.Messages;
@@ -17,7 +16,8 @@ import os.server.handler.Response;
 import os.server.note.Controller;
 import os.server.note.RequestHandler;
 import os.server.type.ContentType;
-import os.util.PropertyFile;
+import os.util.File;
+import os.util.Property;
 import os.util.Utils;
 
 public class Server {
@@ -31,7 +31,7 @@ public class Server {
 	public static final String CONFIG_PATH = "/config.properties";
 	public static final String RESOURCE_PATH = "/src";
 	
-	public static HashMap<String, String> configurations = new HashMap<String, String>();
+	public static Property configurations;
 	
 	private int port;
 	private String rootPath;
@@ -160,7 +160,7 @@ public class Server {
 	
 	private void loadConfigurations() throws IOException {
 		
-		PropertyFile configFile = new PropertyFile(Utils.getCurrentPath() + CONFIG_PATH);
+		File configFile = new File(Utils.getCurrentPath() + CONFIG_PATH);
 		
 		if(configFile.exists()) {
 			
@@ -188,9 +188,9 @@ public class Server {
 					
 					logger.info("Configuration file created");
 					
-					HashMap<String, String> props = new HashMap<String, String>();
-					props.put("port", "80");
-					props.put("root", "*/public");
+					Property props = new Property();
+					props.set("port", "80");
+					props.set("root", "*/public");
 					
 					configFile.setProps(props);
 					configFile.save();
@@ -252,7 +252,7 @@ public class Server {
 	
 	public String getProperty(String key) {
 		
-		if(configurations != null && configurations.containsKey(key)) {
+		if(configurations != null && configurations.hasKey(key)) {
 			
 			return configurations.get(key);
 		}
