@@ -33,6 +33,7 @@ public class Handler {
 	private HashMap<String, String> templates;
 	private byte[] body;
 	private boolean committed = false;
+	private String lang;
 	
 	public Handler(Server server) {
 		
@@ -206,5 +207,15 @@ public class Handler {
 	public void setCommitted(boolean committed) {
 		
 		this.committed = committed;
+	}
+	
+	public void setLanguage(String lang) {
+		
+		this.lang = lang;
+	}
+	
+	public String getLanguage() {
+		
+		return lang;
 	}
 }

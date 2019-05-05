@@ -49,10 +49,14 @@ public class Response extends Handler {
 				
 				if(contentType != null && contentType == ContentType.HTML) {
 					
+					addAttribute("lang", getLanguage());
+					
 					String body = new String(getBody());
 					
 					body = Parser.parseHTML(body, getTemplates());
 					body = Parser.parseHTML(body, getAttributes());
+					body = Parser.parseLang(body, getLanguage(), Server.languages);
+					body = Parser.parseHref(body, getLanguage());
 					
 					setBody(body);
 				}

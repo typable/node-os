@@ -15,33 +15,10 @@ private final String COOKIE_NAME = "uuid";
 	
 	private final String TEMPLATE_PATH = Server.RESOURCE_PATH + "/template";
 	
-	@RequestHandler(url = "/")
-	public void getRoot(Request request, Response response) {
-		
-		Cookie cookie = request.getCookie(COOKIE_NAME);
-		String code = "";
-		
-		if(cookie != null) {
-			
-			String userProfile = "https://lh3.googleusercontent.com/-a8ulId-i9cY/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rcieSoPf-8Y_6Sch5sY7H7PTUttJw/s96-c-mo/photo.jpg";
-			
-			code = "<div class='icon m-1 tooltip'><div class='material-icons'>notifications_none</div><div class='tooltip-text tooltip-icon'>Notifications</div></div>"
-					+ "<div class='account m-1 tooltip'><div class='image image-round'><img src='" + userProfile + "'></div><div class='tooltip-text tooltip-icon' style='transform: translateX(calc(-50% + 22px));'>Account</div></div>" +
-					"<form action='/logout' method='post'><button class='signin m-1'>Log Out</button></form>";
-		}
-		else {
-			
-			code = "<a href='/login' class='text-none'><div class='signin m-1'>Log In</div></a>";
-		}
-		
-		response.addTemplate("nav", TEMPLATE_PATH + "/nav.html");
-		response.addAttribute("login", code);
-		response.showPage("/index.html");
-	}
-	
 	@RequestHandler(url = "/login")
 	public void getLogin(Request request, Response response) {
 		
+		response.addTemplate("header", TEMPLATE_PATH + "/header.html");
 		response.addTemplate("nav", TEMPLATE_PATH + "/nav.html");
 		response.addAttribute("login", "");
 		response.showPage("/login.html");
@@ -74,6 +51,16 @@ private final String COOKIE_NAME = "uuid";
 		cookie.setAge(0);
 		
 		response.setCookie(cookie);
-		response.redirect("/");
+		
+		String lang = request.getLanguage();
+		
+		if(lang.equals("en")) {
+			
+			response.redirect("/");
+		}
+		else {
+			
+			response.redirect("/?lang=" + lang);
+		}
 	}
 }

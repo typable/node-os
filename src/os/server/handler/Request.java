@@ -30,7 +30,31 @@ public class Request extends Handler {
 				String method = line.split(" ")[0];
 				
 				setMethod(RequestMethod.valueOf(method));
-				setUrl(line.split(" ")[1]);
+				
+				String query = line.split(" ")[1];
+				
+				if(query.contains("?")) {
+					
+					setUrl(query.split("\\?")[0]);
+					
+					query = query.split("\\?")[1];
+					
+					if(query.contains("&")) {
+						
+						for(String bodyParts : query.split("&")) {
+							
+							Utils.keySet(getParameter(), "=", bodyParts);
+						}
+					}
+					else {
+						
+						Utils.keySet(getParameter(), "=", query);
+					}
+				}
+				else {
+					
+					setUrl(query);
+				}
 			}
 			else {
 				
@@ -66,6 +90,17 @@ public class Request extends Handler {
 				
 				setBody(body);
 			}
+		}
+		
+		String lang = getParameter().get("lang");
+		
+		if(lang != null && (lang.equals("en") || lang.equals("de"))) {
+			
+			setLanguage(lang);
+		}
+		else {
+			
+			setLanguage("en");
 		}
 	}
 	

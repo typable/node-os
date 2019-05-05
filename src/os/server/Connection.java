@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -77,7 +78,7 @@ public class Connection {
 			}
 		}
 		
-		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
 		out = socket.getOutputStream();
 		
 		runnable.run();

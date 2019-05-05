@@ -25,15 +25,18 @@ public class MainController {
 			
 			String userProfile = "https://lh3.googleusercontent.com/-a8ulId-i9cY/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rcieSoPf-8Y_6Sch5sY7H7PTUttJw/s96-c-mo/photo.jpg";
 			
-			code = "<div class='icon m-1 tooltip'><div class='material-icons'>notifications_none</div><div class='tooltip-text tooltip-icon'>Notifications</div></div>"
-					+ "<div class='account m-1 tooltip'><div class='image image-round'><img src='" + userProfile + "'></div><div class='tooltip-text tooltip-icon' style='transform: translateX(calc(-50% + 22px));'>Account</div></div>" +
-					"<form action='/logout' method='post'><button class='signin m-1'>Log Out</button></form>";
+			code = "<div class='icon m-1 tooltip'><div class='material-icons'>notifications_none</div><div class='tooltip-text tooltip-icon'>@{lang:nav.notification.tooltip}</div></div>"
+					+ "<div class='account m-1 tooltip'><div class='image image-round'><img src='" + userProfile + "'></div><div class='tooltip-text tooltip-icon' style='transform: translateX(calc(-50% + 22px));'>@{lang:nav.account.tooltip}</div></div>" +
+					"<form action='/logout' method='post'><button class='signin m-1'>@{lang:nav.logout}</button></form>";
 		}
 		else {
 			
-			code = "<a href='/login' class='text-none'><div class='signin m-1'>Log In</div></a>";
+			code = "<a href='/login' class='text-none'><div class='signin m-1'>@{lang:nav.login}</div></a>";
 		}
 		
+		String lang = request.getLanguage();
+		
+		response.addTemplate("header", TEMPLATE_PATH + "/header.html");
 		response.addTemplate("nav", TEMPLATE_PATH + "/nav.html");
 		response.addAttribute("login", code);
 		response.showPage("/index.html");
@@ -44,6 +47,15 @@ public class MainController {
 		
 		String query = request.getParameter().get("q");
 		
-		response.redirect("/" + query);
+		String lang = request.getLanguage();
+		
+		if(lang.equals("en")) {
+			
+			response.redirect("/" + query);
+		}
+		else {
+			
+			response.redirect("/" + query + "?lang=" + lang);
+		}
 	}
 }

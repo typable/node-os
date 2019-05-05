@@ -37,9 +37,9 @@ public class SMTPConnection extends Connection {
 					System.out.println(read());
 					System.out.println(read());
 					System.out.println(read());
-					emit("byblockhd@gmail.com", true);
+					emit(username, true);
 					System.out.println(read());
-					emit("VcR98uE4", true);
+					emit(password, true);
 					System.out.println(read());
 					emit("MAIL FROM:<" + email.getFrom() + ">");
 					System.out.println(read());

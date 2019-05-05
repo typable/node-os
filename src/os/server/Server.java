@@ -32,6 +32,7 @@ public class Server {
 	public static final String RESOURCE_PATH = "/src";
 	
 	public static Property configurations;
+	public static Property languages;
 	
 	private int port;
 	private String rootPath;
@@ -77,6 +78,8 @@ public class Server {
 				close();
 			}
 			
+			loadLanguages();
+			
 			serverSocket = new ServerSocket(port);
 			
 			logger.info(Messages.SERVER_STARTED.getMessage("" + port));
@@ -93,6 +96,7 @@ public class Server {
 						request.request();
 						
 						Response response = new Response(this, socket);
+						response.setLanguage(request.getLanguage());
 						
 						if(request.getUrl() != null) {
 							
@@ -248,6 +252,16 @@ public class Server {
 		}
 		
 		return succeeded;
+	}
+	
+	private void loadLanguages() throws IOException {
+		
+		File file = new File(Utils.getCurrentPath() + "/public" + RESOURCE_PATH + "/lang/lang.properties");
+		if(file.exists()) {
+			
+			file.load();
+			languages = file.getProps();
+		}
 	}
 	
 	public String getProperty(String key) {

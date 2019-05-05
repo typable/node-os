@@ -35,9 +35,10 @@ public class EmailController {
 		}
 		else {
 			
-			code = "<a href='/login' class='text-none'><div class='signin m-1'>Log In</div></a>";
+			code = "<a href='/login' class='text-none'><div class='signin m-1'>@{lang:login}</div></a>";
 		}
 		
+		response.addTemplate("header", TEMPLATE_PATH + "/header.html");
 		response.addTemplate("nav", TEMPLATE_PATH + "/nav.html");
 		response.addAttribute("login", code);
 		response.showPage("/email.html");
@@ -69,6 +70,15 @@ public class EmailController {
 			
 		}).start();
 		
-		response.redirect("/");
+		String lang = request.getLanguage();
+		
+		if(lang.equals("en")) {
+			
+			response.redirect("/");
+		}
+		else {
+			
+			response.redirect("/?lang=" + lang);
+		}
 	}
 }
