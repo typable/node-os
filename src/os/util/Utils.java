@@ -18,6 +18,16 @@ public class Utils {
 		return (line != null && !line.equals("")) ? true : false;
 	}
 	
+	public static void keySet(Properties attributes, String separator, String code) {
+		
+		if(code.contains(separator)) {
+			
+			String[] parts = code.split(separator);
+			
+			attributes.set(parts[0], parts[1]);
+		}
+	}
+	
 	public static void keySet(HashMap<String, String> attributes, String separator, String code) {
 		
 		if(code.contains(separator)) {

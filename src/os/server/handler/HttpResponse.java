@@ -5,20 +5,20 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Files;
 
-import os.server.Logger.Messages;
-import os.server.Server;
+import os.core.Core;
+import os.server.HttpServer;
 import os.server.classes.Cookie;
-import os.server.constants.Keys;
+import os.server.classes.Keys;
+import os.server.classes.Logger.Messages;
 import os.server.type.ContentEncoding;
 import os.server.type.ContentType;
 import os.server.type.Status;
 import os.util.Parser;
 
-public class Response extends Handler {
+public class HttpResponse extends Handler {
 	
-	public Response(Server server, Socket socket) throws IOException {
+	public HttpResponse(HttpServer server, Socket socket) throws IOException {
 
-		super(server);
 		super.setSocket(socket);
 	}
 	
@@ -35,7 +35,7 @@ public class Response extends Handler {
 		
 		if(!getHeader().isEmpty()) {
 			
-			for(String key : getHeader().keySet()) {
+			for(String key : getHeader().keys()) {
 				
 				emit(key + ": " + getHeader().get(key));
 			}
@@ -43,7 +43,7 @@ public class Response extends Handler {
 		
 		if(getBody() != null) {
 			
-			if(getHeader().containsKey(Keys.CONTENT_TYPE)) {
+			if(getHeader().hasKey(Keys.CONTENT_TYPE)) {
 				
 				ContentType contentType = ContentType.getByType(getHeader().get(Keys.CONTENT_TYPE));
 				
@@ -55,7 +55,7 @@ public class Response extends Handler {
 					
 					body = Parser.parseHTML(body, getTemplates());
 					body = Parser.parseHTML(body, getAttributes());
-					body = Parser.parseLang(body, getLanguage(), Server.languages);
+					body = Parser.parseLang(body, getLanguage(), Core.LANGUAGES);
 					body = Parser.parseHref(body, getLanguage());
 					
 					setBody(body);
@@ -101,14 +101,14 @@ public class Response extends Handler {
 		
 		try {
 			
-			File file = new File(getServer().getRootPath() + path);
+			File file = new File(Core.ROOT + path);
 			setBody(Files.readAllBytes(file.toPath()));
 			setContentType(ContentType.getByFile(file.toPath().toString()));
 			ok();
 		}
 		catch(IOException e) {
 			
-			getServer().getLogger().warn(Messages.NOT_FOUND.getMessage(path));
+			Core.LOGGER.warn(Messages.NOT_FOUND.getMessage(path));
 			notFound();
 		}
 	}
@@ -117,14 +117,14 @@ public class Response extends Handler {
 		
 		try {
 			
-			File file = new File(getServer().getRootPath() + path);
+			File file = new File(Core.ROOT + path);
 			setBody(Files.readAllBytes(file.toPath()));
 			setContentType(contentType);
 			ok();
 		}
 		catch(IOException e) {
 			
-			getServer().getLogger().warn(Messages.NOT_FOUND.getMessage(path));
+			Core.LOGGER.warn(Messages.NOT_FOUND.getMessage(path));
 			notFound();
 		}
 	}
@@ -138,44 +138,44 @@ public class Response extends Handler {
 	
 	public void addAttribute(String key, String value) {
 		
-		getAttributes().put(key, value);
+		getAttributes().set(key, value);
 	}
 	
 	public void addTemplate(String key, String path) {
 		
 		try {
 			
-			File file = new File(getServer().getRootPath() + path);
-			getTemplates().put(key, String.join("", Files.readAllLines(file.toPath())));
+			File file = new File(Core.ROOT + Core.RESOURCE_PATH + path);
+			getTemplates().set(key, String.join("", Files.readAllLines(file.toPath())));
 		}
 		catch(IOException e) {
 			
-			getServer().getLogger().warn(Messages.NOT_FOUND.getMessage(path));
+			Core.LOGGER.warn(Messages.NOT_FOUND.getMessage(path));
 		}
 	}
 	
 	public void setCookie(Cookie cookie) {
 		
-		getHeader().put(Keys.SET_COOKIE, cookie.getKey() + "=" + cookie.getValue() + "; Max-Age=" + cookie.getAge() + "; Expires=" + cookie.getAge());
+		getHeader().set(Keys.SET_COOKIE, cookie.getKey() + "=" + cookie.getValue() + "; Max-Age=" + cookie.getAge() + "; Expires=" + cookie.getAge());
 	}
 	
 	public void setLocation(String location) {
 		
-		getHeader().put(Keys.LOCATION, location);
+		getHeader().set(Keys.LOCATION, location);
 	}
 	
 	public void setContentLength(int length) {
 		
-		getHeader().put(Keys.CONTENT_LENGTH, String.valueOf(length));
+		getHeader().set(Keys.CONTENT_LENGTH, String.valueOf(length));
 	}
 	
 	public void setContentEncoding(ContentEncoding contentEncoding) {
 		
-		getHeader().put(Keys.CONTENT_ENCODING, contentEncoding.getType());
+		getHeader().set(Keys.CONTENT_ENCODING, contentEncoding.getType());
 	}
 	
 	public void setContentType(ContentType contentType) {
 		
-		getHeader().put(Keys.CONTENT_TYPE, contentType.getType() + " charset=UTF-8");
+		getHeader().set(Keys.CONTENT_TYPE, contentType.getType() + " charset=UTF-8");
 	}
 }

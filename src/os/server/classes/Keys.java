@@ -1,4 +1,4 @@
-package os.server.constants;
+package os.server.classes;
 
 
 public class Keys {

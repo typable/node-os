@@ -1,8 +1,6 @@
-package os.server.protocol;
+package os.connection;
 
 import java.io.IOException;
-
-import os.server.Connection;
 
 public class POP3Connection extends Connection {
 

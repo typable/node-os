@@ -2,25 +2,20 @@ package main.controller;
 
 import java.io.IOException;
 
-import os.server.Server;
+import os.connection.SMTPConnection;
 import os.server.classes.Cookie;
 import os.server.classes.Email;
-import os.server.handler.Request;
-import os.server.handler.Response;
-import os.server.note.Controller;
-import os.server.note.RequestHandler;
-import os.server.protocol.SMTPConnection;
+import os.server.handler.HttpRequest;
+import os.server.handler.HttpResponse;
+import os.server.type.Request;
 import os.server.type.RequestMethod;
 
-@Controller
 public class EmailController {
 
 	private final String COOKIE_NAME = "uuid";
 	
-	private final String TEMPLATE_PATH = Server.RESOURCE_PATH + "/template";
-	
-	@RequestHandler(url = "/email")
-	public void getEmail(Request request, Response response) {
+	@Request(url = "/email")
+	public void getEmail(HttpRequest request, HttpResponse response) {
 		
 		Cookie cookie = request.getCookie(COOKIE_NAME);
 		String code = "";
@@ -38,14 +33,14 @@ public class EmailController {
 			code = "<a href='/login' class='text-none'><div class='signin m-1'>@{lang:login}</div></a>";
 		}
 		
-		response.addTemplate("header", TEMPLATE_PATH + "/header.html");
-		response.addTemplate("nav", TEMPLATE_PATH + "/nav.html");
+		response.addTemplate("header", "/template/header.html");
+		response.addTemplate("nav", "/template/nav.html");
 		response.addAttribute("login", code);
 		response.showPage("/email.html");
 	}
 	
-	@RequestHandler(url = "/email", method = RequestMethod.POST)
-	public void postEmail(Request request, Response response) throws IOException {
+	@Request(url = "/email", method = RequestMethod.POST)
+	public void postEmail(HttpRequest request, HttpResponse response) throws IOException {
 		
 		String subject = request.getParameter().get("subject");
 		String address = request.getParameter().get("email");

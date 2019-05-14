@@ -1,4 +1,4 @@
-package os.server;
+package os.connection;
 
 import java.io.BufferedReader;
 import java.io.IOException;

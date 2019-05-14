@@ -1,10 +1,8 @@
-package os.server.protocol;
+package os.connection;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-
-import os.server.Connection;
 
 public class FTPConnection extends Connection {
 

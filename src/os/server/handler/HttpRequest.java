@@ -4,18 +4,17 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
 
-import os.server.Server;
+import os.server.HttpServer;
 import os.server.classes.Cookie;
-import os.server.constants.Keys;
+import os.server.classes.Keys;
 import os.server.type.RequestMethod;
 import os.util.Parser;
 import os.util.Utils;
 
-public class Request extends Handler {
+public class HttpRequest extends Handler {
 	
-	public Request(Server server, Socket socket) throws IOException {
+	public HttpRequest(HttpServer server, Socket socket) throws IOException {
 
-		super(server);
 		super.setSocket(socket);
 	}
 	
@@ -106,7 +105,7 @@ public class Request extends Handler {
 	
 	public int getContentLength() {
 		
-		if(getHeader().containsKey(Keys.CONTENT_LENGTH)) {
+		if(getHeader().hasKey(Keys.CONTENT_LENGTH)) {
 			
 			try {
 				
@@ -126,7 +125,7 @@ public class Request extends Handler {
 		Cookie[] cookies;
 		HashMap<String, String> cookiesMap = new HashMap<String, String>();
 		
-		if(getHeader().containsKey(Keys.COOKIE)) {
+		if(getHeader().hasKey(Keys.COOKIE)) {
 			
 			String line = getHeader().get(Keys.COOKIE);
 			

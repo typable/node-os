@@ -3,18 +3,18 @@ package os.util;
 import java.util.HashMap;
 import java.util.Set;
 
-public class Property {
+public class Properties {
 	
 	private HashMap<String, String> map;
 
-	public Property() {
+	public Properties() {
 		
 		map = new HashMap<String, String>();
 	}
 	
-	public static Property parse(String props) {
+	public static Properties parse(String props) {
 		
-		Property property = new Property();
+		Properties property = new Properties();
 		
 		for(String s : props.split("\r\n")) {
 			

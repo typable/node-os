@@ -1,8 +1,7 @@
-package os.server.protocol;
+package os.connection;
 
 import java.io.IOException;
 
-import os.server.Connection;
 import os.server.classes.Email;
 
 public class SMTPConnection extends Connection {

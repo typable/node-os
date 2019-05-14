@@ -1,10 +1,9 @@
-package os.server.user;
+package os.server.classes;
 
-import java.util.UUID;
 
 public class User {
 
-	private UUID uuid;
+	private String uuid;
 	private String name;
 	private String email;
 	private String password;
@@ -12,18 +11,18 @@ public class User {
 	
 	public User(String name, String email, String password) {
 		
-		UUID.fromString(email);
+		uuid = email;
 		this.name = name;
 		this.email = email;
 		this.password = password;
 	}
 
-	public UUID getUuid() {
+	public String getUuid() {
 		
 		return uuid;
 	}
 
-	public void setUuid(UUID uuid) {
+	public void setUuid(String uuid) {
 		
 		this.uuid = uuid;
 	}

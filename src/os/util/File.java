@@ -62,13 +62,13 @@ public class File {
 		return JsonObject.parse(new String(getData()));
 	}
 	
-	public void setProps(Property props) {
+	public void setProps(Properties props) {
 		
 		setData(props.stringify().getBytes());
 	}
 	
-	public Property getProps() {
+	public Properties getProps() {
 		
-		return Property.parse(new String(getData()));
+		return Properties.parse(new String(getData()));
 	}
 }

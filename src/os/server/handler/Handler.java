@@ -4,45 +4,35 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.reflect.Method;
 import java.net.Socket;
-import java.util.HashMap;
 
-import os.server.Server;
-import os.server.note.RequestHandler;
 import os.server.type.RequestMethod;
 import os.server.type.Status;
+import os.util.Properties;
 
 public class Handler {
 
-	private Server server;
 	private Socket socket;
 	private BufferedReader in;
 	private OutputStream out;
 	
-	private RequestHandler handler;
-	private Class<?> controller;
-	private Method executor;
-	
 	private RequestMethod method;
 	private Status status;
 	private String url;
-	private HashMap<String, String> header;
-	private HashMap<String, String> parameter;
-	private HashMap<String, String> attributes;
-	private HashMap<String, String> templates;
+	private Properties header;
+	private Properties parameter;
+	private Properties attributes;
+	private Properties templates;
 	private byte[] body;
 	private boolean committed = false;
 	private String lang;
 	
-	public Handler(Server server) {
+	public Handler() {
 		
-		this.server = server;
-		
-		header = new HashMap<String, String>();
-		parameter = new HashMap<String, String>();
-		attributes = new HashMap<String, String>();
-		templates = new HashMap<String, String>();
+		header = new Properties();
+		parameter = new Properties();
+		attributes = new Properties();
+		templates = new Properties();
 	}
 	
 	public void emit(String line) throws IOException {
@@ -53,11 +43,6 @@ public class Handler {
 	public void emit(byte[] data) throws IOException {
 		
 		out.write(data);
-	}
-	
-	public Server getServer() {
-		
-		return server;
 	}
 
 	public Socket getSocket() {
@@ -81,36 +66,6 @@ public class Handler {
 	public OutputStream getOut() {
 	
 		return out;
-	}
-	
-	public RequestHandler getHandler() {
-		
-		return handler;
-	}
-	
-	public void setHandler(RequestHandler handler) {
-		
-		this.handler = handler;
-	}
-	
-	public Class<?> getController() {
-		
-		return controller;
-	}
-	
-	public void setController(Class<?> controller) {
-		
-		this.controller = controller;
-	}
-	
-	public Method getExecutor() {
-		
-		return executor;
-	}
-	
-	public void setExecutor(Method executor) {
-		
-		this.executor = executor;
 	}
 	
 	public RequestMethod getMethod() {
@@ -143,45 +98,24 @@ public class Handler {
 		this.url = url;
 	}
 
-	public HashMap<String, String> getHeader() {
+	public Properties getHeader() {
 		
 		return header;
 	}
 	
-	public void setHeader(HashMap<String, String> header) {
-	
-		this.header = header;
-	}
-	
-	public HashMap<String, String> getParameter() {
+	public Properties getParameter() {
 	
 		return parameter;
 	}
 	
-	public void setParameter(HashMap<String, String> parameter) {
-	
-		this.parameter = parameter;
-	}
-	
-	public HashMap<String, String> getAttributes() {
+	public Properties getAttributes() {
 	
 		return attributes;
 	}
 	
-	public void setAttributes(HashMap<String, String> attributes) {
-	
-		this.attributes = attributes;
-	}
-
-	
-	public HashMap<String, String> getTemplates() {
+	public Properties getTemplates() {
 	
 		return templates;
-	}
-	
-	public void setTemplates(HashMap<String, String> templates) {
-	
-		this.templates = templates;
 	}
 	
 	public byte[] getBody() {

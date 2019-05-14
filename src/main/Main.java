@@ -1,20 +1,20 @@
 package main;
 
-import java.io.IOException;
 
 import main.controller.EmailController;
 import main.controller.LoginController;
 import main.controller.MainController;
-import os.server.Server;
+import os.core.Core;
 
 public class Main {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		
-		Server server = new Server();
-		server.registerController(MainController.class);
-		server.registerController(LoginController.class);
-		server.registerController(EmailController.class);
-		server.launch();
+		Core core = new Core();
+		core.addController(MainController.class);
+		core.addController(LoginController.class);
+		core.addController(EmailController.class);
+		
+		core.launch();
 	}
 }

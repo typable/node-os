@@ -1,7 +1,5 @@
 package os.util;
 
-import java.util.HashMap;
-
 public class Parser {
 	
 	public static String parseURL(String code) {
@@ -17,17 +15,15 @@ public class Parser {
 		
 		if(!lang.equals("en")) {
 			
-			// return code.replaceAll("href=\"/\"", "href='/?lang=de'");
-			
 			return code.replaceAll("(href|action)=(\"|')(/[\\w?&=+]*)(\"|')", "$1='$3?lang=" + lang + "'");
 		}
 		
 		return code;
 	}
 	
-	public static String parseHTML(String code, HashMap<String, String> attributes) {
+	public static String parseHTML(String code, Properties attributes) {
 		
-		for(String key : attributes.keySet()) {
+		for(String key : attributes.keys()) {
 			
 			code = code.replaceAll("\\@\\{" + key + "\\}", attributes.get(key));
 		}
@@ -35,7 +31,7 @@ public class Parser {
 		return code;
 	}
 
-	public static String parseLang(String code, String lang, Property languages) {
+	public static String parseLang(String code, String lang, Properties languages) {
 
 		for(String key : languages.keys()) {
 			

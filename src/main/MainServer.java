@@ -6,7 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import os.server.Connection;
+import os.connection.Connection;
 import os.util.Utils;
 
 public class MainServer {
