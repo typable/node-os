@@ -6,19 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 
 import os.server.HttpServer;
-import os.server.classes.Logger;
-import os.server.classes.Logger.Messages;
 import os.server.handler.Controller;
-import os.service.UserService;
+import os.type.Logger;
+import os.type.Logger.Messages;
 import os.util.File;
-import os.util.Properties;
+import os.util.Property;
 
 public class Core {
 
-	public static Properties PROPERTIES;
-	public static Properties LANGUAGES;
+	public static Property<String> PROPERTIES;
+	public static Property<String> LANGUAGES;
 	public static List<Controller> CONTROLLERS;
-	public static UserService USER_SERVICE;
 	public static Logger LOGGER;
 	
 	public static final String CONFIG_PATH = "/config.properties";
@@ -34,10 +32,9 @@ public class Core {
 		
 		try {
 			
-			PROPERTIES = new Properties();
-			LANGUAGES = new Properties();
+			PROPERTIES = new Property<String>();
+			LANGUAGES = new Property<String>();
 			CONTROLLERS = new ArrayList<Controller>();
-			USER_SERVICE = new UserService();
 			LOGGER = new Logger();
 			
 			instances = new ArrayList<Class<?>>();
@@ -58,7 +55,6 @@ public class Core {
 		ROOT = Core.getRequired("root").replaceAll("\\*", getCurrentPath());
 		
 		loadLanguages();
-		USER_SERVICE.loadUsers();
 		
 		server.launch();
 	}
@@ -73,7 +69,6 @@ public class Core {
 		for(Class<?> instance : instances) {
 			
 			HashMap<String, Object> fields = new HashMap<String, Object>();
-			fields.put("userService", USER_SERVICE);
 			fields.put("logger", LOGGER);
 			
 			Controller controller = new Controller(instance);
@@ -112,7 +107,7 @@ public class Core {
 					
 					LOGGER.info("Configuration file created");
 					
-					Properties props = new Properties();
+					Property<String> props = new Property<String>();
 					props.set("port", "80");
 					props.set("root", "*/public");
 					

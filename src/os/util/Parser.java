@@ -1,46 +1,9 @@
 package os.util;
 
-public class Parser {
-	
-	public static String parseURL(String code) {
-		
-		code = code.replaceAll("\\+", " ");
-		code = code.replaceAll("%40", "@");
-		code = code.replaceAll("%21", "!");
-		
-		return code;
-	}
-	
-	public static String parseHref(String code, String lang) {
-		
-		if(!lang.equals("en")) {
-			
-			return code.replaceAll("(href|action)=(\"|')(/[\\w?&=+]*)(\"|')", "$1='$3?lang=" + lang + "'");
-		}
-		
-		return code;
-	}
-	
-	public static String parseHTML(String code, Properties attributes) {
-		
-		for(String key : attributes.keys()) {
-			
-			code = code.replaceAll("\\@\\{" + key + "\\}", attributes.get(key));
-		}
-		
-		return code;
-	}
 
-	public static String parseLang(String code, String lang, Properties languages) {
+public interface Parser<T extends Object, S extends Object> {
 
-		for(String key : languages.keys()) {
-			
-			if(key.startsWith(lang)) {
-				
-				code = code.replaceAll("\\@\\{lang:" + key.substring(3, key.length()) + "\\}", languages.get(key));
-			}
-		}
-		
-		return code;
-	}
+	public void parse(T target, S source);
+	
+	public void compose(S target, T source);
 }

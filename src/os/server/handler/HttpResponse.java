@@ -7,13 +7,12 @@ import java.nio.file.Files;
 
 import os.core.Core;
 import os.server.HttpServer;
-import os.server.classes.Cookie;
-import os.server.classes.Keys;
-import os.server.classes.Logger.Messages;
-import os.server.type.ContentEncoding;
-import os.server.type.ContentType;
-import os.server.type.Status;
-import os.util.Parser;
+import os.type.ContentType;
+import os.type.Cookie;
+import os.type.Header;
+import os.type.Status;
+import os.type.Logger.Messages;
+import os.util.Formatter;
 
 public class HttpResponse extends Handler {
 	
@@ -43,9 +42,9 @@ public class HttpResponse extends Handler {
 		
 		if(getBody() != null) {
 			
-			if(getHeader().hasKey(Keys.CONTENT_TYPE)) {
+			if(getHeader().hasKey(Header.CONTENT_TYPE)) {
 				
-				ContentType contentType = ContentType.getByType(getHeader().get(Keys.CONTENT_TYPE));
+				ContentType contentType = ContentType.getByType(getHeader().get(Header.CONTENT_TYPE));
 				
 				if(contentType != null && contentType == ContentType.HTML) {
 					
@@ -53,10 +52,10 @@ public class HttpResponse extends Handler {
 					
 					String body = new String(getBody());
 					
-					body = Parser.parseHTML(body, getTemplates());
-					body = Parser.parseHTML(body, getAttributes());
-					body = Parser.parseLang(body, getLanguage(), Core.LANGUAGES);
-					body = Parser.parseHref(body, getLanguage());
+					body = Formatter.parseHTML(body, getTemplates());
+					body = Formatter.parseHTML(body, getAttributes());
+					body = Formatter.parseLang(body, getLanguage(), Core.LANGUAGES);
+					body = Formatter.parseHref(body, getLanguage());
 					
 					setBody(body);
 				}
@@ -156,26 +155,26 @@ public class HttpResponse extends Handler {
 	
 	public void setCookie(Cookie cookie) {
 		
-		getHeader().set(Keys.SET_COOKIE, cookie.getKey() + "=" + cookie.getValue() + "; Max-Age=" + cookie.getAge() + "; Expires=" + cookie.getAge());
+		getHeader().set(Header.SET_COOKIE, cookie.getKey() + "=" + cookie.getValue() + "; Max-Age=" + cookie.getAge() + "; Expires=" + cookie.getAge());
 	}
 	
 	public void setLocation(String location) {
 		
-		getHeader().set(Keys.LOCATION, location);
+		getHeader().set(Header.LOCATION, location);
 	}
 	
 	public void setContentLength(int length) {
 		
-		getHeader().set(Keys.CONTENT_LENGTH, String.valueOf(length));
+		getHeader().set(Header.CONTENT_LENGTH, String.valueOf(length));
 	}
 	
-	public void setContentEncoding(ContentEncoding contentEncoding) {
+	public void setContentEncoding(String contentEncoding) {
 		
-		getHeader().set(Keys.CONTENT_ENCODING, contentEncoding.getType());
+		getHeader().set(Header.CONTENT_ENCODING, contentEncoding);
 	}
 	
 	public void setContentType(ContentType contentType) {
 		
-		getHeader().set(Keys.CONTENT_TYPE, contentType.getType() + " charset=UTF-8");
+		getHeader().set(Header.CONTENT_TYPE, contentType.getType() + " charset=UTF-8");
 	}
 }

@@ -1,4 +1,4 @@
-package os.server.type;
+package os.type;
 
 public enum ContentType {
 

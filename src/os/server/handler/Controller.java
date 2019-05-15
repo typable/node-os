@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import os.server.type.Inject;
-import os.server.type.Request;
+import os.type.Inject;
+import os.type.Request;
 
 public class Controller {
 
@@ -54,7 +54,7 @@ public class Controller {
 					
 					for(String key : fields.keySet()) {
 						
-						if(inject.src().equals(key)) {
+						if(inject.code().equals(key)) {
 							
 							field.setAccessible(true);
 							field.set(instance, fields.get(key));

@@ -5,13 +5,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import os.core.Core;
-import os.server.classes.Logger.Messages;
 import os.server.handler.Controller;
 import os.server.handler.HttpRequest;
 import os.server.handler.HttpResponse;
 import os.server.handler.RequestHandler;
-import os.server.type.ContentType;
-import os.server.type.Request;
+import os.type.ContentType;
+import os.type.Request;
+import os.type.Logger.Messages;
 
 public class HttpServer {
 

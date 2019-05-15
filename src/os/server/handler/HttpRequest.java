@@ -5,10 +5,10 @@ import java.net.Socket;
 import java.util.HashMap;
 
 import os.server.HttpServer;
-import os.server.classes.Cookie;
-import os.server.classes.Keys;
-import os.server.type.RequestMethod;
-import os.util.Parser;
+import os.type.Cookie;
+import os.type.Header;
+import os.type.RequestMethod;
+import os.util.Formatter;
 import os.util.Utils;
 
 public class HttpRequest extends Handler {
@@ -73,7 +73,7 @@ public class HttpRequest extends Handler {
 				
 				String body = String.valueOf(buffer);
 
-				body = Parser.parseURL(body);
+				body = Formatter.parseURL(body);
 				
 				if(body.contains("&")) {
 					
@@ -105,11 +105,11 @@ public class HttpRequest extends Handler {
 	
 	public int getContentLength() {
 		
-		if(getHeader().hasKey(Keys.CONTENT_LENGTH)) {
+		if(getHeader().hasKey(Header.CONTENT_LENGTH)) {
 			
 			try {
 				
-				return Integer.parseInt(getHeader().get(Keys.CONTENT_LENGTH));
+				return Integer.parseInt(getHeader().get(Header.CONTENT_LENGTH));
 			}
 			catch(NumberFormatException ex) {
 				
@@ -125,9 +125,9 @@ public class HttpRequest extends Handler {
 		Cookie[] cookies;
 		HashMap<String, String> cookiesMap = new HashMap<String, String>();
 		
-		if(getHeader().hasKey(Keys.COOKIE)) {
+		if(getHeader().hasKey(Header.COOKIE)) {
 			
-			String line = getHeader().get(Keys.COOKIE);
+			String line = getHeader().get(Header.COOKIE);
 			
 			if(line.contains("; ")) {
 				

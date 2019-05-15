@@ -3,6 +3,10 @@ package os.util;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import os.util.parser.JsonParser;
+import os.util.parser.PropertyParser;
 
 public class File {
 
@@ -11,9 +15,15 @@ public class File {
 	private FileOutputStream out;
 	private byte[] data;
 	
+	private JsonParser jsonParser;
+	private PropertyParser propertyParser;
+	
 	public File(String path) {
 		
 		file = new java.io.File(path);
+		
+		jsonParser = new JsonParser();
+		propertyParser = new PropertyParser();
 	}
 	
 	public void load() throws IOException {
@@ -52,23 +62,44 @@ public class File {
 		return data;
 	}
 	
+	public String getDataAsString() {
+		
+		return new String(data, StandardCharsets.UTF_8);
+	}
+	
 	public void setJson(JsonObject obj) {
 		
-		setData(obj.stringify().getBytes());
+		String data = "";
+		
+		jsonParser.compose(data, obj);
+		
+		setData(data.getBytes());
 	}
 	
 	public JsonObject getJson() {
 		
-		return JsonObject.parse(new String(getData()));
+		JsonObject json = new JsonObject();
+		
+		jsonParser.parse(json, getDataAsString());
+		
+		return json;
 	}
 	
-	public void setProps(Properties props) {
+	public void setProps(Property<String> props) {
 		
-		setData(props.stringify().getBytes());
+		String data = "";
+		
+		propertyParser.compose(data, props);
+		
+		setData(data.getBytes());
 	}
 	
-	public Properties getProps() {
+	public Property<String> getProps() {
 		
-		return Properties.parse(new String(getData()));
+		Property<String> property = new Property<String>();
+		
+		propertyParser.parse(property, getDataAsString());
+		
+		return property;
 	}
 }

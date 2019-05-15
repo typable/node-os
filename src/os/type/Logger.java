@@ -1,4 +1,4 @@
-package os.server.classes;
+package os.type;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,12 +34,24 @@ public class Logger {
 	
 	public void error(String message, Exception ex) {
 		
-		log(Type.ERROR, message + ": " + ex.getMessage());
+		if(ex.getMessage() != null) {
+			
+			log(Type.ERROR, message + ": " + ex.getMessage());
+		}
+		else {
+			
+			error(message);
+		}
+	}
+	
+	public void debug(String message) {
+		
+		log(Type.DEBUG, message);
 	}
 	
 	public enum Type {
 		
-		INFO, WARN, ERROR;
+		INFO, WARN, ERROR, DEBUG;
 	}
 	
 	public enum Messages {

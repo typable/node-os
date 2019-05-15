@@ -1,4 +1,4 @@
-package os.server.classes;
+package os.type;
 
 
 public class Cookie {

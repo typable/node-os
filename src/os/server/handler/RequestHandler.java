@@ -2,7 +2,7 @@ package os.server.handler;
 
 import java.lang.reflect.Method;
 
-import os.server.type.Request;
+import os.type.Request;
 
 public class RequestHandler {
 

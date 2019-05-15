@@ -6,9 +6,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import os.server.type.RequestMethod;
-import os.server.type.Status;
-import os.util.Properties;
+import os.type.RequestMethod;
+import os.type.Status;
+import os.util.Property;
 
 public class Handler {
 
@@ -19,20 +19,20 @@ public class Handler {
 	private RequestMethod method;
 	private Status status;
 	private String url;
-	private Properties header;
-	private Properties parameter;
-	private Properties attributes;
-	private Properties templates;
+	private Property<String> header;
+	private Property<String> parameter;
+	private Property<String> attributes;
+	private Property<String> templates;
 	private byte[] body;
 	private boolean committed = false;
 	private String lang;
 	
 	public Handler() {
 		
-		header = new Properties();
-		parameter = new Properties();
-		attributes = new Properties();
-		templates = new Properties();
+		header = new Property<String>();
+		parameter = new Property<String>();
+		attributes = new Property<String>();
+		templates = new Property<String>();
 	}
 	
 	public void emit(String line) throws IOException {
@@ -98,22 +98,22 @@ public class Handler {
 		this.url = url;
 	}
 
-	public Properties getHeader() {
+	public Property<String> getHeader() {
 		
 		return header;
 	}
 	
-	public Properties getParameter() {
+	public Property<String> getParameter() {
 	
 		return parameter;
 	}
 	
-	public Properties getAttributes() {
+	public Property<String> getAttributes() {
 	
 		return attributes;
 	}
 	
-	public Properties getTemplates() {
+	public Property<String> getTemplates() {
 	
 		return templates;
 	}

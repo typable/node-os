@@ -1,24 +1,17 @@
 package os.util;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class Utils {
 	
-	public static String getCurrentPath() throws IOException {
-		
-		return new File(".").getCanonicalPath().replaceAll("\\\\", "\\/");
-	}
-	
 	public static boolean notEmpty(String line) {
 		
 		return (line != null && !line.equals("")) ? true : false;
 	}
 	
-	public static void keySet(Properties attributes, String separator, String code) {
+	public static void keySet(Property<String> attributes, String separator, String code) {
 		
 		if(code.contains(separator)) {
 			

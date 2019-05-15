@@ -1,4 +1,4 @@
-package os.server.type;
+package os.type;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,10 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Request {
+@Target(ElementType.FIELD)
+public @interface Inject {
 
-	String url();
-
-	RequestMethod method() default RequestMethod.GET;
+	String code();
 }
