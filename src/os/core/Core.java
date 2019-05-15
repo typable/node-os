@@ -74,6 +74,7 @@ public class Core {
 			
 			HashMap<String, Object> fields = new HashMap<String, Object>();
 			fields.put("userService", USER_SERVICE);
+			fields.put("logger", LOGGER);
 			
 			Controller controller = new Controller(instance);
 			controller.inject(fields);
