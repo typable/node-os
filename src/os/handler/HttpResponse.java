@@ -61,12 +61,17 @@ public class HttpResponse {
 
 	public void viewPage(String path) {
 
+		viewPage(path, MediaType.TEXT_HTML);
+	}
+
+	public void viewPage(String path, MediaType type) {
+
 		byte[] data = Core.LOADER.loadFile(path);
 
 		if(data != null) {
 
 			body = data;
-			headers.set(Header.CONTENT_TYPE, MediaType.TEXT_HTML.getType());
+			headers.set(Header.CONTENT_TYPE, type.getType());
 			status = Status.OK;
 		}
 		else {

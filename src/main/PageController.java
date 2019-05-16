@@ -21,6 +21,6 @@ public class PageController {
 
 		logger.info("Hello World!");
 
-		response.viewPage("*/publish/index.html");
+		response.viewPage("*/index.html");
 	}
 }

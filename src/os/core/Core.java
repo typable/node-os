@@ -150,7 +150,12 @@ public class Core {
 
 	public static String getRelativePath(String path) throws IOException {
 
-		return path.contains("*") ? path.replaceAll("\\*", getCurrentPath()) : path;
+		return path.contains("*") ? path.replaceAll("\\*", ROOT) : path;
+	}
+
+	public static String getResourcePath(String path) throws IOException {
+
+		return ROOT + path;
 	}
 
 	public static String get(String key) {
