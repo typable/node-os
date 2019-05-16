@@ -1,16 +1,16 @@
-package os.server.handler;
+package os.handler;
 
 import java.lang.reflect.Method;
 
 import os.type.Request;
 
-public class RequestHandler {
+public class RequestEvent {
 
 	private Controller controller;
 	private Request request;
 	private Method method;
 	
-	public RequestHandler(Controller controller, Request request, Method method) {
+	public RequestEvent(Controller controller, Request request, Method method) {
 		
 		this.controller = controller;
 		this.request = request;

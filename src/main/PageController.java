@@ -1,22 +1,26 @@
 package main;
 
-import os.server.handler.HttpRequest;
-import os.server.handler.HttpResponse;
-import os.type.ContentType;
+import os.handler.HttpRequest;
+import os.handler.HttpResponse;
 import os.type.Inject;
+import os.type.Loader;
 import os.type.Logger;
 import os.type.Request;
+
 
 public class PageController {
 
 	@Inject(code = "logger")
 	private Logger logger;
-	
+
+	@Inject(code = "loader")
+	private Loader loader;
+
 	@Request(url = "/")
 	private void getIndex(HttpRequest request, HttpResponse response) {
-		
+
 		logger.info("Hello World!");
-		
-		response.showBody("It works!", ContentType.PLAIN);
+
+		response.viewPage("*/publish/index.html");
 	}
 }

@@ -1,7 +1,6 @@
 package os.util.parser;
 
 import os.util.JsonObject;
-import os.util.Parser;
 import os.util.Utils;
 
 

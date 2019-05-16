@@ -10,11 +10,6 @@ public class Header {
 	public static final String SET_COOKIE = "Set-Cookie";
 	public static final String COOKIE = "Cookie";
 	
-	public class ContentType {
-		
-		// TODO Header.ContentType
-	}
-	
 	public class ContentEncoding {
 		
 		public static final String IDENTITY = "indentity";

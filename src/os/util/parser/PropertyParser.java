@@ -1,6 +1,5 @@
 package os.util.parser;
 
-import os.util.Parser;
 import os.util.Property;
 
 

@@ -1,4 +1,4 @@
-package os.util;
+package os.util.parser;
 
 
 public interface Parser<T extends Object, S extends Object> {

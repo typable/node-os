@@ -1,20 +1,20 @@
-package os.server.handler;
+package os.handler;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import os.type.Inject;
 import os.type.Request;
+import os.util.Property;
 
 public class Controller {
 
 	private Class<?> type;
 	private Object instance;
-	private List<RequestHandler> requestHandlerList;
+	private List<RequestEvent> requestHandlerList;
 	
 	public Controller(Class<?> type) {
 		
@@ -23,7 +23,7 @@ public class Controller {
 			this.type = type;
 			instance = type.getConstructor().newInstance();
 			
-			requestHandlerList = new ArrayList<RequestHandler>();
+			requestHandlerList = new ArrayList<RequestEvent>();
 			
 			for(Method method : type.getDeclaredMethods()) {
 				
@@ -31,7 +31,7 @@ public class Controller {
 
 					if(annotation instanceof Request) {
 
-						requestHandlerList.add(new RequestHandler(this, (Request) annotation, method));
+						requestHandlerList.add(new RequestEvent(this, (Request) annotation, method));
 					}
 				}
 			}
@@ -42,7 +42,7 @@ public class Controller {
 		}
 	}
 	
-	public void inject(HashMap<String, Object> fields) throws Exception {
+	public void inject(Property<Object> fields) throws Exception {
 		
 		for(Field field : type.getDeclaredFields()) {
 			
@@ -52,7 +52,7 @@ public class Controller {
 
 					Inject inject = (Inject) annotation;
 					
-					for(String key : fields.keySet()) {
+					for(String key : fields.keys()) {
 						
 						if(inject.code().equals(key)) {
 							
@@ -85,12 +85,12 @@ public class Controller {
 		this.instance = instance;
 	}
 
-	public List<RequestHandler> getRequestHandlerList() {
+	public List<RequestEvent> getRequestHandlerList() {
 		
 		return requestHandlerList;
 	}
 
-	public void setRequestHandlerList(List<RequestHandler> requestHandlerList) {
+	public void setRequestHandlerList(List<RequestEvent> requestHandlerList) {
 		
 		this.requestHandlerList = requestHandlerList;
 	}

@@ -31,6 +31,16 @@ public class Utils {
 		}
 	}
 	
+	public static void addAttribute(Property<String> property, String delimiter, String code) {
+		
+		if(code.contains(delimiter)) {
+			
+			String[] args = code.split(delimiter);
+			
+			property.set(args[0], args[1]);
+		}
+	}
+	
 	public static String[] split(String line, char splitter, char[] start, char[] end) {
 		
 		List<Integer> splits = new ArrayList<Integer>();

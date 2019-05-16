@@ -5,13 +5,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import os.core.Core;
-import os.server.handler.Controller;
-import os.server.handler.HttpRequest;
-import os.server.handler.HttpResponse;
-import os.server.handler.RequestHandler;
-import os.type.ContentType;
-import os.type.Request;
+import os.handler.Controller;
+import os.handler.HttpRequest;
+import os.handler.HttpRequestConnection;
+import os.handler.HttpResponse;
+import os.handler.RequestEvent;
 import os.type.Logger.Messages;
+import os.type.Request;
+import os.type.RequestMethod;
+import os.type.Status;
 
 public class HttpServer {
 
@@ -36,55 +38,55 @@ public class HttpServer {
 				
 				new Thread(() -> {
 					
-					try {
-						
-						HttpRequest requestHandler = new HttpRequest(this, socket);
-						requestHandler.request();
-						
-						HttpResponse responseHandler = new HttpResponse(this, socket);
-						responseHandler.setLanguage(requestHandler.getLanguage());
-						
-						if(requestHandler.getUrl() != null) {
+					HttpRequestConnection requestConnection = new HttpRequestConnection(socket);
+					requestConnection.connect(() -> {
+
+						try {
 							
-							String url = requestHandler.getUrl();					
-							RequestHandler currentHandler = null;
+							HttpRequest requestHandler = requestConnection.request();
+							HttpResponse responseHandler = new HttpResponse();
+							
+							String url = requestHandler.getUrl();
+							RequestMethod requestMethod = requestHandler.getRequestMethod();
+							RequestEvent currentEvent = null;
 							
 							for(Controller controller : Core.CONTROLLERS) {
 								
-								for(RequestHandler handler : controller.getRequestHandlerList()) {
+								for(RequestEvent event : controller.getRequestHandlerList()) {
 									
-									Request request = handler.getRequest();
+									Request request = event.getRequest();
 									
-									if(request.url().equals(url) && request.method() == requestHandler.getMethod()) {
+									if(request.url().equals(url) && request.method() == requestMethod) {
 										
-										currentHandler = handler;
+										currentEvent = event;
 									}
 								}
 							}
 							
-							if(currentHandler != null) {
+							if(currentEvent != null) {
 								
-								currentHandler.call(requestHandler, responseHandler);
+								currentEvent.call(requestHandler, responseHandler);
 							}
 							else if(url.startsWith("/src/")) {
 								
-								responseHandler.showPage(url, ContentType.getByFile(url));
+								// TODO source request
+								// responseHandler.showPage(url, ContentType.getByFile(url));
 							}
 							else {
 								
 								Core.LOGGER.warn(Messages.NOT_FOUND.getMessage(url));
-								responseHandler.notFound();
+								responseHandler.setStatus(Status.NOT_FOUND);
 							}
+							
+							requestConnection.commit(responseHandler);
 						}
-						
-						responseHandler.commit();
-					}
-					catch(Exception ex) {
-						
-						Core.LOGGER.error(Messages.FATAL_ERROR.getMessage(), ex);
-						
-						Core.stop();
-					}
+						catch(Exception ex) {
+							
+							Core.LOGGER.error(Messages.FATAL_ERROR.getMessage(), ex);
+							
+							Core.stop();
+						}
+					});
 					
 				}).start();
 			}
