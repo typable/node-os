@@ -33,11 +33,6 @@ public class HttpRequestConnection extends Connection {
 
 				String[] args = line.split(" ");
 
-				if(!args[2].equals("HTTP/1.1")) {
-
-					// TODO HttpRequestConnection.request() - Status.HTTP_VERSION_NOT_SUPPORTED
-				}
-
 				if(args[1].contains("?")) {
 
 					String[] args_ = args[1].split("\\?");

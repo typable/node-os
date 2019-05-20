@@ -9,6 +9,7 @@ import os.server.HttpServer;
 import os.type.Loader;
 import os.type.Logger;
 import os.type.Logger.Messages;
+import os.type.Session;
 import os.util.File;
 import os.util.Property;
 
@@ -17,6 +18,7 @@ public class Core {
 
 	public static Property<String> PROPERTIES;
 	public static Property<String> LANGUAGES;
+	public static Property<Session> SESSIONS;
 	public static List<Controller> CONTROLLERS;
 	public static Logger LOGGER;
 	public static Loader LOADER;
@@ -36,6 +38,7 @@ public class Core {
 
 			PROPERTIES = new Property<String>();
 			LANGUAGES = new Property<String>();
+			SESSIONS = new Property<Session>();
 			CONTROLLERS = new ArrayList<Controller>();
 			LOGGER = new Logger();
 			LOADER = new Loader();
@@ -74,6 +77,7 @@ public class Core {
 			Property<Object> fields = new Property<Object>();
 			fields.set("logger", LOGGER);
 			fields.set("loader", LOADER);
+			fields.set("config", PROPERTIES);
 
 			Controller controller = new Controller(instance);
 			controller.inject(fields);
@@ -172,6 +176,18 @@ public class Core {
 		}
 
 		return get(key);
+	}
+
+	public static Session getSession(String uuid) {
+
+		for(String uuid_ : SESSIONS.keys()) {
+
+			if(uuid_.equals(uuid)) {
+
+				return SESSIONS.get(uuid_);
+			}
+		}
+		return null;
 	}
 
 	public static void stop() {
