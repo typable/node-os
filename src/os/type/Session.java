@@ -72,6 +72,16 @@ public class Session {
 		this.attributes = attributes;
 	}
 
+	public Object getAttribute(String key) {
+
+		return attributes.get(key);
+	}
+
+	public void setAttribute(String key, Object value) {
+
+		attributes.set(key, value);
+	}
+
 	public long getTimeout() {
 
 		return timeout;

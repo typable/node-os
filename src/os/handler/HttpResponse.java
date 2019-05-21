@@ -1,8 +1,13 @@
 package os.handler;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
 import os.core.Core;
 import os.type.Cookie;
 import os.type.Header;
+import os.type.Logger.Messages;
 import os.type.MediaType;
 import os.type.RequestMethod;
 import os.type.Status;
@@ -49,13 +54,13 @@ public class HttpResponse {
 	public void redirect(String url) {
 
 		status = Status.FOUND;
-		headers.set(Header.LOCATION, url);
+		headers.set(Header.LOCATION.getCode(), url);
 	}
 
 	public void view(String code) {
 
 		status = Status.OK;
-		headers.set(Header.CONTENT_TYPE, MediaType.TEXT_PLAIN.getType());
+		headers.set(Header.CONTENT_TYPE.getCode(), MediaType.TEXT_PLAIN.getType());
 		body = code.getBytes();
 	}
 
@@ -71,7 +76,7 @@ public class HttpResponse {
 		if(data != null) {
 
 			body = data;
-			headers.set(Header.CONTENT_TYPE, type.getType());
+			headers.set(Header.CONTENT_TYPE.getCode(), type.getType());
 			status = Status.OK;
 		}
 		else {
@@ -80,19 +85,33 @@ public class HttpResponse {
 		}
 	}
 
+	public void provideDownload(File file) {
+
+		try {
+
+			headers.set(Header.CONTENT_DISPOSITION.getCode(), "attachment; filename=\"" + file.getName() + "\"");
+			body = Files.readAllBytes(file.toPath());
+			status = Status.OK;
+		}
+		catch(IOException e) {
+
+			Core.LOGGER.warn(Messages.NOT_FOUND.getMessage(file.getName()));
+		}
+	}
+
 	public void addAttribute(String key, String value) {
 
 		attributes.set(key, value);
 	}
 
-	public void addHeader(String key, String value) {
+	public void addHeader(Header key, String value) {
 
-		headers.set(key, value);
+		headers.set(key.getCode(), value);
 	}
 
 	public void addCookie(Cookie cookie) {
 
-		headers.set(Header.SET_COOKIE, cookie.getKey() + "=" + cookie.getValue() + "; Max-Age=" + cookie.getAge() + "; Expires=" + cookie.getAge());
+		headers.set(Header.SET_COOKIE.getCode(), cookie.getKey() + "=" + cookie.getValue() + "; Max-Age=" + cookie.getAge() + "; Expires=" + cookie.getAge());
 	}
 
 	public String getUrl() {

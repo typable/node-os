@@ -46,6 +46,10 @@ public class HttpRequestConnection extends Connection {
 							Utils.addAttribute(request.getParameters(), "=", arg);
 						}
 					}
+					else {
+
+						Utils.addAttribute(request.getParameters(), "=", args_[1]);
+					}
 				}
 				else {
 
@@ -64,7 +68,7 @@ public class HttpRequestConnection extends Connection {
 
 		if(request.getRequestMethod() == RequestMethod.POST) {
 
-			String contentLength = request.getHeaders().get(Header.CONTENT_LENGTH);
+			String contentLength = request.getHeaders().get(Header.CONTENT_LENGTH.getCode());
 
 			if(contentLength != null) {
 
@@ -72,7 +76,7 @@ public class HttpRequestConnection extends Connection {
 
 				if(length > 0) {
 
-					String body = new String(read(length), StandardCharsets.UTF_8);
+					String body = new String(readLength(length), StandardCharsets.UTF_8);
 
 					body = Formatter.parseURL(body);
 
@@ -121,9 +125,9 @@ public class HttpRequestConnection extends Connection {
 
 			byte[] body = response.getBody();
 
-			if(response.getHeaders().hasKey(Header.CONTENT_TYPE)) {
+			if(response.getHeaders().hasKey(Header.CONTENT_TYPE.getCode())) {
 
-				if(response.getHeaders().get(Header.CONTENT_TYPE).equals(MediaType.TEXT_HTML.getType())) {
+				if(response.getHeaders().get(Header.CONTENT_TYPE.getCode()).equals(MediaType.TEXT_HTML.getType())) {
 
 					String code = new String(body, StandardCharsets.UTF_8);
 

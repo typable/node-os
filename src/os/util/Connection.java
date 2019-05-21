@@ -160,6 +160,18 @@ public class Connection {
 	}
 
 	/**
+	 * Reads incoming data as String by a specific length
+	 */
+	public byte[] readLength(int length) throws IOException {
+
+		char[] buffer = new char[length];
+
+		reader.read(buffer, 0, length);
+
+		return String.valueOf(buffer).getBytes();
+	}
+
+	/**
 	 * Reads incoming data
 	 */
 	public byte[] read(int length) throws IOException {

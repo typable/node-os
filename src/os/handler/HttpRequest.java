@@ -35,9 +35,9 @@ public class HttpRequest {
 		Cookie[] cookies;
 		Property<String> property = new Property<String>();
 
-		if(headers.hasKey(Header.COOKIE)) {
+		if(headers.hasKey(Header.COOKIE.getCode())) {
 
-			String line = headers.get(Header.COOKIE);
+			String line = headers.get(Header.COOKIE.getCode());
 
 			if(line.contains("; ")) {
 
