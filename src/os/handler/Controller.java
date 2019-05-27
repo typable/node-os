@@ -8,7 +8,7 @@ import java.util.List;
 
 import os.type.Inject;
 import os.type.Request;
-import os.util.Property;
+import util.type.Property;
 
 
 public class Controller {

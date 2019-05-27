@@ -7,8 +7,8 @@ import java.util.UUID;
 
 import os.core.Core;
 import os.handler.Controller;
+import os.handler.HttpConnection;
 import os.handler.HttpRequest;
-import os.handler.HttpRequestConnection;
 import os.handler.HttpResponse;
 import os.handler.RequestEvent;
 import os.type.Cookie;
@@ -17,7 +17,6 @@ import os.type.MediaType;
 import os.type.Request;
 import os.type.RequestMethod;
 import os.type.Session;
-import os.type.Status;
 
 
 public class HttpServer {
@@ -42,7 +41,7 @@ public class HttpServer {
 
 				new Thread(() -> {
 
-					HttpRequestConnection requestConnection = new HttpRequestConnection(socket);
+					HttpConnection requestConnection = new HttpConnection(socket);
 					requestConnection.connect(() -> {
 
 						try {
@@ -102,7 +101,11 @@ public class HttpServer {
 								else {
 
 									Core.LOGGER.warn(Messages.NOT_FOUND.getMessage(url));
+									responseHandler.viewPage("*/404.html", MediaType.TEXT_HTML);
+
+									/*
 									responseHandler.setStatus(Status.NOT_FOUND);
+									*/
 								}
 
 								requestConnection.commit(responseHandler);

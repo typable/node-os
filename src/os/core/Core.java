@@ -10,8 +10,8 @@ import os.type.Loader;
 import os.type.Logger;
 import os.type.Logger.Messages;
 import os.type.Session;
-import os.util.File;
-import os.util.Property;
+import util.file.PropertyFile;
+import util.type.Property;
 
 
 public class Core {
@@ -88,7 +88,9 @@ public class Core {
 
 	private void loadConfigurations() throws IOException {
 
-		File configFile = new File(getCurrentPath() + CONFIG_PATH);
+		// File configFile = new File(getCurrentPath() + CONFIG_PATH);
+
+		PropertyFile configFile = new PropertyFile(getCurrentPath() + CONFIG_PATH);
 
 		if(configFile.exists()) {
 
@@ -96,7 +98,7 @@ public class Core {
 
 				configFile.load();
 
-				PROPERTIES = configFile.getProps();
+				PROPERTIES = configFile.getProperty();
 
 				LOGGER.info("Configurations loaded");
 			}
@@ -119,7 +121,7 @@ public class Core {
 					props.set("port", "80");
 					props.set("root", "*/publish");
 
-					configFile.setProps(props);
+					configFile.setData(props);
 					configFile.save();
 
 					loadConfigurations();
@@ -138,12 +140,12 @@ public class Core {
 
 	private void loadLanguages() throws IOException {
 
-		File file = new File(ROOT + RESOURCE_PATH + "/lang/lang.properties");
+		PropertyFile file = new PropertyFile(ROOT + RESOURCE_PATH + "/lang/lang.properties");
 
 		if(file.exists()) {
 
 			file.load();
-			LANGUAGES = file.getProps();
+			LANGUAGES = file.getProperty();
 		}
 	}
 

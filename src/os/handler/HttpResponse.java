@@ -2,6 +2,8 @@ package os.handler;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import os.core.Core;
@@ -66,17 +68,22 @@ public class HttpResponse {
 
 	public void viewPage(String path) {
 
-		viewPage(path, MediaType.TEXT_HTML);
+		viewPage(path, MediaType.TEXT_HTML, StandardCharsets.UTF_8);
 	}
 
 	public void viewPage(String path, MediaType type) {
+
+		viewPage(path, type, StandardCharsets.UTF_8);
+	}
+
+	public void viewPage(String path, MediaType type, Charset charset) {
 
 		byte[] data = Core.LOADER.loadFile(path);
 
 		if(data != null) {
 
 			body = data;
-			headers.set(Header.CONTENT_TYPE.getCode(), type.getType());
+			headers.set(Header.CONTENT_TYPE.getCode(), type.getType() + "; charset=" + charset.displayName().toLowerCase());
 			status = Status.OK;
 		}
 		else {

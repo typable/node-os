@@ -114,7 +114,7 @@ public class Connection {
 	 **/
 	public void emit(String data) throws IOException {
 
-		emit(data.getBytes());
+		emit(data.getBytes(StandardCharsets.UTF_8));
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class Connection {
 	 **/
 	public void emit(String data, boolean base64) throws IOException {
 
-		emit(data.getBytes(), base64);
+		emit(data.getBytes(StandardCharsets.UTF_8), base64);
 	}
 
 	/**

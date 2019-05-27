@@ -13,9 +13,9 @@ import os.util.Formatter;
 import os.util.Utils;
 
 
-public class HttpRequestConnection extends Connection {
+public class HttpConnection extends Connection {
 
-	public HttpRequestConnection(Socket socket) {
+	public HttpConnection(Socket socket) {
 
 		super(socket);
 	}
@@ -127,7 +127,7 @@ public class HttpRequestConnection extends Connection {
 
 			if(response.getHeaders().hasKey(Header.CONTENT_TYPE.getCode())) {
 
-				if(response.getHeaders().get(Header.CONTENT_TYPE.getCode()).equals(MediaType.TEXT_HTML.getType())) {
+				if(response.getHeaders().get(Header.CONTENT_TYPE.getCode()).split("; ")[0].equals(MediaType.TEXT_HTML.getType())) {
 
 					String code = new String(body, StandardCharsets.UTF_8);
 
@@ -137,7 +137,7 @@ public class HttpRequestConnection extends Connection {
 					// code = Formatter.parseLang(code, getLanguage(), Core.LANGUAGES);
 					// code = Formatter.parseHref(code, getLanguage());
 
-					body = code.getBytes();
+					body = code.getBytes(StandardCharsets.UTF_8);
 				}
 			}
 

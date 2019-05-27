@@ -1,6 +1,36 @@
-<link rel="stylesheet" href="src/css/master.css">
-<form action="/login" method="post">
-	<input type="text" name="username" placeholder="Username">
-	<input type="password" name="password" placeholder="Password">
-	<input type="submit" value="Log In">
-</form>
+<!DOCTYPE text/html>
+<html>
+  <head>
+    <title>Console</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="src/css/root.css">
+  </head>
+  <body>
+    <main class="section py-10">
+		<section class="container py-5">
+			<div class="row">
+				<div class="col-2">
+					
+				</div>
+				<div class="col-8">
+					<div class="row mb-7">
+						<div class="text text-black h3">Anmelden</div>
+					</div>
+					<div class="row mb-2">
+						<form action="/login" method="post">
+							<input name="url" type="text" hidden="true" value="@{url}">
+							<input name="email" type="email" placeholder="E-mail Addresse">
+							<input name="password" type="password" placeholder="Passwort">
+							<input type="submit" value="Anmelden">
+						</form>
+					</div>
+				</div>
+				<div class="col-2">
+					
+				</div>
+			</div>
+		</section>
+	</main>
+  </body>
+</html>

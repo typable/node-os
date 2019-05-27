@@ -1,56 +1,125 @@
 package main;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import os.core.Core;
 import os.handler.HttpRequest;
 import os.handler.HttpResponse;
+import os.type.MediaType;
 import os.type.Request;
 import os.type.RequestMethod;
 import os.type.Session;
+import os.type.User;
+import util.file.JSONFile;
+import util.type.JSONObject;
 
 
 public class PageController {
 
 	@Request(url = "/")
-	private void getIndex(HttpRequest request, HttpResponse response) {
+	private void getRoot(HttpRequest request, HttpResponse response) {
 
-		Session session = request.getSession();
+		response.addAttribute("google.apikey", Core.get("google.apikey"));
+		response.addAttribute("meta.author", Core.get("meta.author"));
+		response.addAttribute("meta.keywords", Core.get("meta.keywords"));
+		response.addAttribute("meta.description", Core.get("meta.description"));
+		response.viewPage("*/index.html", MediaType.TEXT_HTML);
+	}
 
-		Boolean logged = (Boolean) session.getAttribute("logged");
+	@Request(url = "/impressum")
+	private void getImpressum(HttpRequest request, HttpResponse response) {
 
-		if(logged != null) {
+		response.viewPage("*/impressum.html", MediaType.TEXT_HTML);
+	}
 
-			response.viewPage("*/index.html");
-		}
-		else {
+	@Request(url = "/404")
+	private void get404(HttpRequest request, HttpResponse response) {
 
-			response.viewPage("*/login.html");
-		}
+		response.viewPage("*/404.html", MediaType.TEXT_HTML);
+	}
+
+	@Request(url = "/login")
+	private void getLogin(HttpRequest request, HttpResponse response) {
+
+		response.viewPage("*/login.html", MediaType.TEXT_HTML);
 	}
 
 	@Request(url = "/login", method = RequestMethod.POST)
 	private void postLogin(HttpRequest request, HttpResponse response) {
 
-		Session session = request.getSession();
+		List<User> USERS = new ArrayList<User>();
 
-		String username = request.getParameter("username");
-		String password = request.getParameter("password");
+		try {
 
-		if(username != null && password != null) {
+			JSONFile file = new JSONFile(Core.ROOT + "/src/database/users.json");
 
-			if(username.equals("andy") && password.equals("123")) {
+			file.load();
 
-				session.setAttribute("logged", true);
+			JSONObject obj = file.getJSONObject();
+
+			for(JSONObject user : obj.getJSONObjectArray("users")) {
+
+				USERS.add(new User(user.getString("name"), user.getString("email"), user.getString("password")));
+			}
+
+			String url = request.getParameter("url");
+			String email = request.getParameter("email");
+			String password = request.getParameter("password");
+
+			if(email != null && password != null) {
+
+				User currentUser = null;
+
+				for(User user : USERS) {
+
+					if(email.equals(user.getEmail()) && password.equals(user.getPassword())) {
+
+						currentUser = user;
+					}
+				}
+
+				if(currentUser != null) {
+
+					Session session = request.getSession();
+					session.setAttribute("user", currentUser);
+
+					if(url != null && !url.equals("@{url}")) {
+
+						response.redirect(url);
+					}
+					else {
+
+						response.redirect("/");
+					}
+
+					return;
+				}
 			}
 		}
+		catch(Exception e) {
 
-		response.redirect("/");
+			e.printStackTrace();
+		}
+
+		response.redirect("/login");
 	}
 
-	@Request(url = "/download")
-	private void getDownload(HttpRequest request, HttpResponse response) {
+	@Request(url = "/styleguide")
+	private void getStyleguide(HttpRequest request, HttpResponse response) {
 
-		response.provideDownload(new File(Core.ROOT + "/index.html"));
+		Session session = request.getSession();
+
+		User user = (User) session.getAttribute("user");
+
+		if(user != null) {
+
+			response.viewPage("*/styleguide.html", MediaType.TEXT_HTML);
+		}
+		else {
+
+			response.addAttribute("url", "/styleguide");
+			response.viewPage("*/login.html", MediaType.TEXT_HTML);
+		}
 	}
 }
