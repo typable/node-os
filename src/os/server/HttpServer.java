@@ -3,20 +3,20 @@ package os.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.UUID;
 
 import os.core.Core;
-import os.handler.Controller;
+import os.event.Event;
+import os.event.NotFoundEvent;
 import os.handler.HttpConnection;
 import os.handler.HttpRequest;
 import os.handler.HttpResponse;
-import os.handler.RequestEvent;
-import os.type.Cookie;
+import os.service.SessionService;
 import os.type.Logger.Messages;
-import os.type.MediaType;
 import os.type.Request;
-import os.type.RequestMethod;
-import os.type.Session;
+import os.type.constants.MediaType;
+import os.type.constants.RequestMethod;
+import os.type.holder.EventHolder;
+import os.type.holder.RequestHolder;
 
 
 public class HttpServer {
@@ -51,46 +51,27 @@ public class HttpServer {
 
 							String url = requestHandler.getUrl();
 							RequestMethod requestMethod = requestHandler.getRequestMethod();
-							RequestEvent currentEvent = null;
+							RequestHolder currentRequestHolder = null;
 
 							if(url != null) {
 
-								for(Controller controller : Core.CONTROLLERS) {
+								for(RequestHolder holder : Core.REQUESTS) {
 
-									for(RequestEvent event : controller.getRequestHandlerList()) {
+									Request request = holder.getRequest();
 
-										Request request = event.getRequest();
+									if(request.url().equals(url) && request.method() == requestMethod) {
 
-										if(request.url().equals(url) && request.method() == requestMethod) {
-
-											currentEvent = event;
-										}
+										currentRequestHolder = holder;
 									}
 								}
 
-								if(currentEvent != null) {
+								if(currentRequestHolder != null) {
 
-									Cookie cookie = requestHandler.getCookie("_uuid");
+									SessionService sessionService = Core.sessionService;
 
-									if(cookie == null) {
+									sessionService.createSession(responseHandler);
 
-										createSessionCookie(requestHandler, responseHandler);
-									}
-									else {
-
-										Session session = Core.getSession(cookie.getValue());
-
-										if(session == null) {
-
-											createSessionCookie(requestHandler, responseHandler);
-										}
-										else {
-
-											requestHandler.setSession(session);
-										}
-									}
-
-									currentEvent.call(requestHandler, responseHandler);
+									currentRequestHolder.call(requestHandler, responseHandler);
 								}
 								else if(url.startsWith("/src/")) {
 
@@ -103,9 +84,15 @@ public class HttpServer {
 									Core.LOGGER.warn(Messages.NOT_FOUND.getMessage(url));
 									responseHandler.viewPage("*/404.html", MediaType.TEXT_HTML);
 
-									/*
-									responseHandler.setStatus(Status.NOT_FOUND);
-									*/
+									for(EventHolder holder : Core.EVENTS) {
+
+										Event event = holder.getEvent();
+
+										if(event instanceof NotFoundEvent) {
+
+											holder.call(requestHandler, responseHandler);
+										}
+									}
 								}
 
 								requestConnection.commit(responseHandler);
@@ -114,6 +101,8 @@ public class HttpServer {
 						catch(Exception ex) {
 
 							Core.LOGGER.error(Messages.FATAL_ERROR.getMessage(), ex);
+
+							ex.printStackTrace();
 
 							Core.stop();
 						}
@@ -126,23 +115,10 @@ public class HttpServer {
 
 			Core.LOGGER.error(Messages.FATAL_ERROR.getMessage(), e);
 
+			e.printStackTrace();
+
 			Core.stop();
 		}
-	}
-
-	private void createSessionCookie(HttpRequest request, HttpResponse response) {
-
-		String uuid = UUID.randomUUID().toString();
-		Session session = new Session();
-
-		Cookie cookie = new Cookie("_uuid", uuid);
-		cookie.setAge(60 * 60 * 24);
-
-		Core.SESSIONS.set(uuid, session);
-
-		request.setSession(session);
-
-		response.addCookie(cookie);
 	}
 
 	public ServerSocket getServerSocket() {

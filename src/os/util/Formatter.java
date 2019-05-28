@@ -1,5 +1,8 @@
 package os.util;
 
+import util.type.Property;
+
+
 public class Formatter {
 
 	public static String parseURL(String code) {
@@ -8,16 +11,6 @@ public class Formatter {
 		code = code.replaceAll("%40", "@");
 		code = code.replaceAll("%21", "!");
 		code = code.replaceAll("%2F", "/");
-
-		return code;
-	}
-
-	public static String parseHref(String code, String lang) {
-
-		if(!lang.equals("en")) {
-
-			return code.replaceAll("(href|action)=(\"|')(/[\\w?&=+]*)(\"|')", "$1='$3?lang=" + lang + "'");
-		}
 
 		return code;
 	}
@@ -35,6 +28,8 @@ public class Formatter {
 				code = code.replaceAll("\\@\\{" + key + "\\}", "");
 			}
 		}
+
+		code = code.replaceAll("\\@\\{[^{]*\\}", "");
 
 		return code;
 	}

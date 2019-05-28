@@ -5,14 +5,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import os.type.constants.RequestMethod;
-
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Request {
+public @interface Event {
 
-	String url();
-
-	RequestMethod method() default RequestMethod.GET;
 }

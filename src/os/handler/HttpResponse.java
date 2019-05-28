@@ -8,12 +8,12 @@ import java.nio.file.Files;
 
 import os.core.Core;
 import os.type.Cookie;
-import os.type.Header;
 import os.type.Logger.Messages;
-import os.type.MediaType;
-import os.type.RequestMethod;
-import os.type.Status;
-import os.util.Property;
+import os.type.constants.Header;
+import os.type.constants.MediaType;
+import os.type.constants.RequestMethod;
+import os.type.constants.Status;
+import util.type.Property;
 
 
 public class HttpResponse {

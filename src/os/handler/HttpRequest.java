@@ -1,12 +1,11 @@
 package os.handler;
 
 import os.type.Cookie;
-import os.type.Header;
-import os.type.RequestMethod;
-import os.type.Session;
-import os.type.Status;
-import os.util.Property;
+import os.type.constants.Header;
+import os.type.constants.RequestMethod;
+import os.type.constants.Status;
 import os.util.Utils;
+import util.type.Property;
 
 
 public class HttpRequest {
@@ -16,7 +15,6 @@ public class HttpRequest {
 	private Status status;
 	private Property<String> headers;
 	private Property<String> parameters;
-	private Session session;
 	private byte[] body;
 
 	public HttpRequest() {
@@ -41,7 +39,7 @@ public class HttpRequest {
 
 			if(line.contains("; ")) {
 
-				for(String arg : line.split("; ")) {
+				for(String arg : line.split("; ", -1)) {
 
 					Utils.addAttribute(property, "=", arg);
 				}
@@ -127,16 +125,6 @@ public class HttpRequest {
 	public void setParameters(Property<String> parameters) {
 
 		this.parameters = parameters;
-	}
-
-	public Session getSession() {
-
-		return session;
-	}
-
-	public void setSession(Session session) {
-
-		this.session = session;
 	}
 
 	public byte[] getBody() {

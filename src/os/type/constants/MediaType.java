@@ -1,4 +1,4 @@
-package os.type;
+package os.type.constants;
 
 /**
  * A media type (also known as a Multipurpose Internet Mail Extensions or MIME

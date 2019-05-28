@@ -1,4 +1,4 @@
-package os.type;
+package os.type.constants;
 
 /**
  * The status-code element is a three-digit integer code giving the<br/>

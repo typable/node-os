@@ -2,18 +2,21 @@ package os.type;
 
 import java.util.Date;
 
-import os.util.Property;
+import util.type.Property;
 
 
 public class Session {
 
+	private String uuid;
 	private final long timeout = 1000 * 60 * 60;
 	private long creationTime;
 	private long timeoutTime;
 	private long age;
 	private Property<Object> attributes;
 
-	public Session() {
+	public Session(String uuid) {
+
+		this.uuid = uuid;
 
 		Date date = new Date();
 
@@ -30,6 +33,11 @@ public class Session {
 
 		timeoutTime = date.getTime() + timeout;
 		age = date.getTime() - creationTime;
+	}
+
+	public String getUUID() {
+
+		return uuid;
 	}
 
 	public long getCreationTime() {

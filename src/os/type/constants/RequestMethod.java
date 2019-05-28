@@ -1,4 +1,4 @@
-package os.type;
+package os.type.constants;
 
 public enum RequestMethod {
 

@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
-import os.type.Header;
-import os.type.MediaType;
-import os.type.RequestMethod;
-import os.type.Status;
+import os.type.constants.Header;
+import os.type.constants.MediaType;
+import os.type.constants.RequestMethod;
+import os.type.constants.Status;
 import os.util.Connection;
 import os.util.Formatter;
 import os.util.Utils;
@@ -135,7 +135,6 @@ public class HttpConnection extends Connection {
 					// code = Formatter.parseHTML(code, getTemplates());
 					code = Formatter.parseHTML(code, response.getAttributes());
 					// code = Formatter.parseLang(code, getLanguage(), Core.LANGUAGES);
-					// code = Formatter.parseHref(code, getLanguage());
 
 					body = code.getBytes(StandardCharsets.UTF_8);
 				}
