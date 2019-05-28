@@ -7,6 +7,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="publish"/>
-	<classpathentry kind="lib" path="C:/DATA/lib/nodeos/Utils.jar"/>
+	<classpathentry kind="lib" path="I:/lib/NodeOS/Utils.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

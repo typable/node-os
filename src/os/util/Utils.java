@@ -1,6 +1,8 @@
 package os.util;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 
@@ -98,5 +100,10 @@ public class Utils {
 		}
 
 		return json_;
+	}
+
+	public static String encode(String value) {
+
+		return Base64.getEncoder().encodeToString(value.getBytes(StandardCharsets.UTF_8));
 	}
 }

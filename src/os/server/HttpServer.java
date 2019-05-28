@@ -11,8 +11,10 @@ import os.handler.HttpConnection;
 import os.handler.HttpRequest;
 import os.handler.HttpResponse;
 import os.service.SessionService;
+import os.type.Cookie;
 import os.type.Logger.Messages;
 import os.type.Request;
+import os.type.Session;
 import os.type.constants.MediaType;
 import os.type.constants.RequestMethod;
 import os.type.holder.EventHolder;
@@ -69,7 +71,21 @@ public class HttpServer {
 
 									SessionService sessionService = Core.sessionService;
 
-									sessionService.createSession(responseHandler);
+									Cookie cookie = requestHandler.getCookie("_uuid");
+
+									if(cookie == null) {
+
+										sessionService.createSession(responseHandler);
+									}
+									else {
+
+										Session session = sessionService.getCurrentSession(cookie);
+
+										if(session == null) {
+
+											sessionService.createSession(responseHandler);
+										}
+									}
 
 									currentRequestHolder.call(requestHandler, responseHandler);
 								}

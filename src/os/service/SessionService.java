@@ -50,6 +50,11 @@ public class SessionService extends Service {
 
 		Cookie cookie = request.getCookie("_uuid");
 
+		return getCurrentSession(cookie);
+	}
+
+	public Session getCurrentSession(Cookie cookie) {
+
 		if(cookie != null) {
 
 			for(Session session : sessions) {

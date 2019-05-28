@@ -64,7 +64,7 @@ public class PageHandler implements Listener {
 
 		String url = request.getParameter("url");
 		String email = request.getParameter("email");
-		String password = request.getParameter("password");
+		String password = Utils.encode(request.getParameter("password"));
 
 		User user = authenticationService.login(email, password);
 
@@ -86,6 +86,10 @@ public class PageHandler implements Listener {
 
 					response.redirect("/");
 				}
+			}
+			else {
+
+				response.redirect("/login");
 			}
 		}
 		else {

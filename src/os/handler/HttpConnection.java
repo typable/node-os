@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
+import os.core.Core;
 import os.type.constants.Header;
 import os.type.constants.MediaType;
 import os.type.constants.RequestMethod;
@@ -105,43 +106,43 @@ public class HttpConnection extends Connection {
 		if(response.getStatus() != null) {
 
 			emit("HTTP/1.1 " + response.getStatus().getMessage());
-		}
-		else {
 
-			emit("HTTP/1.1 " + Status.BAD_REQUEST.getMessage());
+			if(!response.getHeaders().isEmpty()) {
 
-			return;
-		}
+				for(String key : response.getHeaders().keys()) {
 
-		if(!response.getHeaders().isEmpty()) {
-
-			for(String key : response.getHeaders().keys()) {
-
-				emit(key + ": " + response.getHeaders().get(key));
-			}
-		}
-
-		if(response.getBody() != null) {
-
-			byte[] body = response.getBody();
-
-			if(response.getHeaders().hasKey(Header.CONTENT_TYPE.getCode())) {
-
-				if(response.getHeaders().get(Header.CONTENT_TYPE.getCode()).split("; ")[0].equals(MediaType.TEXT_HTML.getType())) {
-
-					String code = new String(body, StandardCharsets.UTF_8);
-
-					// TODO Formatter.parse()
-					// code = Formatter.parseHTML(code, getTemplates());
-					code = Formatter.parseHTML(code, response.getAttributes());
-					// code = Formatter.parseLang(code, getLanguage(), Core.LANGUAGES);
-
-					body = code.getBytes(StandardCharsets.UTF_8);
+					emit(key + ": " + response.getHeaders().get(key));
 				}
 			}
 
-			emit("");
-			emit(body);
+			if(response.getBody() != null) {
+
+				byte[] body = response.getBody();
+
+				if(response.getHeaders().hasKey(Header.CONTENT_TYPE.getCode())) {
+
+					if(response.getHeaders().get(Header.CONTENT_TYPE.getCode()).split("; ")[0].equals(MediaType.TEXT_HTML.getType())) {
+
+						String code = new String(body, StandardCharsets.UTF_8);
+
+						// TODO Formatter.parse()
+						// code = Formatter.parseHTML(code, getTemplates());
+						code = Formatter.parseHTML(code, response.getAttributes());
+						// code = Formatter.parseLang(code, getLanguage(), Core.LANGUAGES);
+
+						body = code.getBytes(StandardCharsets.UTF_8);
+					}
+				}
+
+				emit("");
+				emit(body);
+			}
+		}
+		else {
+
+			Core.LOGGER.warn("Bad Request!");
+
+			emit("HTTP/1.1 " + Status.BAD_REQUEST.getMessage());
 		}
 
 		quit();
