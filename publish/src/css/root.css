@@ -342,7 +342,7 @@ html, body {
 .al-between { justify-content: space-between; }
 .al-around { justify-content: space-around; }
 
-// .text { user-select: none; }
+/* .text { user-select: none; } */
 
 .text-light { color: #FFFFFF; }
 .text-dark { color: #444444; }

@@ -158,7 +158,7 @@ public class Core {
 					props.set("port", "80");
 					props.set("root", "*/publish");
 
-					configFile.setData(props);
+					configFile.setProperty(props);
 					configFile.save();
 
 					loadConfigurations();
