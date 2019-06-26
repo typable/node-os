@@ -111,6 +111,7 @@
 	cursor: pointer;
 	background-color: #FFF;
 	color: #454545;
+	user-select: none;
 }
 
 .toast a {

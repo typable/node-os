@@ -105,7 +105,9 @@ public class PageHandler implements Listener {
 
 		if(user != null) {
 
-			response.viewPage("*/styleguide.html");
+			response.viewPage("E:/workspace/web/experimental/index.html");
+
+			// response.viewPage("*/styleguide.html");
 		}
 		else {
 

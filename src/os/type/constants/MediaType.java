@@ -120,6 +120,14 @@ public enum MediaType {
 	IMAGE_SVG("image/svg+xml", new String[] { "svg" }),
 
 	/**
+	 * Icon<br/>
+	 * <br/>
+	 * MIME Type: image/ico<br/>
+	 * File Types: ico
+	 */
+	IMAGE_ICO("image/ico", new String[] { "ico" }),
+
+	/**
 	 * Waveform Audio File Format<br/>
 	 * <br/>
 	 * MIME Type: audi/wave<br/>
@@ -185,7 +193,7 @@ public enum MediaType {
 
 					String[] fileTypes = mediaType.getFileTypes();
 
-					if(fileType != null) {
+					if(fileType != null && fileTypes != null) {
 
 						for(String type : fileTypes) {
 

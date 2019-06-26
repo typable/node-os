@@ -93,7 +93,7 @@ public class HttpServer {
 
 									String path = Core.getResourcePath(url);
 
-									responseHandler.viewPage(path, MediaType.TEXT_CSS);
+									responseHandler.viewPage(path, MediaType.getByFileType(path.substring(path.lastIndexOf("/"), path.length())));
 								}
 								else {
 
