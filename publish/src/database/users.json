@@ -1,5 +1,7 @@
 {
 	"users": [
-		{"name": "Andreas Sitzler", "email": "andy@mf.de", "password": "MTIz"}
+		{"name": "Andreas Sitzler", "email": "andy@mf.de", "password": "MTIz"},
+		{"name": "Luca Reisinger", "email": "luca@mf.de", "password": "RGVzdG94Mw=="},
+		{"name": "Test", "email": "test@mf.de", "password": "dGVzdA=="}
 	]
 }

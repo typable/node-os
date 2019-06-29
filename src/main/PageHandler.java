@@ -1,18 +1,17 @@
 package main;
 
 import os.core.Core;
-import os.event.ViewPageEvent;
 import os.handler.HttpRequest;
 import os.handler.HttpResponse;
 import os.service.AuthenticationService;
 import os.service.SessionService;
 import os.service.UserService;
-import os.type.Event;
 import os.type.Inject;
 import os.type.Listener;
 import os.type.Request;
 import os.type.Session;
 import os.type.User;
+import os.type.constants.MediaType;
 import os.type.constants.RequestMethod;
 import os.util.Utils;
 
@@ -28,12 +27,6 @@ public class PageHandler implements Listener {
 	@Inject(code = "sessionService")
 	private SessionService sessionService;
 
-	@Event
-	private void onViewPage(ViewPageEvent event) {
-
-		//
-	}
-
 	@Request(url = "/")
 	private void getRoot(HttpRequest request, HttpResponse response) {
 
@@ -45,12 +38,6 @@ public class PageHandler implements Listener {
 	private void getImpressum(HttpRequest request, HttpResponse response) {
 
 		response.viewPage("*/impressum.html");
-	}
-
-	@Request(url = "/404")
-	private void get404(HttpRequest request, HttpResponse response) {
-
-		response.viewPage("*/404.html");
 	}
 
 	@Request(url = "/login")
@@ -105,14 +92,51 @@ public class PageHandler implements Listener {
 
 		if(user != null) {
 
-			response.viewPage("E:/workspace/web/experimental/index.html");
-
-			// response.viewPage("*/styleguide.html");
+			response.viewPage("*/styleguide.html");
 		}
 		else {
 
 			response.addAttribute("url", "/styleguide");
 			response.viewPage("*/login.html");
 		}
+	}
+
+	@Request(url = "/download")
+	private void getDownload(HttpRequest request, HttpResponse response) {
+
+		User user = userService.getCurrentUser(request);
+
+		if(user != null) {
+
+			response.viewPage("*/download.html");
+		}
+		else {
+
+			response.addAttribute("url", "/download");
+			response.viewPage("*/login.html");
+		}
+	}
+
+	@Request(url = "/download", method = RequestMethod.POST)
+	private void postDownload(HttpRequest request, HttpResponse response) {
+
+		String file = request.getParameter("file");
+
+		if(file != null && !file.isBlank()) {
+
+			response.provideDownload(file);
+		}
+		else {
+
+			response.notFound();
+		}
+	}
+
+	@Request(url = "/favicon.ico")
+	private void getFavicon(HttpRequest request, HttpResponse response) {
+
+		response.viewPage("*/src/assets/favicon.png", MediaType.IMAGE_PNG);
+
+		response.ok();
 	}
 }

@@ -1,14 +1,7 @@
-/*
-@import url('https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i&display=swap');
-*/
-@import url('https://fonts.googleapis.com/css?family=Assistant:200,300,400,600,700,800|Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i|Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Work+Sans:100,200,300,400,500,600,700,800,900&display=swap');
-
-* {
-  font-family: 'Open Sans', sans-serif;
-}
-
 .hidden {
-  display: none;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
 }
 
 :root {
@@ -96,7 +89,7 @@
   color: rgb(140, 140, 140);
 }
 
-.form-group input {
+.form-group input, .form-group select {
   padding: 11px 12px;
   outline: none;
   border: 1px solid #DDD;
@@ -105,15 +98,15 @@
   color: var(--text);
 }
 
-.form-group input:hover {
+.form-group input:hover, .form-group select:hover {
   border-color: #CCC;
 }
 
-.form-group input:focus {
+.form-group input:focus, .form-group select:focus {
   border-color: rgb(104, 145, 255);
 }
 
-.form-group input:disabled {
+.form-group input:disabled, .form-group select:disabled {
   pointer-events: none;
   background-color: var(--default);
   color: rgb(140, 140, 140);

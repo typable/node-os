@@ -40,6 +40,22 @@ public class HttpResponse {
 
 	public void notFound() {
 
+		try {
+
+			File file = new File(Core.getResourcePath("/404.html"));
+
+			if(file.exists()) {
+
+				viewPage("*/404.html");
+
+				return;
+			}
+		}
+		catch(IOException e) {
+
+			e.printStackTrace();
+		}
+
 		status = Status.NOT_FOUND;
 	}
 
@@ -92,17 +108,28 @@ public class HttpResponse {
 		}
 	}
 
-	public void provideDownload(File file) {
+	public void provideDownload(String path) {
 
 		try {
 
-			headers.set(Header.CONTENT_DISPOSITION.getCode(), "attachment; filename=\"" + file.getName() + "\"");
-			body = Files.readAllBytes(file.toPath());
-			status = Status.OK;
+			File file = new File(Core.getResourcePath("/src/downloads/" + path));
+
+			if(file.exists()) {
+
+				headers.set(Header.CONTENT_DISPOSITION.getCode(), "attachment; filename=\"" + file.getName() + "\"");
+				body = Files.readAllBytes(file.toPath());
+				status = Status.OK;
+			}
+			else {
+
+				Core.LOGGER.warn(Messages.NOT_FOUND.getMessage(path));
+				notFound();
+			}
 		}
 		catch(IOException e) {
 
-			Core.LOGGER.warn(Messages.NOT_FOUND.getMessage(file.getName()));
+			Core.LOGGER.warn(Messages.NOT_FOUND.getMessage(path));
+			notFound();
 		}
 	}
 
