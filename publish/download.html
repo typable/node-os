@@ -1,63 +1,48 @@
 <!DOCTYPE html>
 <html lang="de" dir="ltr">
-  <head>
-  	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta charset="utf-8">
-    <meta author="Prototype Studio">
-    <link rel="stylesheet" href="src/css/root.css">
-    <link rel="stylesheet" href="src/css/native.css">
-    <title>MF Fraggles - Download</title>
-  </head>
-  <body>
-    <section class="container-fluid py-20">
-      <div class="container">
-        <div class="row">
-          <!-- CONTENT -->
-          <form action="/download" method="post" class="form-download">
-            <div class="form-group col-8">
-              <label>Dateiformat</label>
-              <div class="option">
-                <select class="option" name="file">
-                  <option value="">TomTom Routendatei</option>
-                  <option value="">Google Earth KML Datei (.kml)</option>
-                  <option value="test.csv">Garmin CSV Datei (.csv)</option>
-                  <option value="">Garmin POI Datei</option>
-                  <option value="">Garmin GP eXchange Datei</option>
-                  <option value="">BMW Datei</option>
-                </select>
-                <img src="/src/assets/arrow_down.svg" class="option-arrow">
-              </div>
-            </div>
-            <div class="form-group col-3">
-              <label class="hidden">Button</label>
-              <button type="submit" class="download">Download</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </section>
-  </body>
-  <style media="screen">
-
-    .form-download {
-      width: 600px;
-      margin: 0 auto;
-    }
-
-    .option {
-      width: 100%;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-    }
-
-    .option-arrow {
-      width: 32px;
-      position: absolute;
-      margin-top: -38px;
-      margin-left: 360px;
-      pointer-events: none;
-      user-select: none;
-    }
-
-  </style>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta charset="utf-8">
+		<meta name="author" content="Prototype Studio">
+		<link rel="stylesheet" href="src/css/root.css">
+		<link rel="stylesheet" href="src/css/native.css">
+		<link rel="stylesheet" href="src/css/master.css">
+		<title>MF Fraggles - Download</title>
+	</head>
+	<body>
+		<section class="container-fluid py-20">
+			<div class="container">
+				<div class="row">
+					<!-- CONTENT -->
+					<form action="/download" method="post" class="form form-download">
+						<!--
+						<div class="row mb-7">
+							<div class="text text-black h3">Downloads</div>
+						</div>
+						-->
+						<div class="row">
+							<div class="form-group col-9">
+								<label>Dateiformat</label>
+								<div class="option">
+									<select name="file">
+										<option value="">TomTom Routendatei</option>
+										<option value="">Google Earth KML Datei (.kml)</option>
+										<option value="test.csv">Garmin CSV Datei (.csv)</option>
+										<option value="">Garmin POI Datei</option>
+										<option value="">Garmin GP eXchange Datei</option>
+										<option value="">BMW Datei</option>
+									</select>
+									<img class="arrow">
+								</div>
+							</div>
+							<div class="form-group col-3">
+								<label></label>
+								<button type="submit">Herunterladen</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</section>
+	</body>
 </html>

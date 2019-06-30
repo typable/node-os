@@ -74,28 +74,32 @@
 }
 
 .form {
-  width: 360px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
 }
 
 .form-group {
   display: inline-flex;
   flex-direction: column;
+  padding: 0 4px;
   padding-bottom: 20px;
 }
 
 .form-group label {
-  padding-left: 2px;
   padding-bottom: 6px;
   color: rgb(140, 140, 140);
+  height: 23px;
 }
 
 .form-group input, .form-group select {
-  padding: 11px 12px;
+  padding: 12px;
   outline: none;
   border: 1px solid #DDD;
   border-radius: 2px;
   font-size: 16px;
   color: var(--text);
+  width: 100%;
 }
 
 .form-group input:hover, .form-group select:hover {
@@ -169,4 +173,23 @@
   position: absolute;
   border: 16px solid transparent;
   border-bottom: 16px solid #333;
+}
+
+.option {
+	position: relative;
+}
+			
+.option select {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+}
+			
+.option .arrow {
+	top: 7px;
+	right: 7px;
+	width: 32px;
+	position: absolute;
+	pointer-events: none;
+	user-select: none;
+	content: url('/src/assets/arrow_down.svg');
 }

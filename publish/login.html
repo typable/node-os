@@ -4,6 +4,7 @@
     <title>MF Fraggles - Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8">
+    <meta name="author" content="Prototype Studio">
     <link rel="stylesheet" href="src/css/root.css">
     <link rel="stylesheet" href="src/css/native.css">
   </head>
@@ -16,7 +17,7 @@
 			</div>
           <form action="/login" method="post">
             <div class="row">
-              <input name="url" type="text" hidden value="@{url}">
+              <input name="url" type="text" hidden="true" value="@{url}">
               <div class="form-group col-12">
                 <label>E-mail address</label>
                 <input type="text" name="email" spellcheck="false" autocomplete="off">
