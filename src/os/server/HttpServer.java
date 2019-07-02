@@ -5,20 +5,16 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import os.core.Core;
-import os.event.Event;
-import os.event.NotFoundEvent;
 import os.handler.HttpConnection;
 import os.handler.HttpRequest;
 import os.handler.HttpResponse;
 import os.service.SessionService;
 import os.type.Cookie;
-import os.type.Logger.Messages;
-import os.type.Request;
 import os.type.Session;
 import os.type.constants.MediaType;
 import os.type.constants.RequestMethod;
-import os.type.holder.EventHolder;
 import os.type.holder.RequestHolder;
+import util.log.Logger.Messages;
 
 
 public class HttpServer {
@@ -59,9 +55,7 @@ public class HttpServer {
 
 								for(RequestHolder holder : Core.REQUESTS) {
 
-									Request request = holder.getRequest();
-
-									if(request.url().equals(url) && request.method() == requestMethod) {
+									if(holder.getUrl().equals(url) && holder.getMethod() == requestMethod) {
 
 										currentRequestHolder = holder;
 									}
@@ -87,7 +81,7 @@ public class HttpServer {
 										}
 									}
 
-									currentRequestHolder.call(requestHandler, responseHandler);
+									currentRequestHolder.getCallback().call(requestHandler, responseHandler);
 								}
 								else if(url.startsWith("/src/")) {
 
@@ -99,16 +93,6 @@ public class HttpServer {
 
 									Core.LOGGER.warn(Messages.NOT_FOUND.getMessage(url));
 									responseHandler.viewPage("*/404.html", MediaType.TEXT_HTML);
-
-									for(EventHolder holder : Core.EVENTS) {
-
-										Event event = holder.getEvent();
-
-										if(event instanceof NotFoundEvent) {
-
-											holder.call(requestHandler, responseHandler);
-										}
-									}
 								}
 
 								requestConnection.commit(responseHandler);
@@ -118,9 +102,8 @@ public class HttpServer {
 
 							Core.LOGGER.error(Messages.FATAL_ERROR.getMessage(), ex);
 
-							ex.printStackTrace();
-
-							Core.stop();
+							// ex.printStackTrace();
+							// Core.stop();
 						}
 					});
 

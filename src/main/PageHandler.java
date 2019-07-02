@@ -1,30 +1,29 @@
 package main;
 
+import core.reflect.Inject;
 import os.core.Core;
 import os.handler.HttpRequest;
 import os.handler.HttpResponse;
 import os.service.AuthenticationService;
 import os.service.SessionService;
 import os.service.UserService;
-import os.type.Inject;
-import os.type.Listener;
 import os.type.Request;
 import os.type.Session;
 import os.type.User;
 import os.type.constants.MediaType;
 import os.type.constants.RequestMethod;
-import os.util.Utils;
+import util.Utils;
 
 
-public class PageHandler implements Listener {
+public class PageHandler {
 
-	@Inject(code = "userService")
+	@Inject
 	private UserService userService;
 
-	@Inject(code = "authenticationService")
+	@Inject
 	private AuthenticationService authenticationService;
 
-	@Inject(code = "sessionService")
+	@Inject
 	private SessionService sessionService;
 
 	@Request(url = "/")
@@ -65,7 +64,7 @@ public class PageHandler implements Listener {
 				sessionService.getSessions().remove(session);
 				sessionService.getSessions().add(session);
 
-				if(Utils.notEmpty(url)) {
+				if(url != null && !url.isBlank()) {
 
 					response.redirect(url);
 				}
@@ -138,5 +137,13 @@ public class PageHandler implements Listener {
 		response.viewPage("*/src/assets/favicon.png", MediaType.IMAGE_PNG);
 
 		response.ok();
+	}
+
+	/* ### PROTOTYPE-STUDIO ### */
+
+	@Request(url = "/ps")
+	private void getPs(HttpRequest request, HttpResponse response) {
+
+		response.viewPage("*/ps/index.html");
 	}
 }

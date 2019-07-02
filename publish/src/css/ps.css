@@ -1,0 +1,181 @@
+.nav {
+  border-bottom: 1px solid #EEEEEE;
+  padding: 16px 0;
+}
+
+.nav .menu-bar {
+  display: inline-flex;
+  flex-direction: row;
+}
+
+.brand {
+
+}
+
+.menu {
+  font-weight: 500;
+  font-size: 16px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 14px;
+  color: #B5B5B5;
+  cursor: pointer;
+}
+
+.menu-active {
+  color: #1976D2;
+}
+
+.nav .account-bar {
+  display: inline-flex;
+  justify-content: flex-end;
+}
+
+.account-bar .notification {
+  margin-right: 40px;
+}
+
+.account-bar .account {
+  display: inline-flex;
+  flex-direction: row;
+}
+
+.account .image {
+  width: 36px;
+  height: 36px;
+  background-color: #EEEEEE;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.account .image img {
+  /* IMG */
+}
+
+.account .info {
+  display: flex;
+  flex-direction: column;
+  padding: 1px 0;
+  margin-left: 8px;
+}
+
+.account .info label {
+  font-weight: 500;
+  color: #1976D2;
+  padding-bottom: 2px;
+}
+
+.account .info span {
+  font-size: 12px;
+  color: #9E9E9E;
+}
+
+.account .arrow {
+  margin-left: 8px;
+}
+
+.icon {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 9999px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.icon:hover {
+  background-color: #e3f2fd99;
+}
+
+.icon img {
+  width: 24px;
+	user-select: none;
+  cursor: pointer;
+}
+
+.menu {
+  position: relative;
+}
+
+.menu:hover::after {
+  width: 100%;
+  opacity: 1;
+}
+
+.menu::after {
+  opacity: 0;
+  content: '';
+  display: block;
+  position: absolute;
+  width: 0;
+  height: 3px;
+  background-color: #1976D2;
+  bottom: -17px;
+  border-radius: 9999px;
+  transition: 0.2s;
+}
+
+.overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dialog {
+  position: fixed;
+  width: 800px;
+  height: 900px;
+  background-color: #FFFFFF;
+  border-radius: 6px;
+  z-index: 2;
+  left: calc(50% - 400px);
+  top: calc(50% - 450px);
+  overflow: hidden;
+  box-shadow: 0 1px 4px 2px rgba(0, 0, 0, 0.05);
+}
+
+.image-box {
+  display: flex;
+	align-items: center;
+	justify-content: center;
+  width: 800px;
+  height: 500px;
+	overflow: hidden;
+  background-color: #424242;
+}
+
+.image {
+  display: block;
+	position: relative;
+	cursor: pointer;
+	overflow: hidden;
+	border-radius: 7px;
+  max-height: 100%;
+	max-width: 100%;
+}
+
+.image img {
+  display: block;
+  width: 100%;
+  user-select: none;
+}
+
+.content-box {
+  width: 800px;
+  height: 250px;
+  padding: 30px;
+}
+
+.content-textarea {
+  height: 140px;
+  min-height: 140px !important;
+  max-height: 140px;
+  min-width: calc(800px - 60px);
+  max-width: calc(800px - 60px);
+}

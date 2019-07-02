@@ -1,4 +1,4 @@
-package os.util;
+package os.format;
 
 import util.type.Property;
 

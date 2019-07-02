@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
+import net.Connection;
 import os.core.Core;
+import os.format.Formatter;
 import os.type.constants.Header;
 import os.type.constants.MediaType;
 import os.type.constants.RequestMethod;
 import os.type.constants.Status;
-import os.util.Connection;
-import os.util.Formatter;
-import os.util.Utils;
+import util.Utils;
 
 
 public class HttpConnection extends Connection {
@@ -28,7 +28,7 @@ public class HttpConnection extends Connection {
 		String line;
 		int i = 0;
 
-		while(Utils.notEmpty(line = readLine())) {
+		while((line = readLine()) != null && !line.isBlank()) {
 
 			if(i == 0) {
 

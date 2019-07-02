@@ -1,28 +1,55 @@
 package os.type.holder;
 
-import java.lang.reflect.Method;
-
+import core.reflect.Callback;
 import os.type.Request;
+import os.type.constants.RequestMethod;
 
 
-public class RequestHolder extends MethodHolder {
+public class RequestHolder {
 
-	private Request request;
+	private String url;
+	private RequestMethod method;
+	private Callback callback;
 
-	public RequestHolder(Request request, Object instance, Method method) {
+	public RequestHolder(Request request, Callback callback) {
 
-		super(instance, method);
-
-		this.request = request;
+		this(request.url(), request.method(), callback);
 	}
 
-	public Request getRequest() {
+	public RequestHolder(String url, RequestMethod method, Callback callback) {
 
-		return request;
+		this.url = url;
+		this.method = method;
+		this.callback = callback;
 	}
 
-	public void setRequest(Request request) {
+	public String getUrl() {
 
-		this.request = request;
+		return url;
+	}
+
+	public void setUrl(String url) {
+
+		this.url = url;
+	}
+
+	public RequestMethod getMethod() {
+
+		return method;
+	}
+
+	public void setMethod(RequestMethod method) {
+
+		this.method = method;
+	}
+
+	public Callback getCallback() {
+
+		return callback;
+	}
+
+	public void setCallback(Callback callback) {
+
+		this.callback = callback;
 	}
 }

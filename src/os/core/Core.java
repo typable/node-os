@@ -1,22 +1,24 @@
 package os.core;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import core.reflect.Callback;
+import core.reflect.Instance;
 import os.server.HttpServer;
 import os.service.AuthenticationService;
 import os.service.SessionService;
 import os.service.UserService;
 import os.type.Loader;
-import os.type.Logger;
-import os.type.Logger.Messages;
 import os.type.Request;
-import os.type.holder.EventHolder;
 import os.type.holder.RequestHolder;
 import util.file.PropertyFile;
+import util.log.Logger;
+import util.log.Logger.Messages;
 import util.type.Property;
 
 
@@ -25,7 +27,6 @@ public class Core {
 	public static Property<String> PROPERTIES;
 	public static Property<String> LANGUAGES;
 	public static List<RequestHolder> REQUESTS;
-	public static List<EventHolder> EVENTS;
 	public static Logger LOGGER;
 	public static Loader LOADER;
 
@@ -39,31 +40,23 @@ public class Core {
 	public static int PORT;
 	public static String ROOT;
 
-	private List<Class<?>> instances;
+	private List<Instance> instances;
 	private HttpServer server;
 
 	public Core() {
 
-		try {
+		PROPERTIES = new Property<String>();
+		LANGUAGES = new Property<String>();
+		LOGGER = new Logger();
+		LOADER = new Loader();
+		REQUESTS = new ArrayList<RequestHolder>();
 
-			PROPERTIES = new Property<String>();
-			LANGUAGES = new Property<String>();
-			LOGGER = new Logger();
-			LOADER = new Loader();
-			REQUESTS = new ArrayList<RequestHolder>();
-			EVENTS = new ArrayList<EventHolder>();
+		userService = new UserService();
+		sessionService = new SessionService();
+		authenticationService = new AuthenticationService();
 
-			userService = new UserService();
-			sessionService = new SessionService();
-			authenticationService = new AuthenticationService();
-
-			instances = new ArrayList<Class<?>>();
-			server = new HttpServer();
-		}
-		catch(Exception e) {
-
-			e.printStackTrace();
-		}
+		instances = new ArrayList<Instance>();
+		server = new HttpServer();
 	}
 
 	public void launch() throws Exception {
@@ -81,35 +74,33 @@ public class Core {
 		server.launch();
 	}
 
-	public void addHandler(Class<?> instance) {
+	public void addHandler(Class<?> type) throws Exception {
 
-		instances.add(instance);
+		instances.add(new Instance(type));
 	}
 
 	private void loadHandlers() throws Exception {
 
-		Property<Object> fields = new Property<Object>();
-		fields.set("logger", LOGGER);
-		fields.set("loader", LOADER);
-		fields.set("config", PROPERTIES);
-		fields.set("userService", userService);
-		fields.set("sessionService", sessionService);
-		fields.set("authenticationService", authenticationService);
+		Property<Object> args = new Property<Object>();
+		args.set("logger", LOGGER);
+		args.set("loader", LOADER);
+		args.set("config", PROPERTIES);
+		args.set("userService", userService);
+		args.set("sessionService", sessionService);
+		args.set("authenticationService", authenticationService);
 
-		for(Class<?> type : instances) {
+		for(Instance instance : instances) {
 
 			try {
 
-				Object instance = type.getConstructor().newInstance();
-
-				for(Method method : type.getDeclaredMethods()) {
+				for(Method method : instance.getType().getDeclaredMethods()) {
 
 					for(Annotation annotation : method.getAnnotations()) {
 
 						if(annotation instanceof Request) {
 
-							RequestHolder holder = new RequestHolder((Request) annotation, instance, method);
-							holder.inject(type, fields);
+							RequestHolder holder = new RequestHolder((Request) annotation, new Callback(instance, method));
+							instance.inject(args);
 
 							REQUESTS.add(holder);
 						}
@@ -123,9 +114,7 @@ public class Core {
 		}
 	}
 
-	private void loadConfigurations() throws IOException {
-
-		// File configFile = new File(getCurrentPath() + CONFIG_PATH);
+	private void loadConfigurations() throws Exception {
 
 		PropertyFile configFile = new PropertyFile(getCurrentPath() + CONFIG_PATH);
 
@@ -168,14 +157,14 @@ public class Core {
 					LOGGER.error("Failed to create new file!");
 				}
 			}
-			catch(IOException e) {
+			catch(Exception e) {
 
 				LOGGER.error("Failed to create new file!", e);
 			}
 		}
 	}
 
-	private void loadLanguages() throws IOException {
+	private void loadLanguages() throws Exception {
 
 		PropertyFile file = new PropertyFile(ROOT + RESOURCE_PATH + "/lang/lang.properties");
 
@@ -188,7 +177,7 @@ public class Core {
 
 	public static String getCurrentPath() throws IOException {
 
-		return new java.io.File(".").getCanonicalPath().replaceAll("\\\\", "\\/");
+		return new File(".").getCanonicalPath().replaceAll("\\\\", "\\/");
 	}
 
 	public static String getRelativePath(String path) throws IOException {

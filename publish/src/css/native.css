@@ -92,7 +92,7 @@
   height: 23px;
 }
 
-.form-group input, .form-group select {
+.form-group input, .form-group select, .form-group textarea {
   padding: 12px;
   outline: none;
   border: 1px solid #DDD;
@@ -102,15 +102,19 @@
   width: 100%;
 }
 
-.form-group input:hover, .form-group select:hover {
+.form-group textarea {
+  min-height: 86px;
+}
+
+.form-group input:hover, .form-group select:hover, .form-group textarea:hover {
   border-color: #CCC;
 }
 
-.form-group input:focus, .form-group select:focus {
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
   border-color: rgb(104, 145, 255);
 }
 
-.form-group input:disabled, .form-group select:disabled {
+.form-group input:disabled, .form-group select:disabled, .form-group textarea:disabled {
   pointer-events: none;
   background-color: var(--default);
   color: rgb(140, 140, 140);
@@ -178,12 +182,12 @@
 .option {
 	position: relative;
 }
-			
+
 .option select {
 	-webkit-appearance: none;
 	-moz-appearance: none;
 }
-			
+
 .option .arrow {
 	top: 7px;
 	right: 7px;

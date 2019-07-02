@@ -8,11 +8,11 @@ import java.nio.file.Files;
 
 import os.core.Core;
 import os.type.Cookie;
-import os.type.Logger.Messages;
 import os.type.constants.Header;
 import os.type.constants.MediaType;
 import os.type.constants.RequestMethod;
 import os.type.constants.Status;
+import util.log.Logger.Messages;
 import util.type.Property;
 
 
@@ -104,7 +104,7 @@ public class HttpResponse {
 		}
 		else {
 
-			status = Status.NOT_FOUND;
+			notFound();
 		}
 	}
 
