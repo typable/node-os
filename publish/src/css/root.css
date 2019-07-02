@@ -25,7 +25,11 @@ html, body {
 	flex-wrap: wrap;
 }
 
-.row { display: flex; }
+.col {
+	flex-direction: column;
+}
+
+.row, .col { display: flex; }
 
 .row-in { display: inline-flex; }
 
