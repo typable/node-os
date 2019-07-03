@@ -1,0 +1,75 @@
+<!DOCTYPE text/html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta charset="utf-8">
+		<meta name="author" content="Prototype Studio">
+		<link rel="stylesheet" href="/src/css/root.css">
+		<link rel="stylesheet" href="/src/css/style.css">
+		<title>Viewer</title>
+		<script type="text/javascript" src="/src/js/nodescript.js"></script>
+		<script type="text/javascript" src="/src/js/viewer.js"></script>
+	</head>
+	<body>
+		<template id="image">
+			<div class="img-box">
+				<img src="${src}" draggable="false">
+				<div class="type">${type}</div>
+				<div class="info">
+					<div class="title">${title}</div>
+					<div class="description">${description}</div>
+				</div>
+			</div>
+		</template>
+		<div id="content" class="row">
+			<!-- CONTENT -->
+		</div>
+		<div id="wrapper" class="wrapper">
+			<div class="img-view">
+				<div class="img-box-view">
+					<!-- IMAGE -->
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+		
+			let content = $('#content');
+		
+			let images = [
+				{
+					src: 'https://images.pexels.com/photos/2071216/pexels-photo-2071216.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+					type: 'JPEG',
+					title: 'Abstract Building',
+					description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam'
+				},
+				{
+					src: 'https://images.pexels.com/photos/2034378/pexels-photo-2034378.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
+					type: 'JPG',
+					title: 'Glass House',
+					description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren'
+				},
+				{
+					src: 'https://images.pexels.com/photos/135018/pexels-photo-135018.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260',
+					type: 'PNG',
+					title: 'Monument',
+					description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr. At vero eos et accusam et justo duo dolores et ea rebum'
+				},
+				{
+					src: '/src/assets/test-2.jpg',
+					type: 'JPG',
+					title: 'Urbanized',
+					description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam aqu de fuaen'
+				},
+			];
+		
+			Component.create($('#image'));
+			
+			images.each(function(key, val) {
+				content.html(content.html() + Components.IMAGE.get(val));
+			});
+			
+			let viewer = new Viewer($('#wrapper'));
+		
+		</script>
+	</body>
+</html>

@@ -1,5 +1,8 @@
 package os.format;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 import util.type.Property;
 
 
@@ -7,12 +10,7 @@ public class Formatter {
 
 	public static String parseURL(String code) {
 
-		code = code.replaceAll("\\+", " ");
-		code = code.replaceAll("%40", "@");
-		code = code.replaceAll("%21", "!");
-		code = code.replaceAll("%2F", "/");
-
-		return code;
+		return URLDecoder.decode(code, StandardCharsets.UTF_8);
 	}
 
 	public static String parseHTML(String code, Property<String> attributes) {

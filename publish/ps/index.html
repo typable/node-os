@@ -8,59 +8,70 @@
 		<link rel="stylesheet" href="src/css/native.css">
 		<link rel="stylesheet" href="src/css/ps.css">
 		<title>Prototype Studio</title>
+		<script type="text/javascript" src="/src/js/nodescript.js"></script>
+		<script type="text/javascript" src="/src/js/ps.js"></script>
 	</head>
 	<body>
 		<section class="">
-			<div class="overlay"></div>
-			<div class="dialog dialog-image-edit">
+			<div id="overlay" class="overlay" onclick="viewer.close()"></div>
+			<div id="viewer" class="viewer">
+				<div class="image-container">
+					<img src="/src/assets/img-1.jpg">
+				</div>
+			</div>
+			<div id="dialog" class="dialog">
 				<div class="dialog-header">
 					<div class="dialog-title">Bild bearbeiten</div>
-					<div class="dialog-close icon">
+					<div class="dialog-close icon" onclick="dialog.close()">
 						<img src="/src/assets/close.svg">
 					</div>
 				</div>
-				<div class="dialog-content">
-					<div class="image-box">
-						<!--
-						<div class="image">
-							<img src="/src/assets/img-2.jpg">
+				<div class="dialog-content row">
+					<div class="col">
+						<div class="image-box" onclick="viewer.open()">
+							<img src="/src/assets/img-1.jpg">
 						</div>
-					-->
+						<div class="image-info">
+							<div class="image-size">Größe: <span>390 KB</span></div>
+							<div class="image-format">Format: <span>JPEG</span></div>
+						</div>
 					</div>
-					<div class="content-box">
-						<form action="/" method="post" class="form">
-							<div class="row">
-								<div class="form-group col-3">
-									<label>ID</label>
-									<input type="text" name="id" spellcheck="false" autocomplete="off">
+					<div class="col">
+						<div class="content-box">
+							<form action="/ps/update-image" method="post" class="form">
+								<div class="row">
+									<div class="form-group col-3">
+										<label>ID</label>
+										<input type="text" name="id" spellcheck="false" autocomplete="off">
+									</div>
+									<div class="form-group col-9">
+										<label>Name</label>
+										<input type="text" name="name" spellcheck="false" autocomplete="off">
+									</div>
 								</div>
-								<div class="form-group col-9">
-									<label>Name</label>
-									<input type="text" name="name" spellcheck="false" autocomplete="off">
+								<div class="row">
+									<div class="form-group col-12">
+										<label>Tags</label>
+										<input type="text" name="tags" spellcheck="false" autocomplete="off">
+									</div>
 								</div>
-							</div>
-							<div class="row">
-								<div class="form-group col-12">
-									<label>Tags</label>
-									<input type="text" name="tags" spellcheck="false" autocomplete="off">
+								<div class="row">
+									<div class="form-group col-12">
+										<label>Beschreibung</label>
+										<textarea class="content-textarea" name="description" spellcheck="false" autocomplete="off"></textarea>
+									</div>
 								</div>
-							</div>
-							<div class="row">
-								<div class="form-group col-12">
-									<label>Beschreibung</label>
-									<textarea class="content-textarea" name="description" spellcheck="false" autocomplete="off"></textarea>
+								<div class="row">
+									<div class="form-group col-10">
+		
+									</div>
+									<div class="form-group col-2">
+										<label></label>
+										<button type="submit">Speichern</button>
+									</div>
 								</div>
-							</div>
-							<div class="row">
-								<div class="form-group col-10">
-	
-								</div>
-								<div class="form-group col-2">
-									<label></label>
-									<button type="submit">Speichern</button>
-								</div>
-							</div>
-						</form>
+							</form>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -86,7 +97,7 @@
 						</div>
 					</div>
 					<div class="col-4 account-bar">
-						<div class="notification icon">
+						<div class="notification icon" onclick="dialog.open()">
 							<img src="/src/assets/notification.svg">
 						</div>
 						<div class="account">
@@ -105,5 +116,12 @@
 				</div>
 			</div>
 		</section>
+		<script type="text/javascript">
+			
+			let dialog = new Dialog('#dialog');
+			
+			let viewer = new Viewer('#viewer');
+		
+		</script>
 	</body>
 </html>
