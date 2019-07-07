@@ -3,7 +3,6 @@ package os.handler;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import os.core.Core;
@@ -84,12 +83,12 @@ public class HttpResponse {
 
 	public void viewPage(String path) {
 
-		viewPage(path, MediaType.TEXT_HTML, StandardCharsets.UTF_8);
+		viewPage(path, MediaType.TEXT_HTML, Core.DEFAULT_CHARSET);
 	}
 
 	public void viewPage(String path, MediaType type) {
 
-		viewPage(path, type, StandardCharsets.UTF_8);
+		viewPage(path, type, Core.DEFAULT_CHARSET);
 	}
 
 	public void viewPage(String path, MediaType type, Charset charset) {

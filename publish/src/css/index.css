@@ -1,0 +1,134 @@
+/* ##### IMPORTS ##### */
+@import url('https://fonts.googleapis.com/css?family=Knewave|Sriracha');
+
+/* ##### ROOT ##### */
+* {
+	color: var(--text);
+}
+
+:root {
+	--text: #263238;
+}
+
+.separator {
+	height: 50px;
+}
+
+.nav, .brand, .events, .story, .gallery, .contact, .footer {
+	padding: 25px 0;
+}
+
+/* ##### MEDIA ##### */
+@media (min-width: 1920px) {
+	
+	.container { width: 1200px; }
+}
+
+/* ##### NAV ##### */
+.nav {
+	
+}
+
+/* ##### BRAND ##### */
+.brand {
+	
+}
+
+.brand .row {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.brand .brand-club {
+	font-size: 19px;
+	text-transform: uppercase;
+	text-align: center;
+	color: #999999;
+	letter-spacing: 3px;
+}
+
+.brand .brand-name {
+	padding-top: 50px;
+	font-family: Knewave;
+	font-size: 150px;
+	text-transform: uppercase;
+	text-align: center;
+	user-select: none;
+	line-height: 160px;
+}
+
+.brand .brand-since {
+	font-family: Sriracha;
+	font-size: 18px;
+	text-align: center;
+	color: #777777;
+}
+
+.brand .brand-city {
+	font-size: 26px;
+	text-transform: uppercase;
+	text-align: center;
+	letter-spacing: 2px;
+	color: #555555;
+}
+
+/* ##### EVENTS ##### */
+.events {
+	
+}
+
+/* ##### STORY ##### */
+.story {
+	
+}
+
+/* ##### GALLERY ##### */
+.gallery {
+	
+}
+
+/* ##### CONTACT ##### */
+.contact {
+	padding-bottom: 100px;
+}
+
+.contact .map {
+	position: relative;
+	padding: 125px 0;
+}
+
+.contact .map::after {
+	content: '';
+	display: block;
+	position: absolute;
+	z-index: 1;
+	width: 100%;
+	height: 25px;
+	top: auto;
+	bottom: 0;
+	background-color: #FFFFFF;
+}
+
+.contact .contact-box {
+	padding:  0 40px;
+}
+
+.contact .contact-box .contact-box-title {
+	font-size: 18px;
+	font-weight: 500;
+	padding-bottom: 30px;
+}
+
+.contact .contact-box .contact-box-content {
+	line-height: 20px;
+}
+
+.contact .contact-box .contact-box-content p {
+	padding-bottom: 16px;
+}
+
+/* ##### FOOTER ##### */
+.footer {
+	padding-bottom: 100px;
+}

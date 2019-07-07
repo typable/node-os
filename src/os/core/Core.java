@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,8 @@ public class Core {
 
 	public static Property<String> PROPERTIES;
 	public static Property<String> LANGUAGES;
+	public static Property<String> TEXTS;
+	public static List<File> TEMPLATES;
 	public static List<RequestHolder> REQUESTS;
 	public static Logger LOGGER;
 	public static Loader LOADER;
@@ -36,6 +40,8 @@ public class Core {
 
 	public static final String CONFIG_PATH = "/config.properties";
 	public static final String RESOURCE_PATH = "/src";
+	public static final Charset DEFAULT_CHARSET = StandardCharsets.ISO_8859_1;
+	public static final String DEFAULT_LANG = "de";
 
 	public static int PORT;
 	public static String ROOT;
@@ -50,6 +56,7 @@ public class Core {
 		LOGGER = new Logger();
 		LOADER = new Loader();
 		REQUESTS = new ArrayList<RequestHolder>();
+		TEMPLATES = new ArrayList<File>();
 
 		userService = new UserService();
 		sessionService = new SessionService();
@@ -69,6 +76,8 @@ public class Core {
 		userService.loadUsers();
 
 		loadLanguages();
+		loadTexts(DEFAULT_LANG);
+		loadTemplates();
 		loadHandlers();
 
 		server.launch();
@@ -172,6 +181,33 @@ public class Core {
 
 			file.load();
 			LANGUAGES = file.getProperty();
+		}
+	}
+
+	public static void loadTexts(String lang) throws Exception {
+
+		PropertyFile file = new PropertyFile(ROOT + RESOURCE_PATH + "/lang/lang-" + lang + ".properties");
+
+		if(file.exists()) {
+
+			file.load();
+			TEXTS = file.getProperty();
+		}
+	}
+
+	public static void loadTemplates() throws Exception {
+
+		File directory = new File(ROOT + RESOURCE_PATH + "/template/");
+
+		if(directory.exists()) {
+
+			for(File file : directory.listFiles()) {
+
+				if(file.getAbsolutePath().endsWith(".html")) {
+
+					TEMPLATES.add(file);
+				}
+			}
 		}
 	}
 

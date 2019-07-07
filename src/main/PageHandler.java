@@ -1,12 +1,7 @@
 package main;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 import core.reflect.Inject;
 import os.core.Core;
-import os.experimental.ContentService;
 import os.handler.HttpRequest;
 import os.handler.HttpResponse;
 import os.service.AuthenticationService;
@@ -18,8 +13,6 @@ import os.type.User;
 import os.type.constants.MediaType;
 import os.type.constants.RequestMethod;
 import util.Utils;
-import util.file.JSONFile;
-import util.type.JSONObject;
 
 
 public class PageHandler {
@@ -146,7 +139,7 @@ public class PageHandler {
 		response.ok();
 	}
 
-	/* ### PROTOTYPE-STUDIO ### */
+	/* ##### PROTOTYPE-STUDIO ##### */
 
 	@Request(url = "/ps")
 	private void getPs(HttpRequest request, HttpResponse response) {
@@ -158,57 +151,5 @@ public class PageHandler {
 	private void getPsViewer(HttpRequest request, HttpResponse response) {
 
 		response.viewPage("*/ps/viewer.html");
-	}
-
-	@Request(url = "/ps/update-image", method = RequestMethod.POST)
-	private void postPsUpdateImage(HttpRequest request, HttpResponse response) {
-
-		String id = request.getParameter("id");
-		String name = request.getParameter("name");
-		String tags = request.getParameter("tags");
-		String description = request.getParameter("description");
-
-		ContentService contentService = new ContentService();
-
-		JSONObject obj = contentService.prepareImage(id, name, tags.trim(), description);
-
-		try {
-
-			JSONFile file = new JSONFile(Core.getResourcePath("/src/database/content.json"));
-
-			if(file.exists()) {
-
-				file.load();
-
-				JSONObject root = file.getJSONObject();
-
-				List<JSONObject> list = new LinkedList<JSONObject>(Arrays.asList(root.getJSONObjectArray("images")));
-
-				list.add(obj);
-
-				JSONObject[] array = new JSONObject[list.size()];
-
-				for(int i = 0; i < list.size(); i++) {
-
-					array[i] = list.get(i);
-				}
-
-				root.set("images", array);
-
-				file.setJSONObject(root);
-
-				file.save();
-			}
-			else {
-
-				System.out.println("File not exists: " + Core.getResourcePath("/src/database/content.json"));
-			}
-		}
-		catch(Exception e) {
-
-			e.printStackTrace();
-		}
-
-		response.redirect("/ps");
 	}
 }

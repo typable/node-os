@@ -102,7 +102,7 @@ public class HttpServer {
 
 							Core.LOGGER.error(Messages.FATAL_ERROR.getMessage(), ex);
 
-							// ex.printStackTrace();
+							ex.printStackTrace();
 							// Core.stop();
 						}
 					});

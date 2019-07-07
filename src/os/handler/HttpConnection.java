@@ -2,7 +2,6 @@ package os.handler;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 import net.Connection;
 import os.core.Core;
@@ -77,7 +76,7 @@ public class HttpConnection extends Connection {
 
 				if(length > 0) {
 
-					String body = new String(readLength(length), StandardCharsets.UTF_8);
+					String body = new String(readLength(length), Core.DEFAULT_CHARSET);
 
 					body = Formatter.parseURL(body);
 
@@ -101,7 +100,7 @@ public class HttpConnection extends Connection {
 		return request;
 	}
 
-	public void commit(HttpResponse response) throws IOException {
+	public void commit(HttpResponse response) throws Exception {
 
 		if(response.getStatus() != null) {
 
@@ -123,14 +122,20 @@ public class HttpConnection extends Connection {
 
 					if(response.getHeaders().get(Header.CONTENT_TYPE.getCode()).split("; ")[0].equals(MediaType.TEXT_HTML.getType())) {
 
-						String code = new String(body, StandardCharsets.UTF_8);
+						String code = new String(body, Core.DEFAULT_CHARSET);
 
-						// TODO Formatter.parse()
-						// code = Formatter.parseHTML(code, getTemplates());
-						code = Formatter.parseHTML(code, response.getAttributes());
-						// code = Formatter.parseLang(code, getLanguage(), Core.LANGUAGES);
+						try {
 
-						body = code.getBytes(StandardCharsets.UTF_8);
+							Core.loadTexts(Core.DEFAULT_LANG);
+						}
+						catch(Exception e) {
+
+							e.printStackTrace();
+						}
+
+						code = Formatter.parse(code, response.getAttributes());
+
+						body = code.getBytes(Core.DEFAULT_CHARSET);
 					}
 				}
 

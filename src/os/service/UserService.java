@@ -26,13 +26,16 @@ public class UserService extends Service {
 
 			JSONFile file = new JSONFile(Core.ROOT + "/src/database/users.json");
 
-			file.load();
+			if(file.exists()) {
 
-			JSONObject obj = file.getJSONObject();
+				file.load();
 
-			for(JSONObject user : obj.getJSONObjectArray("users")) {
+				JSONObject obj = file.getJSONObject();
 
-				users.add(new User(user.getString("name"), user.getString("email"), user.getString("password")));
+				for(JSONObject user : obj.getJSONObjectArray("users")) {
+
+					users.add(new User(user.getString("name"), user.getString("email"), user.getString("password")));
+				}
 			}
 		}
 		catch(Exception e) {

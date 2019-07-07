@@ -1,126 +1,95 @@
 <!DOCTYPE html>
 <html lang="de" dir="ltr">
 	<head>
+		@{template:meta}
 		<title>MF Fraggles</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta charset="utf-8">
-		<meta name="author" content="@{meta.author}">
-		<meta name="keywords" content="@{meta.keywords}">
-		<meta name="description" content="@{meta.description}">
-		<meta name="theme-color" content="#263238">
-		<link rel="shortcut icon" type="image/icon" href="src/assets/favicon.png">
-		<link rel="stylesheet" type="text/css" href="src/css/root.css">
-		<link rel="stylesheet" type="text/css" href="src/css/master.css">
+		<link rel="stylesheet" type="text/css" href="src/css/index.css">
+		<script type="text/javascript" src="/src/js/index.js"></script>
 	</head>
 	<body>
-		<nav class="section">
-			<section class="container py-2">
+		<!-- NAV -->
+		<nav class="nav container-fluid">
+			<section class="container">
 				<div class="row">
 					
 				</div>
 			</section>
 		</nav>
-		<header class="section">
-			<div class="container">
-				<div class="row al-center">
-					<div class="px-4 text brand-club">Motorradfreunde</div>
-					<div class="px-4 col-12 text text-black brand-name">Fraggles</div>
-					<div class="px-4 text pb-1 brand-since">1988</div>
-					<div class="px-4 text pb-7 brand-city">HAITERBACH</div>
-				</div>
-			</div>
-		</header>
-		<div class="section py-20">
+		<!-- BRAND -->
+		<header class="brand container-fluid">
 			<section class="container">
 				<div class="row">
-					<div class="col-12 col-sm-7 px-4">
-						<div class="text text-black col-12 pb-1 h3">History</div>
-						<div class="text line-2 h5 pb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
-						<div class="text line-2">Facilisi etiam dignissim diam quis enim lobortis scelerisque. Mattis enim ut tellus elementum sagittis vitae et. Orci nulla pellentesque dignissim enim sit amet venenatis urna cursus. At ultrices mi tempus imperdiet nulla. Elementum eu facilisis sed odio. Vulputate sapien nec sagittis aliquam malesuada bibendum arcu. Sem integer vitae justo eget magna fermentum. Amet tellus cras adipiscing enim eu turpis egestas. Elementum facilisis leo vel fringilla est ullamcorper eget. Ultrices dui sapien eget mi. Donec ac odio tempor orci dapibus. Donec adipiscing tristique risus nec feugiat in fermentum posuere urna.<br>
-								<br>
-								Ultricies mi quis hendrerit dolor magna eget est lorem. Ultricies mi quis hendrerit dolor magna eget est. Venenatis tellus in metus vulputate eu scelerisque felis imperdiet proin. Felis imperdiet proin fermentum leo vel. Lectus quam id leo in. Vivamus at augue eget arcu.</div>
-					</div>
-					<div class="col-12 col-sm-5 px-4">
-						<img src="/src/assets/favicon.png">
+					<div class="brand-club">@{text:brand.club}</div>
+					<div class="brand-name">@{text:brand.name}</div>
+					<div class="brand-since">@{text:brand.since}</div>
+					<div class="brand-city">@{text:brand.city}</div>
+				</div>
+			</section>
+		</header>
+		<!-- EVENTS -->
+		<main class="events container-fluid">
+			<section class="container">
+				<div class="row">
+					
+				</div>
+			</section>
+		</main>
+		<!-- STORY -->
+		<main class="story container-fluid">
+			<section class="container">
+				<div class="row">
+					<div class="col-6">@{text:story.text}</div>
+					<div class="col-6">
+						
 					</div>
 				</div>
 			</section>
-		</div>
-		<div class="section pb-8">
+		</main>
+		<!-- GALLERY -->
+		<main class="gallery container-fluid">
 			<section class="container">
-				<div class="row px-4">
-					<div id="map" class="col-12">
+				<div class="row">
+					
+				</div>
+			</section>
+		</main>
+		<!-- CONTACT -->
+		<main class="contact container-fluid">
+			<section class="container">
+				<div class="row">
+					<div id="map" class="map col-12">
 						<!-- GOOGLE MAPS -->
 					</div>
 				</div>
-			</section>
-			<section class="container">
-				<div class="row pb-10 pt-2">
-					<div class="col-12 col-sm-4 px-4 pt-8">
-						<div class="text text-bold h5">Über uns</div>
-						<div class="text pt-4 line-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+				<div class="separator"></div>
+				<div class="row">
+					<div class="contact-box col-4">
+						<div class="contact-box-title">@{text:contact.about.title}</div>
+						<div class="contact-box-content">@{text:contact.about.text}</div>
 					</div>
-					<div class="col-12 col-sm-4 px-4 pt-8">
-						<div class="text text-bold h5">Anfahrt</div>
-						<div class="text pt-4 line-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div>
-						<div class="text pt-2 line-2">Horber Straße (L355) Erdeponie<br>
-								72221 Haiterbach</div>
+					<div class="contact-box col-4">
+						<div class="contact-box-title">@{text:contact.drive.title}</div>
+						<div class="contact-box-content">@{text:contact.drive.text}</div>
 					</div>
-					<div class="col-12 col-sm-4 px-4 pt-8">
-						<div class="text text-bold h5">Kontakt</div>
-						<div class="text pt-4 line-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.<br>
-                <br>
-                Motorradfreunde Fraggles Haiterbach</div>
-						<div class="text pt-2 line-2">
-							<a href="mailto:kontakt@mf-fraggles.de" class="text">kontakt@mf-fraggles.de</a>
-						</div>
+					<div class="contact-box col-4">
+						<div class="contact-box-title">@{text:contact.info.title}</div>
+						<div class="contact-box-content">@{text:contact.info.text}</div>
 					</div>
 				</div>
 			</section>
-		</div>
-		<footer class="section">
-			<section class="container py-8">
-				<div class="row line-2 px-4 al-between">
-					<div class="text col-12 col-tl-8 pb-1">&copy; Copyright MF Fraggles 2019</div>
-					<div class="row-in col-12 col-tl-4 pb-1">
-						<div class="text pr-4">
-							Powered by <a class="text" href="http://prototype-studio.de">Prototype Studio</a>
-						</div>
-						<div class="text">
-							<a class="text" href="/impressum">Impressum</a>
-						</div>
+		</main>
+		<!-- FOOTER -->
+		<footer class="footer container-fluid">
+			<section class="container">
+				<div class="row">
+					<div class="col-6">@{meta.copyright}</div>
+					<div class="col-6">
+						Powered by <a href="http://prototype-studio.de">Prototype Studio</a>
+						<a href="/impressum">Impressum</a>
 					</div>
 				</div>
 			</section>
 		</footer>
-		<script type="text/javascript">
-
-			var map, marker;
-			function initMap() {
-
-			  map = new google.maps.Map(document.getElementById('map'), {
-				 center: {lat: 48.510680, lng: 8.652559},
-				 zoom: 13,
-				 disableDefaultUI: true,
-				 draggableCursor: 'pointer',
-				 fullscreenControl: true,
-				 mapTypeId: 'roadmap',
-				 mapTypeControl: true,
-				 mapTypeControlOptions: {
-					style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-					mapTypeIds: ['roadmap', 'hybrid']
-				 }
-			  });
-			  map.addListener('resize', e => {
-				 map.set('gestureHandling', 'all');
-			  });
-			  marker = new google.maps.Marker({
-				 position: {lat: 48.510680, lng: 8.652559},
-				 map: map,
-			  });
-			}
-
-		</script>
-		<script src="https://maps.googleapis.com/maps/api/js?key=@{google.apikey};callback=initMap" async="" defer=""></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=@{google.apikey};callback=initMap"></script>
 	</body>
 </html>
