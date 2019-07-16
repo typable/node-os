@@ -21,10 +21,6 @@ public class HttpServer {
 
 	private ServerSocket serverSocket;
 
-	public HttpServer() {
-
-	}
-
 	public void launch() {
 
 		try {
@@ -38,6 +34,59 @@ public class HttpServer {
 				Socket socket = serverSocket.accept();
 
 				new Thread(() -> {
+
+					/*
+					HttpConnection httpConnection = new HttpConnection(socket);
+					httpConnection.connect(new Runnable() {
+					
+						@Override
+						public void run() {
+					
+							try {
+					
+								HttpRequest httpRequest = httpConnection.request();
+								HttpResponse httpResponse = new HttpResponse();
+					
+								String url = httpRequest.getUrl();
+								RequestMethod requestMethod = httpRequest.getRequestMethod();
+								RequestHolder requestHolder = null;
+					
+								if(url != null) {
+					
+									for(RequestHolder holder : Core.REQUESTS) {
+					
+										if(holder.getUrl().equals(url) && holder.getMethod() == requestMethod) {
+					
+											requestHolder = holder;
+					
+											break;
+										}
+									}
+					
+									if(requestHolder != null) {
+					
+										Cookie cookie = httpRequest.getCookie("_uuid");
+					
+										if(cookie != null) {
+					
+										}
+										else {
+					
+										}
+					
+										//
+									}
+					
+									httpConnection.commit(httpResponse);
+								}
+							}
+							catch(Exception e) {
+					
+								e.printStackTrace();
+							}
+						}
+					});
+					*/
 
 					HttpConnection requestConnection = new HttpConnection(socket);
 					requestConnection.connect(() -> {
