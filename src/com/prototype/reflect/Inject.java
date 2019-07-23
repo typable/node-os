@@ -1,18 +1,13 @@
-package os.type;
+package com.prototype.reflect;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.prototype.http.constants.RequestMethod;
-
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Request {
+@Target(ElementType.FIELD)
+public @interface Inject {
 
-	String url();
-
-	RequestMethod method() default RequestMethod.GET;
 }

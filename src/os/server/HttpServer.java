@@ -4,14 +4,15 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import com.prototype.http.constants.MediaType;
+import com.prototype.http.constants.RequestMethod;
+import com.prototype.logger.Logger.Messages;
+
 import os.core.Core;
 import os.handler.HttpConnection;
 import os.handler.HttpRequest;
 import os.handler.HttpResponse;
-import os.type.constants.MediaType;
-import os.type.constants.RequestMethod;
 import os.type.holder.RequestHolder;
-import util.log.Logger.Messages;
 
 
 public class HttpServer {

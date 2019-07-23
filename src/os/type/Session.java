@@ -2,7 +2,7 @@ package os.type;
 
 import java.util.Date;
 
-import util.type.Property;
+import com.prototype.type.Property;
 
 
 public class Session {

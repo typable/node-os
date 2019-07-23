@@ -9,10 +9,10 @@ import com.prototype.constants.Constants;
 import com.prototype.environment.Environment;
 import com.prototype.http.HTTPServer;
 import com.prototype.loader.Loader;
+import com.prototype.logger.Logger;
+import com.prototype.type.Property;
 
 import os.type.holder.RequestHolder;
-import util.log.Logger;
-import util.type.Property;
 
 
 public class Prototype {

@@ -1,8 +1,8 @@
 package com.prototype.http;
 
-import os.type.constants.MediaType;
-import os.type.constants.Status;
-import util.type.Property;
+import com.prototype.http.constants.MediaType;
+import com.prototype.http.constants.Status;
+import com.prototype.type.Property;
 
 
 public class HTTPResponse {
@@ -34,6 +34,16 @@ public class HTTPResponse {
 	public void setStatus(Status status) {
 
 		this.status = status;
+	}
+
+	public Double getVersion() {
+
+		return request.getVersion();
+	}
+
+	public void setVersion(Double version) {
+
+		request.setVersion(version);
 	}
 
 	public Property<String> getAttributes() {

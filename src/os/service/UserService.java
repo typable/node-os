@@ -3,11 +3,8 @@ package os.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import os.core.Core;
 import os.handler.HttpRequest;
 import os.type.User;
-import util.file.JSONFile;
-import util.type.JSONObject;
 
 
 @Deprecated
@@ -24,19 +21,19 @@ public class UserService extends Service {
 
 		try {
 
-			JSONFile file = new JSONFile(Core.ROOT + "/src/database/users.json");
-
-			if(file.exists()) {
-
-				file.load();
-
-				JSONObject obj = file.getJSONObject();
-
-				for(JSONObject user : obj.getJSONObjectArray("users")) {
-
-					users.add(new User(user.getString("name"), user.getString("email"), user.getString("password")));
-				}
-			}
+			//			JSONFile file = new JSONFile(Core.ROOT + "/src/database/users.json");
+			//
+			//			if(file.exists()) {
+			//
+			//				file.load();
+			//
+			//				JSONObject obj = file.getJSONObject();
+			//
+			//				for(JSONObject user : obj.getJSONObjectArray("users")) {
+			//
+			//					users.add(new User(user.getString("name"), user.getString("email"), user.getString("password")));
+			//				}
+			//			}
 		}
 		catch(Exception e) {
 

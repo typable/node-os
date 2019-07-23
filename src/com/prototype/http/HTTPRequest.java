@@ -1,8 +1,8 @@
 package com.prototype.http;
 
-import os.type.constants.MediaType;
-import os.type.constants.RequestMethod;
-import util.type.Property;
+import com.prototype.http.constants.MediaType;
+import com.prototype.http.constants.RequestMethod;
+import com.prototype.type.Property;
 
 
 public class HTTPRequest {

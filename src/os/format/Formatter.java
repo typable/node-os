@@ -4,8 +4,9 @@ import java.io.File;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 
+import com.prototype.type.Property;
+
 import os.core.Core;
-import util.type.Property;
 
 
 public class Formatter {

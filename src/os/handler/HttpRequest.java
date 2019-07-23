@@ -1,10 +1,11 @@
 package os.handler;
 
+import com.prototype.http.constants.Header;
+import com.prototype.http.constants.RequestMethod;
+import com.prototype.type.Property;
+import com.prototype.util.Utils;
+
 import os.type.Cookie;
-import os.type.constants.Header;
-import os.type.constants.RequestMethod;
-import util.Utils;
-import util.type.Property;
 
 
 public class HttpRequest {

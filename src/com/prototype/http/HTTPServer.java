@@ -4,8 +4,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import com.prototype.Prototype;
+import com.prototype.http.constants.RequestMethod;
 
-import os.type.constants.RequestMethod;
 import os.type.holder.RequestHolder;
 
 

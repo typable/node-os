@@ -5,11 +5,12 @@ import java.nio.charset.Charset;
 
 import com.prototype.Prototype;
 import com.prototype.format.Formatter;
-
-import net.Connection;
-import os.type.constants.MediaType;
-import os.type.constants.RequestMethod;
-import os.type.constants.Status;
+import com.prototype.http.constants.Header;
+import com.prototype.http.constants.MediaType;
+import com.prototype.http.constants.RequestMethod;
+import com.prototype.http.constants.Status;
+import com.prototype.net.Connection;
+import com.prototype.util.Utils;
 
 
 public class HTTPConnection extends Connection {
@@ -35,12 +36,39 @@ public class HTTPConnection extends Connection {
 
 			if(args.length == 3 && args[2].startsWith("HTTP/")) {
 
+				String[] query = Formatter.parseURL(args[1]).split("\\?");
+
+				if(query.length == 2) {
+
+					request.setParameters(Formatter.parseQuery(query[1]));
+				}
+
+				request.setUrl(query[0]);
 				request.setMethod(RequestMethod.valueOf(args[0]));
-				request.setUrl(Formatter.parseURL(args[1]));
 				request.setVersion(Double.valueOf(args[2].split("/")[1]));
 			}
+			else {
 
-			// System.out.println(line);
+				Utils.addAttribute(request.getHeaders(), ": ", line);
+			}
+		}
+
+		if(request.getMethod() == RequestMethod.POST) {
+
+			String contentLength = request.getHeaders().get(Header.CONTENT_LENGTH.getCode());
+
+			if(contentLength != null) {
+
+				Integer length = Integer.parseInt(contentLength);
+
+				String body = new String(readLength(length), CHARSET);
+
+				body = Formatter.parseURL(body);
+
+				request.setParameters(Formatter.parseQuery(body));
+
+				request.setBody(body.getBytes(CHARSET));
+			}
 		}
 
 		return request;
@@ -50,7 +78,7 @@ public class HTTPConnection extends Connection {
 
 		if(response.getStatus() != null) {
 
-			emit("HTTP/1.1 " + response.getStatus().getMessage());
+			emit("HTTP/" + response.getVersion() + " " + response.getStatus().getMessage());
 
 			if(!response.getHeaders().isEmpty()) {
 
@@ -77,7 +105,7 @@ public class HTTPConnection extends Connection {
 		}
 		else {
 
-			emit("HTTP/1.1 " + Status.BAD_REQUEST.getMessage());
+			emit("HTTP/" + response.getVersion() + " " + Status.BAD_REQUEST.getMessage());
 		}
 
 		quit();

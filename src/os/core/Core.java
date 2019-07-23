@@ -10,16 +10,17 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-import core.reflect.Callback;
-import core.reflect.Instance;
+import com.prototype.logger.Logger;
+import com.prototype.logger.Logger.Messages;
+import com.prototype.parse.PropertyParser;
+import com.prototype.reflect.Callback;
+import com.prototype.reflect.Instance;
+import com.prototype.type.Property;
+
 import os.server.HttpServer;
 import os.type.Loader;
 import os.type.Request;
 import os.type.holder.RequestHolder;
-import util.log.Logger;
-import util.log.Logger.Messages;
-import util.parse.PropertyParser;
-import util.type.Property;
 
 
 public class Core {

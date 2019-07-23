@@ -5,14 +5,15 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 
+import com.prototype.http.constants.Header;
+import com.prototype.http.constants.MediaType;
+import com.prototype.http.constants.RequestMethod;
+import com.prototype.http.constants.Status;
+import com.prototype.logger.Logger.Messages;
+import com.prototype.type.Property;
+
 import os.core.Core;
 import os.type.Cookie;
-import os.type.constants.Header;
-import os.type.constants.MediaType;
-import os.type.constants.RequestMethod;
-import os.type.constants.Status;
-import util.log.Logger.Messages;
-import util.type.Property;
 
 
 public class HttpResponse {

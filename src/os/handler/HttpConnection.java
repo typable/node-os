@@ -4,14 +4,15 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.URLDecoder;
 
-import net.Connection;
+import com.prototype.http.constants.Header;
+import com.prototype.http.constants.MediaType;
+import com.prototype.http.constants.RequestMethod;
+import com.prototype.http.constants.Status;
+import com.prototype.net.Connection;
+import com.prototype.util.Utils;
+
 import os.core.Core;
 import os.format.Formatter;
-import os.type.constants.Header;
-import os.type.constants.MediaType;
-import os.type.constants.RequestMethod;
-import os.type.constants.Status;
-import util.Utils;
 
 
 public class HttpConnection extends Connection {

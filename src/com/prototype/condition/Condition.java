@@ -1,6 +1,6 @@
 package com.prototype.condition;
 
-import util.log.Logger.Messages;
+import com.prototype.logger.Logger.Messages;
 
 
 public class Condition {

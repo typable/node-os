@@ -4,9 +4,8 @@ import java.io.File;
 import java.net.URLDecoder;
 
 import com.prototype.Prototype;
-
-import os.core.Core;
-import util.type.Property;
+import com.prototype.type.Property;
+import com.prototype.util.Utils;
 
 
 public class Formatter {
@@ -14,6 +13,25 @@ public class Formatter {
 	public static String parseURL(String code) {
 
 		return URLDecoder.decode(code, Prototype.constant().CHARSET);
+	}
+
+	public static Property<String> parseQuery(String code) {
+
+		Property<String> props = new Property<>();
+
+		if(code.contains("&")) {
+
+			for(String param : code.split("&")) {
+
+				Utils.addAttribute(props, "=", param);
+			}
+		}
+		else {
+
+			Utils.addAttribute(props, "=", code);
+		}
+
+		return props;
 	}
 
 	public static String parse(String code, Property<String> attributes) throws Exception {
@@ -35,11 +53,11 @@ public class Formatter {
 			}
 		}
 
-		for(String key : Core.PROPERTIES.keys()) {
+		for(String key : Prototype.env().keys()) {
 
-			if(Core.PROPERTIES.get(key) != null) {
+			if(Prototype.env().get(key) != null) {
 
-				code = code.replaceAll("\\@\\{" + key + "\\}", Core.PROPERTIES.get(key));
+				code = code.replaceAll("\\@\\{" + key + "\\}", (String) Prototype.env().get(key));
 			}
 		}
 
@@ -61,11 +79,11 @@ public class Formatter {
 
 	public static String parseText(String code) {
 
-		if(Core.TEXTS != null) {
+		if(Prototype.message() != null) {
 
-			for(String key : Core.TEXTS.keys()) {
+			for(String key : Prototype.message().keys()) {
 
-				code = code.replaceAll("\\@\\{text:" + key + "\\}", Core.TEXTS.get(key));
+				code = code.replaceAll("\\@\\{text:" + key + "\\}", Prototype.message().get(key));
 			}
 		}
 

@@ -8,12 +8,12 @@ import java.util.List;
 
 import com.prototype.Prototype;
 import com.prototype.environment.Environment;
+import com.prototype.logger.Logger;
+import com.prototype.logger.Logger.Messages;
+import com.prototype.parse.PropertyParser;
+import com.prototype.type.Property;
 
 import os.type.holder.RequestHolder;
-import util.log.Logger;
-import util.log.Logger.Messages;
-import util.parse.PropertyParser;
-import util.type.Property;
 
 
 public class Loader {

@@ -6,8 +6,9 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.prototype.logger.Logger.Messages;
+
 import os.core.Core;
-import util.log.Logger.Messages;
 
 
 public class Loader {

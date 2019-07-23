@@ -1,8 +1,9 @@
 package os.type.holder;
 
-import core.reflect.Callback;
+import com.prototype.http.constants.RequestMethod;
+import com.prototype.reflect.Callback;
+
 import os.type.Request;
-import os.type.constants.RequestMethod;
 
 
 public class RequestHolder {
