@@ -3,7 +3,6 @@ package os.handler;
 import os.type.Cookie;
 import os.type.constants.Header;
 import os.type.constants.RequestMethod;
-import os.type.constants.Status;
 import util.Utils;
 import util.type.Property;
 
@@ -12,7 +11,6 @@ public class HttpRequest {
 
 	private String url;
 	private RequestMethod requestMethod;
-	private Status status;
 	private Property<String> headers;
 	private Property<String> parameters;
 	private byte[] body;
@@ -95,16 +93,6 @@ public class HttpRequest {
 	public void setRequestMethod(RequestMethod requestMethod) {
 
 		this.requestMethod = requestMethod;
-	}
-
-	public Status getStatus() {
-
-		return status;
-	}
-
-	public void setStatus(Status status) {
-
-		this.status = status;
 	}
 
 	public Property<String> getHeaders() {

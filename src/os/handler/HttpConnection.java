@@ -2,6 +2,7 @@ package os.handler;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.URLDecoder;
 
 import net.Connection;
 import os.core.Core;
@@ -37,7 +38,7 @@ public class HttpConnection extends Connection {
 
 					String[] args_ = args[1].split("\\?");
 
-					request.setUrl(args_[0]);
+					request.setUrl(URLDecoder.decode(args_[0], Core.DEFAULT_CHARSET));
 
 					if(args_[1].contains("&")) {
 

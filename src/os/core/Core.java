@@ -6,21 +6,19 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
 import core.reflect.Callback;
 import core.reflect.Instance;
 import os.server.HttpServer;
-import os.service.AuthenticationService;
-import os.service.SessionService;
-import os.service.UserService;
 import os.type.Loader;
 import os.type.Request;
 import os.type.holder.RequestHolder;
-import util.file.PropertyFile;
 import util.log.Logger;
 import util.log.Logger.Messages;
+import util.parse.PropertyParser;
 import util.type.Property;
 
 
@@ -34,12 +32,12 @@ public class Core {
 	public static Logger LOGGER;
 	public static Loader LOADER;
 
-	public static UserService userService;
-	public static SessionService sessionService;
-	public static AuthenticationService authenticationService;
+	//	public static UserService userService;
+	//	public static SessionService sessionService;
+	//	public static AuthenticationService authenticationService;
 
 	public static final String CONFIG_PATH = "/config.properties";
-	public static final String RESOURCE_PATH = "/src";
+	public static final String RESOURCE_PATH = "/res";
 	public static final Charset DEFAULT_CHARSET = StandardCharsets.ISO_8859_1;
 	public static final String DEFAULT_LANG = "de";
 
@@ -58,9 +56,9 @@ public class Core {
 		REQUESTS = new ArrayList<RequestHolder>();
 		TEMPLATES = new ArrayList<File>();
 
-		userService = new UserService();
-		sessionService = new SessionService();
-		authenticationService = new AuthenticationService();
+		//		userService = new UserService();
+		//		sessionService = new SessionService();
+		//		authenticationService = new AuthenticationService();
 
 		instances = new ArrayList<Instance>();
 		server = new HttpServer();
@@ -73,7 +71,7 @@ public class Core {
 		PORT = Integer.parseInt(getRequired("port"));
 		ROOT = Core.getRequired("root").replaceAll("\\*", getCurrentPath());
 
-		userService.loadUsers();
+		//		userService.loadUsers();
 
 		loadLanguages();
 		loadTexts(DEFAULT_LANG);
@@ -91,12 +89,12 @@ public class Core {
 	private void loadHandlers() throws Exception {
 
 		Property<Object> args = new Property<Object>();
-		args.set("logger", LOGGER);
-		args.set("loader", LOADER);
-		args.set("config", PROPERTIES);
-		args.set("userService", userService);
-		args.set("sessionService", sessionService);
-		args.set("authenticationService", authenticationService);
+		args.put("logger", LOGGER);
+		args.put("loader", LOADER);
+		args.put("config", PROPERTIES);
+		//		args.put("userService", userService);
+		//		args.put("sessionService", sessionService);
+		//		args.put("authenticationService", authenticationService);
 
 		for(Instance instance : instances) {
 
@@ -125,15 +123,14 @@ public class Core {
 
 	private void loadConfigurations() throws Exception {
 
-		PropertyFile configFile = new PropertyFile(getCurrentPath() + CONFIG_PATH);
+		File configFile = new File(getCurrentPath() + CONFIG_PATH);
+		PropertyParser parser = new PropertyParser();
 
 		if(configFile.exists()) {
 
 			try {
 
-				configFile.load();
-
-				PROPERTIES = configFile.getProperty();
+				PROPERTIES = parser.parse(Files.readString(configFile.toPath(), Core.DEFAULT_CHARSET));
 
 				LOGGER.info("Configurations loaded");
 			}
@@ -146,18 +143,17 @@ public class Core {
 
 			try {
 
-				configFile.create();
+				configFile.createNewFile();
 
 				if(configFile.exists()) {
 
 					LOGGER.info("Configuration file created");
 
 					Property<String> props = new Property<String>();
-					props.set("port", "80");
-					props.set("root", "*/publish");
+					props.put("port", "80");
+					props.put("root", "*/web");
 
-					configFile.setProperty(props);
-					configFile.save();
+					Files.writeString(configFile.toPath(), parser.compose(props), Core.DEFAULT_CHARSET);
 
 					loadConfigurations();
 				}
@@ -175,29 +171,31 @@ public class Core {
 
 	private void loadLanguages() throws Exception {
 
-		PropertyFile file = new PropertyFile(ROOT + RESOURCE_PATH + "/lang/lang.properties");
+		File file = new File(getCurrentPath() + RESOURCE_PATH + "/lang/lang.properties");
 
 		if(file.exists()) {
 
-			file.load();
-			LANGUAGES = file.getProperty();
+			PropertyParser parser = new PropertyParser();
+
+			LANGUAGES = parser.parse(Files.readString(file.toPath(), Core.DEFAULT_CHARSET));
 		}
 	}
 
 	public static void loadTexts(String lang) throws Exception {
 
-		PropertyFile file = new PropertyFile(ROOT + RESOURCE_PATH + "/lang/lang-" + lang + ".properties");
+		File file = new File(getCurrentPath() + RESOURCE_PATH + "/lang/lang-" + lang + ".properties");
 
 		if(file.exists()) {
 
-			file.load();
-			TEXTS = file.getProperty();
+			PropertyParser parser = new PropertyParser();
+
+			TEXTS = parser.parse(Files.readString(file.toPath(), Core.DEFAULT_CHARSET));
 		}
 	}
 
 	public static void loadTemplates() throws Exception {
 
-		File directory = new File(ROOT + RESOURCE_PATH + "/template/");
+		File directory = new File(getCurrentPath() + RESOURCE_PATH + "/template/");
 
 		if(directory.exists()) {
 
@@ -223,7 +221,7 @@ public class Core {
 
 	public static String getResourcePath(String path) throws IOException {
 
-		return ROOT + path;
+		return getCurrentPath() + path;
 	}
 
 	public static String get(String key) {

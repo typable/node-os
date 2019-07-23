@@ -8,9 +8,6 @@ import os.core.Core;
 import os.handler.HttpConnection;
 import os.handler.HttpRequest;
 import os.handler.HttpResponse;
-import os.service.SessionService;
-import os.type.Cookie;
-import os.type.Session;
 import os.type.constants.MediaType;
 import os.type.constants.RequestMethod;
 import os.type.holder.RequestHolder;
@@ -94,7 +91,7 @@ public class HttpServer {
 						try {
 
 							HttpRequest requestHandler = requestConnection.request();
-							HttpResponse responseHandler = new HttpResponse();
+							HttpResponse responseHandler = new HttpResponse(requestHandler);
 
 							String url = requestHandler.getUrl();
 							RequestMethod requestMethod = requestHandler.getRequestMethod();
@@ -112,27 +109,27 @@ public class HttpServer {
 
 								if(currentRequestHolder != null) {
 
-									SessionService sessionService = Core.sessionService;
-
-									Cookie cookie = requestHandler.getCookie("_uuid");
-
-									if(cookie == null) {
-
-										sessionService.createSession(responseHandler);
-									}
-									else {
-
-										Session session = sessionService.getCurrentSession(cookie);
-
-										if(session == null) {
-
-											sessionService.createSession(responseHandler);
-										}
-									}
+									//									SessionService sessionService = Core.sessionService;
+									//
+									//									Cookie cookie = requestHandler.getCookie("_uuid");
+									//
+									//									if(cookie == null) {
+									//
+									//										sessionService.createSession(responseHandler);
+									//									}
+									//									else {
+									//
+									//										Session session = sessionService.getCurrentSession(cookie);
+									//
+									//										if(session == null) {
+									//
+									//											sessionService.createSession(responseHandler);
+									//										}
+									//									}
 
 									currentRequestHolder.getCallback().call(requestHandler, responseHandler);
 								}
-								else if(url.startsWith("/src/")) {
+								else if(url.startsWith("/res/")) {
 
 									String path = Core.getResourcePath(url);
 

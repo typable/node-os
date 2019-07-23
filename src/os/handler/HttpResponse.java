@@ -17,18 +17,13 @@ import util.type.Property;
 
 public class HttpResponse {
 
-	private String url;
-	private RequestMethod requestMethod;
+	private HttpRequest request;
 	private Status status;
-	private Property<String> headers;
-	private Property<String> parameters;
 	private Property<String> attributes;
-	private byte[] body;
 
-	public HttpResponse() {
+	public HttpResponse(HttpRequest request) {
 
-		headers = new Property<String>();
-		parameters = new Property<String>();
+		this.request = request;
 		attributes = new Property<String>();
 	}
 
@@ -71,14 +66,14 @@ public class HttpResponse {
 	public void redirect(String url) {
 
 		status = Status.FOUND;
-		headers.set(Header.LOCATION.getCode(), url);
+		request.getHeaders().put(Header.LOCATION.getCode(), url);
 	}
 
 	public void view(String code) {
 
 		status = Status.OK;
-		headers.set(Header.CONTENT_TYPE.getCode(), MediaType.TEXT_PLAIN.getType());
-		body = code.getBytes();
+		request.getHeaders().put(Header.CONTENT_TYPE.getCode(), MediaType.TEXT_PLAIN.getType());
+		request.setBody(code.getBytes());
 	}
 
 	public void viewPage(String path) {
@@ -97,8 +92,8 @@ public class HttpResponse {
 
 		if(data != null) {
 
-			body = data;
-			headers.set(Header.CONTENT_TYPE.getCode(), type.getType() + "; charset=" + charset.displayName().toLowerCase());
+			request.setBody(data);
+			request.getHeaders().put(Header.CONTENT_TYPE.getCode(), type.getType() + "; charset=" + charset.displayName().toLowerCase());
 			status = Status.OK;
 		}
 		else {
@@ -115,8 +110,8 @@ public class HttpResponse {
 
 			if(file.exists()) {
 
-				headers.set(Header.CONTENT_DISPOSITION.getCode(), "attachment; filename=\"" + file.getName() + "\"");
-				body = Files.readAllBytes(file.toPath());
+				request.getHeaders().put(Header.CONTENT_DISPOSITION.getCode(), "attachment; filename=\"" + file.getName() + "\"");
+				request.setBody(Files.readAllBytes(file.toPath()));
 				status = Status.OK;
 			}
 			else {
@@ -134,37 +129,37 @@ public class HttpResponse {
 
 	public void addAttribute(String key, String value) {
 
-		attributes.set(key, value);
+		attributes.put(key, value);
 	}
 
 	public void addHeader(Header key, String value) {
 
-		headers.set(key.getCode(), value);
+		request.getHeaders().put(key.getCode(), value);
 	}
 
 	public void addCookie(Cookie cookie) {
 
-		headers.set(Header.SET_COOKIE.getCode(), cookie.getKey() + "=" + cookie.getValue() + "; Max-Age=" + cookie.getAge() + "; Expires=" + cookie.getAge());
+		request.getHeaders().put(Header.SET_COOKIE.getCode(), cookie.getKey() + "=" + cookie.getValue() + "; Max-Age=" + cookie.getAge() + "; Expires=" + cookie.getAge());
 	}
 
 	public String getUrl() {
 
-		return url;
+		return request.getUrl();
 	}
 
 	public void setUrl(String url) {
 
-		this.url = url;
+		request.setUrl(url);
 	}
 
 	public RequestMethod getRequestMethod() {
 
-		return requestMethod;
+		return request.getRequestMethod();
 	}
 
 	public void setRequestMethod(RequestMethod requestMethod) {
 
-		this.requestMethod = requestMethod;
+		request.setRequestMethod(requestMethod);
 	}
 
 	public Status getStatus() {
@@ -179,22 +174,22 @@ public class HttpResponse {
 
 	public Property<String> getHeaders() {
 
-		return headers;
+		return request.getHeaders();
 	}
 
 	public void setHeaders(Property<String> headers) {
 
-		this.headers = headers;
+		request.setHeaders(headers);
 	}
 
 	public Property<String> getParameters() {
 
-		return parameters;
+		return request.getParameters();
 	}
 
 	public void setParameters(Property<String> parameters) {
 
-		this.parameters = parameters;
+		request.setParameters(parameters);
 	}
 
 	public Property<String> getAttributes() {
@@ -209,11 +204,11 @@ public class HttpResponse {
 
 	public byte[] getBody() {
 
-		return body;
+		return request.getBody();
 	}
 
 	public void setBody(byte[] body) {
 
-		this.body = body;
+		request.setBody(body);
 	}
 }

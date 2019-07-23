@@ -11,6 +11,7 @@ import os.type.Session;
 import os.type.User;
 
 
+@Deprecated
 public class SessionService extends Service {
 
 	private List<Session> sessions;

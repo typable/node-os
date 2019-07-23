@@ -87,7 +87,7 @@ public class Session {
 
 	public void setAttribute(String key, Object value) {
 
-		attributes.set(key, value);
+		attributes.put(key, value);
 	}
 
 	public long getTimeout() {

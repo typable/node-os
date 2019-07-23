@@ -1,8 +1,9 @@
-package os.format;
+package com.prototype.format;
 
 import java.io.File;
 import java.net.URLDecoder;
-import java.nio.file.Files;
+
+import com.prototype.Prototype;
 
 import os.core.Core;
 import util.type.Property;
@@ -12,14 +13,13 @@ public class Formatter {
 
 	public static String parseURL(String code) {
 
-		return URLDecoder.decode(code, Core.DEFAULT_CHARSET);
+		return URLDecoder.decode(code, Prototype.constant().CHARSET);
 	}
 
 	public static String parse(String code, Property<String> attributes) throws Exception {
 
 		code = parseText(code);
 		code = parseTemplate(code, attributes);
-		// TODO code = parseLang(code, getLanguage(), Core.LANGUAGES);
 		code = parseHTML(code, attributes);
 
 		return code;
@@ -33,10 +33,6 @@ public class Formatter {
 
 				code = code.replaceAll("\\@\\{" + key + "\\}", attributes.get(key));
 			}
-			else {
-
-				// code = code.replaceAll("\\@\\{" + key + "\\}", "");
-			}
 		}
 
 		for(String key : Core.PROPERTIES.keys()) {
@@ -45,13 +41,7 @@ public class Formatter {
 
 				code = code.replaceAll("\\@\\{" + key + "\\}", Core.PROPERTIES.get(key));
 			}
-			else {
-
-				// code = code.replaceAll("\\@\\{" + key + "\\}", "");
-			}
 		}
-
-		// code = code.replaceAll("\\@\\{[^{]*\\}", "");
 
 		return code;
 	}
@@ -84,7 +74,7 @@ public class Formatter {
 
 	public static String parseTemplate(String code, Property<String> attributes) throws Exception {
 
-		for(File file : Core.TEMPLATES) {
+		for(File file : Prototype.template()) {
 
 			if(file != null) {
 
@@ -94,10 +84,9 @@ public class Formatter {
 
 				if(textFile.exists()) {
 
-					String text = Files.readString(file.toPath(), Core.DEFAULT_CHARSET);
+					String text = Prototype.loader().read(file.toPath());
 
 					text = parseText(text);
-					// TODO code = parseLang(code, getLanguage(), Core.LANGUAGES);
 					text = parseHTML(text, attributes);
 
 					if(key != null) {

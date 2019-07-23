@@ -1,4 +1,4 @@
-package os.type.constants;
+package com.prototype.http.constants;
 
 /**
  * HTTP defines a set of request methods to indicate the desired action to be

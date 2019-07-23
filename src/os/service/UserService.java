@@ -5,12 +5,12 @@ import java.util.List;
 
 import os.core.Core;
 import os.handler.HttpRequest;
-import os.type.Session;
 import os.type.User;
 import util.file.JSONFile;
 import util.type.JSONObject;
 
 
+@Deprecated
 public class UserService extends Service {
 
 	private List<User> users;
@@ -46,12 +46,12 @@ public class UserService extends Service {
 
 	public User getCurrentUser(HttpRequest request) {
 
-		Session session = Core.sessionService.getCurrentSession(request);
-
-		if(session != null) {
-
-			return (User) session.getAttribute("user");
-		}
+		//		Session session = Core.sessionService.getCurrentSession(request);
+		//
+		//		if(session != null) {
+		//
+		//			return (User) session.getAttribute("user");
+		//		}
 
 		return null;
 	}
