@@ -53,14 +53,6 @@ public class Formatter {
 			}
 		}
 
-		for(String key : Prototype.env().keys()) {
-
-			if(Prototype.env().get(key) != null) {
-
-				code = code.replaceAll("\\@\\{" + key + "\\}", (String) Prototype.env().get(key));
-			}
-		}
-
 		return code;
 	}
 
@@ -102,7 +94,7 @@ public class Formatter {
 
 				if(textFile.exists()) {
 
-					String text = Prototype.loader().read(file.toPath());
+					String text = Prototype.loader().readText(file.toPath());
 
 					text = parseText(text);
 					text = parseHTML(text, attributes);

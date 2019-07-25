@@ -80,6 +80,15 @@ public class HTTPConnection extends Connection {
 
 			emit("HTTP/" + response.getVersion() + " " + response.getStatus().getMessage());
 
+			if(response.getType() != null) {
+
+				response.getHeaders().put(Header.CONTENT_TYPE.getCode(), response.getType().getType());
+			}
+			else {
+
+				response.getHeaders().put(Header.CONTENT_TYPE.getCode(), MediaType.TEXT_PLAIN.getType());
+			}
+
 			if(!response.getHeaders().isEmpty()) {
 
 				for(String key : response.getHeaders().keys()) {
@@ -93,8 +102,6 @@ public class HTTPConnection extends Connection {
 				String body = new String(response.getBody(), CHARSET);
 
 				if(response.getType() == MediaType.TEXT_HTML) {
-
-					Prototype.loader().loadMessages(Prototype.message());
 
 					body = Formatter.parse(body, response.getAttributes());
 				}

@@ -1,37 +1,44 @@
 package com.prototype.logger;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
+import com.prototype.Prototype;
+import com.prototype.loader.Loader;
 
 
 public class Logger {
 
-	private SimpleDateFormat format;
-	private SimpleDateFormat fileFormat;
+	private Loader LOADER;
+
+	private DateTimeFormatter dateFormatter;
+	private DateTimeFormatter timeFormatter;
 	private File file;
 
 	private String DEFAULT_LINE_BREAK;
 
 	public Logger() {
 
-		format = new SimpleDateFormat("HH:mm:ss");
-		fileFormat = new SimpleDateFormat("DD-MM-YYYY");
+		dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+		timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
 		final String osName = System.getProperty("os.name");
 
 		DEFAULT_LINE_BREAK = osName.startsWith("Windows") ? "\r\n" : "\n";
 	}
 
-	public Logger(String path) {
+	public void logFile(Path path) {
 
-		this();
+		LOADER = Prototype.loader();
 
-		if(new File(path).isDirectory()) {
+		if(path.toFile().isDirectory()) {
 
-			file = new File(path + fileFormat.format(new Date()) + ".log");
+			LocalDate date = LocalDate.now();
+
+			file = new File(path + "/" + date.format(dateFormatter) + ".log");
 
 			try {
 
@@ -42,14 +49,16 @@ public class Logger {
 			}
 			catch(Exception e) {
 
-				//
+				e.printStackTrace();
 			}
 		}
 	}
 
 	public void log(Logger.Type type, String message) {
 
-		String value = format.format(new Date()) + " | [" + type.name() + "] " + message;
+		LocalTime time = LocalTime.now();
+
+		String value = time.format(timeFormatter) + " | [" + type.name() + "] " + message;
 
 		System.out.println(value);
 
@@ -57,13 +66,13 @@ public class Logger {
 
 			try {
 
-				String data = Files.readString(file.toPath(), StandardCharsets.ISO_8859_1);
+				String data = LOADER.readText(file.toPath());
 				data += (value + DEFAULT_LINE_BREAK);
-				Files.writeString(file.toPath(), data, StandardCharsets.ISO_8859_1);
+				LOADER.writeText(file.toPath(), data);
 			}
 			catch(Exception e) {
 
-				//
+				e.printStackTrace();
 			}
 		}
 	}

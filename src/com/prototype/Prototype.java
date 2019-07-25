@@ -1,6 +1,7 @@
 package com.prototype;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,9 +11,9 @@ import com.prototype.environment.Environment;
 import com.prototype.http.HTTPServer;
 import com.prototype.loader.Loader;
 import com.prototype.logger.Logger;
+import com.prototype.parse.PropertyParser;
 import com.prototype.type.Property;
-
-import os.type.holder.RequestHolder;
+import com.prototype.type.RequestHolder;
 
 
 public class Prototype {
@@ -45,39 +46,153 @@ public class Prototype {
 		loader = new Loader();
 
 		server = new HTTPServer();
+
+		environment.put("logger", logger);
+		environment.put("loader", loader);
+		environment.put("server", server);
 	}
 
 	public static void main(String[] args) throws Exception {
 
 		Prototype prototype = new Prototype();
 
-		prototype.launch();
+		if(args.length >= 1) {
+
+			if(args[0].equals("-init")) {
+
+				prototype.init(args);
+			}
+			else {
+
+				logger.warn("Invalid command!");
+			}
+
+			//			if(args[0].equals("-update")) {
+			//
+			//				prototype.update();
+			//			}
+		}
+		else {
+
+			prototype.launch();
+		}
 	}
 
-	private void init() {
+	private void init(String[] args) throws Exception {
 
-		//
+		final String PATH = path();
+
+		File SOURCE_PATH = new File(PATH + constants.SOURCE_PATH);
+		SOURCE_PATH.mkdir();
+
+		File RESOURCE_PATH = new File(PATH + constants.RESOURCE_PATH);
+		RESOURCE_PATH.mkdir();
+
+		// TODO ext/ directory
+		//		File EXTENSION_PATH = new File(PATH + constants.EXTENSION_PATH);
+		//		EXTENSION_PATH.mkdir();
+
+		File LIBRARY_PATH = new File(PATH + constants.LIBRARY_PATH);
+		LIBRARY_PATH.mkdir();
+
+		File LOG_PATH = new File(PATH + constants.LOG_PATH);
+		LOG_PATH.mkdir();
+
+		File WEB_PATH = new File(PATH + constants.WEB_PATH);
+		WEB_PATH.mkdir();
+
+		File CONFIG_FILE = new File(PATH + "/" + constants.CONFIG_FILE);
+		CONFIG_FILE.createNewFile();
+
+		PropertyParser propertyParser = new PropertyParser();
+
+		Property<String> props = new Property<>();
+		props.put(PORT, "80");
+
+		loader.writeText(CONFIG_FILE.toPath(), propertyParser.compose(props));
+
+		File LAUNCH_BAT = new File(PATH + "/" + constants.LAUNCH_BAT);
+		LAUNCH_BAT.createNewFile();
+
+		loader.writeText(LAUNCH_BAT.toPath(), "@echo off" + constants.DOS_LINE_BREAK + "java -cp \"NodeOS.jar;bin/\" com.prototype.Prototype");
+
+		File LAUNCH_BASH = new File(PATH + "/" + constants.LAUNCH_BASH);
+		LAUNCH_BASH.createNewFile();
+
+		loader.writeText(LAUNCH_BASH.toPath(), "java -cp \"NodeOS.jar:bin/\" com.prototype.Prototype");
+
+		if(args.length == 2) {
+
+			if(args[1].startsWith("eclipse=") && args[1].split("=").length == 2) {
+
+				String name = args[1].split("=")[1];
+
+				File PROJECT_FILE = new File(PATH + "/" + constants.PROJECT_FILE);
+				PROJECT_FILE.createNewFile();
+
+				String data = constants.PROJECT_TEMPLATE.replaceAll("\\@\\{name\\}", name);
+
+				loader.writeText(PROJECT_FILE.toPath(), data);
+
+				File CLASSPATH_FILE = new File(PATH + "/" + constants.CLASSPATH_FILE);
+				CLASSPATH_FILE.createNewFile();
+
+				loader.writeText(CLASSPATH_FILE.toPath(), constants.CLASSPATH_TEMPLATE);
+
+				logger.info("Project successfully initialized");
+			}
+			else {
+
+				logger.warn("Invalid command!");
+			}
+		}
+		else {
+
+			logger.info("Project successfully initialized");
+		}
 	}
 
 	private void launch() throws Exception {
 
-		loader.loadConfigurations(environment);
-		loader.loadRequests(requests);
-		loader.loadTemplates(templates);
-		loader.loadMessages(messages);
+		logger.logFile(Paths.get(path() + constants.LOG_PATH));
 
-		String port = (String) environment.get(PORT);
+		File CONFIG_FILE = new File(path() + "/" + constants.CONFIG_FILE);
 
-		if(Condition.notNull(port, PORT)) {
+		if(CONFIG_FILE.exists()) {
 
-			server.start(Integer.valueOf(port));
+			String CLASSPATH = System.getProperty("java.class.path");
+
+			if(!CLASSPATH.contains("bin/")) {
+
+				logger.warn("Use the launch.bat or launch.sh file to start the server!");
+
+				System.exit(0);
+			}
+
+			loader.loadConfigurations(environment);
+			loader.loadRequests(requests);
+			loader.loadTemplates(templates);
+			loader.loadMessages(messages);
+
+			String port = (String) environment.get(PORT);
+
+			if(Condition.notNull(port, PORT)) {
+
+				server.start(Integer.valueOf(port));
+			}
+		}
+		else {
+
+			logger.warn("Project must be initialized!");
+
+			System.exit(0);
 		}
 	}
 
-	private void updateDomain() {
-
-		//
-	}
+	//	private void update() {
+	//
+	//		// TODO update()
+	//	}
 
 	public static String path() {
 

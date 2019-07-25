@@ -1,21 +1,26 @@
 package com.prototype.http;
 
+import java.io.File;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import com.prototype.Prototype;
+import com.prototype.http.constants.MediaType;
 import com.prototype.http.constants.RequestMethod;
-
-import os.type.holder.RequestHolder;
+import com.prototype.logger.Logger;
+import com.prototype.logger.Logger.Messages;
+import com.prototype.type.RequestHolder;
 
 
 public class HTTPServer {
+
+	private Logger LOGGER;
 
 	private ServerSocket serverSocket;
 
 	public HTTPServer() {
 
-		//
+		LOGGER = Prototype.logger();
 	}
 
 	public void start(int port) {
@@ -23,6 +28,8 @@ public class HTTPServer {
 		try {
 
 			serverSocket = new ServerSocket(port);
+
+			LOGGER.info(Messages.SERVER_STARTED.getMessage(String.valueOf(port)));
 
 			while(!serverSocket.isClosed()) {
 
@@ -59,15 +66,30 @@ public class HTTPServer {
 
 									requestHolder.getCallback().call(request, response);
 								}
+								else if(url.startsWith("/res/")) {
+
+									File file = new File(Prototype.path() + url);
+
+									if(file.exists() && file.isFile()) {
+
+										response.viewPage(file.toPath(), MediaType.getByFileType(file.getName()));
+									}
+									else {
+
+										response.notFound();
+									}
+								}
 								else {
 
-									//
+									response.notFound();
 								}
 
 								connection.commit(response);
 							}
 						}
 						catch(Exception e) {
+
+							LOGGER.error(Messages.FATAL_ERROR.getMessage());
 
 							e.printStackTrace();
 						}
@@ -77,7 +99,18 @@ public class HTTPServer {
 		}
 		catch(Exception e) {
 
+			LOGGER.error(Messages.FATAL_ERROR.getMessage());
+
 			e.printStackTrace();
 		}
+	}
+
+	public void stop() throws Exception {
+
+		serverSocket.close();
+
+		LOGGER.info(Messages.SERVER_STOPPED.getMessage());
+
+		System.exit(0);
 	}
 }

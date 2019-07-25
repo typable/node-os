@@ -1,4 +1,4 @@
-package os.type;
+package com.prototype.type;
 
 public class Email {
 

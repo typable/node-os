@@ -17,7 +17,8 @@ public class HTTPRequest {
 
 	public HTTPRequest() {
 
-		//
+		headers = new Property<>();
+		parameters = new Property<>();
 	}
 
 	public String getUrl() {
