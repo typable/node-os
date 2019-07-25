@@ -89,9 +89,7 @@ public class HTTPServer {
 						}
 						catch(Exception e) {
 
-							LOGGER.error(Messages.FATAL_ERROR.getMessage());
-
-							e.printStackTrace();
+							LOGGER.error(Messages.FATAL_ERROR.getMessage(), e);
 						}
 					}
 				});
@@ -99,9 +97,7 @@ public class HTTPServer {
 		}
 		catch(Exception e) {
 
-			LOGGER.error(Messages.FATAL_ERROR.getMessage());
-
-			e.printStackTrace();
+			LOGGER.error(Messages.FATAL_ERROR.getMessage(), e);
 		}
 	}
 

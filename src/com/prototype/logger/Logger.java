@@ -94,15 +94,14 @@ public class Logger {
 
 	public void error(String message, Exception ex) {
 
-		if(ex.getMessage() != null) {
+		String errorMessage = ex.getCause().getClass().getName() + ": " + ex.getCause().getMessage() + DEFAULT_LINE_BREAK;
 
-			log(Type.ERROR, message + ": " + ex.getMessage());
-		}
-		else {
+		for(StackTraceElement trace : ex.getCause().getStackTrace()) {
 
-			log(Type.ERROR, message + ":");
-			ex.printStackTrace();
+			errorMessage += "     at " + trace.getClassName() + "." + trace.getMethodName() + "(" + trace.getFileName() + ":" + trace.getLineNumber() + ")" + DEFAULT_LINE_BREAK;
 		}
+
+		log(Type.ERROR, message + ": " + errorMessage);
 	}
 
 	public void debug(String message) {

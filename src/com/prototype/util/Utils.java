@@ -32,4 +32,16 @@ public class Utils {
 
 		return Base64.getEncoder().encodeToString(value.getBytes(StandardCharsets.ISO_8859_1));
 	}
+
+	public static String whitespace(int length) {
+
+		String code = "";
+
+		for(int i = 0; i < length; i++) {
+
+			code += " ";
+		}
+
+		return code;
+	}
 }

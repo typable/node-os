@@ -11,6 +11,7 @@ import com.prototype.environment.Environment;
 import com.prototype.http.HTTPServer;
 import com.prototype.loader.Loader;
 import com.prototype.logger.Logger;
+import com.prototype.logger.Logger.Messages;
 import com.prototype.parse.PropertyParser;
 import com.prototype.type.Property;
 import com.prototype.type.RequestHolder;
@@ -202,7 +203,7 @@ public class Prototype {
 		}
 		catch(Exception e) {
 
-			e.printStackTrace();
+			logger.error(Messages.FATAL_ERROR.getMessage(), e);
 
 			return null;
 		}

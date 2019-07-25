@@ -37,6 +37,7 @@ public class Formatter {
 	public static String parse(String code, Property<String> attributes) throws Exception {
 
 		code = parseText(code);
+		code = parseEnv(code);
 		code = parseTemplate(code, attributes);
 		code = parseHTML(code, attributes);
 
@@ -63,6 +64,24 @@ public class Formatter {
 			if(key.startsWith(lang)) {
 
 				code = code.replaceAll("\\@\\{lang:" + key.substring(3, key.length()) + "\\}", languages.get(key));
+			}
+		}
+
+		return code;
+	}
+
+	public static String parseEnv(String code) {
+
+		if(Prototype.env() != null) {
+
+			for(String key : Prototype.env().keys()) {
+
+				Object value = Prototype.env().get(key);
+
+				if(value instanceof String) {
+
+					code = code.replaceAll("\\@\\{env:" + key + "\\}", (String) value);
+				}
 			}
 		}
 
@@ -97,6 +116,7 @@ public class Formatter {
 					String text = Prototype.loader().readText(file.toPath());
 
 					text = parseText(text);
+					text = parseEnv(text);
 					text = parseHTML(text, attributes);
 
 					if(key != null) {
