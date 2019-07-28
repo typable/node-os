@@ -3,6 +3,7 @@ package com.prototype.util;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+import com.prototype.type.Parameter;
 import com.prototype.type.Property;
 
 
@@ -25,6 +26,19 @@ public class Utils {
 			String[] args = code.split(delimiter, -1);
 
 			property.put(args[0], args[1]);
+		}
+	}
+
+	public static void addParameter(Property<Parameter> params, String delimiter, String code) {
+
+		if(code.contains(delimiter)) {
+
+			String[] args = code.split(delimiter, -1);
+
+			Parameter param = new Parameter(args[0]);
+			param.setValue(args[1]);
+
+			params.put(args[0], param);
 		}
 	}
 

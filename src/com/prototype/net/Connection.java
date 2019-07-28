@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
@@ -19,6 +20,10 @@ import javax.net.ssl.SSLSocketFactory;
  */
 public class Connection {
 
+	public final String CRLF = "\r\n";
+	public final String LF = "\n";
+	public final Charset CHARSET = StandardCharsets.ISO_8859_1;
+
 	private Socket socket;
 	private InputStream in;
 	private BufferedReader reader;
@@ -28,8 +33,6 @@ public class Connection {
 	private int port;
 	private boolean isSSL;
 	private byte[] LINE_BREAK;
-	private byte[] LINE_BREAK_UNIX = { (byte) '\r', (byte) '\n' };
-	private byte[] LINE_BREAK_DOS = { (byte) '\n' };
 
 	/**
 	 * Creates a new Connection
@@ -66,7 +69,7 @@ public class Connection {
 		this.port = port;
 		this.isSSL = isSSL;
 
-		LINE_BREAK = isUNIX() ? LINE_BREAK_UNIX : LINE_BREAK_DOS;
+		LINE_BREAK = (isUNIX() ? LF : CRLF).getBytes(CHARSET);
 	}
 
 	/**
@@ -92,7 +95,7 @@ public class Connection {
 			}
 
 			in = socket.getInputStream();
-			reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.ISO_8859_1));
+			reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), CHARSET));
 			out = socket.getOutputStream();
 
 			new Thread(runnable).start();
@@ -118,7 +121,7 @@ public class Connection {
 	 **/
 	public void emit(String data) throws IOException {
 
-		emit(data.getBytes(StandardCharsets.ISO_8859_1));
+		emit(data.getBytes(CHARSET));
 	}
 
 	/**
@@ -129,7 +132,7 @@ public class Connection {
 	 **/
 	public void emit(String data, boolean base64) throws IOException {
 
-		emit(data.getBytes(StandardCharsets.ISO_8859_1), base64);
+		emit(data.getBytes(CHARSET), base64);
 	}
 
 	/**
@@ -166,25 +169,13 @@ public class Connection {
 	/**
 	 * Reads incoming data as String by a specific length
 	 */
-	public byte[] readLength(int length) throws IOException {
+	public byte[] read(int length) throws IOException {
 
 		char[] buffer = new char[length];
 
 		reader.read(buffer, 0, length);
 
-		return String.valueOf(buffer).getBytes();
-	}
-
-	/**
-	 * Reads incoming data
-	 */
-	public byte[] read(int length) throws IOException {
-
-		byte[] buffer = new byte[length];
-
-		in.read(buffer, 0, length);
-
-		return buffer;
+		return String.valueOf(buffer).getBytes(CHARSET);
 	}
 
 	/**

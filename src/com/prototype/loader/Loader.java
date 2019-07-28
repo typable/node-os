@@ -3,8 +3,6 @@ package com.prototype.loader;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,7 +24,7 @@ import com.prototype.type.Request;
 import com.prototype.type.RequestHolder;
 
 
-public class Loader {
+public class Loader extends ClassLoader {
 
 	private String PATH;
 	private Charset CHARSET;
@@ -242,27 +240,16 @@ public class Loader {
 
 	public Class<?> loadClass(String name, Path path) throws Exception {
 
-		URLClassLoader loader = new URLClassLoader(new URL[] { path.toUri().toURL() });
+		byte[] data = read(path);
 
-		Class<?> loadedClass = loader.loadClass(name);
-
-		loader.close();
-
-		if(loadedClass != null) {
-
-			return loadedClass;
-		}
-
-		return null;
+		return defineClass(name, data, 0, data.length);
 	}
 
 	public <T> T loadClass(String name, Path path, Class<T> type) throws Exception {
 
-		URLClassLoader loader = new URLClassLoader(new URL[] { path.toUri().toURL() });
+		byte[] data = read(path);
 
-		Class<?> loadedClass = loader.loadClass(name);
-
-		loader.close();
+		Class<?> loadedClass = defineClass(name, data, 0, data.length);
 
 		if(loadedClass != null) {
 

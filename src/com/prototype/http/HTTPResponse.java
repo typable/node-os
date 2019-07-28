@@ -2,6 +2,7 @@ package com.prototype.http;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.prototype.Prototype;
 import com.prototype.http.constants.Header;
@@ -15,6 +16,7 @@ public class HTTPResponse {
 	private HTTPRequest request;
 	private Status status;
 	private Property<String> attributes;
+	private byte[] body;
 
 	public HTTPResponse(HTTPRequest request) {
 
@@ -55,14 +57,21 @@ public class HTTPResponse {
 	public void redirect(String url) {
 
 		request.getHeaders().put(Header.LOCATION.getCode(), url);
-		status = Status.TEMPORARY_REDIRECT;
+		status = Status.FOUND;
 	}
 
 	public void view(String body, MediaType type) {
 
-		request.setBody(body.getBytes(Prototype.constant().CHARSET));
+		this.body = body.getBytes(Prototype.constant().CHARSET);
 		request.setType(type);
 		status = Status.OK;
+	}
+
+	public void viewNotFoundPage() {
+
+		Path path = Paths.get(Prototype.path() + Prototype.constant().WEB_PATH + "/404.html");
+
+		viewPage(path, MediaType.TEXT_HTML);
 	}
 
 	public void viewPage(Path path, MediaType type) {
@@ -75,7 +84,7 @@ public class HTTPResponse {
 
 				byte[] data = Prototype.loader().read(path);
 
-				request.setBody(data);
+				body = data;
 				request.setType(type);
 				status = Status.OK;
 			}
@@ -116,7 +125,9 @@ public class HTTPResponse {
 	public void download(byte[] data, String name) {
 
 		request.getHeaders().put(Header.CONTENT_DISPOSITION.getCode(), "attachment; filename=\"" + name + "\"");
-		request.setBody(data);
+		request.getHeaders().put(Header.CONTENT_LENGTH.getCode(), String.valueOf(data.length));
+		request.setType(MediaType.getByFileType(name));
+		body = data;
 		status = Status.OK;
 	}
 
@@ -197,11 +208,11 @@ public class HTTPResponse {
 
 	public byte[] getBody() {
 
-		return request.getBody();
+		return body;
 	}
 
 	public void setBody(byte[] body) {
 
-		request.setBody(body);
+		this.body = body;
 	}
 }

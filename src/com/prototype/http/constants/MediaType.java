@@ -88,6 +88,14 @@ public enum MediaType {
 	APPLICATION_OCTET_STREAM("application/octet-stream", null),
 
 	/**
+	 * Form URL-Encoded<br/>
+	 * <br/>
+	 * MIME Type: application/x-www-form-urlencoded<br/>
+	 * File Types: null
+	 */
+	APPLICATION_FORM_URLENCODED("application/x-www-form-urlencoded", null),
+
+	/**
 	 * Graphics Interchange Format<br/>
 	 * <br/>
 	 * MIME Type: image/gif<br/>
@@ -157,7 +165,15 @@ public enum MediaType {
 	 * MIME Type: font/ttf<br/>
 	 * File Types: ttf
 	 */
-	FONT_TTF("font/ttf", new String[] { "ttf" });
+	FONT_TTF("font/ttf", new String[] { "ttf" }),
+
+	/**
+	 * Form Data<br/>
+	 * <br/>
+	 * MIME Type: multipart/form-data<br/>
+	 * File Types: null
+	 */
+	MULTIPART_FORM_DATA("multipart/form-data", null);
 
 	private String type;
 	private String[] fileTypes;

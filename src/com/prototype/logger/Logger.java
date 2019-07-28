@@ -94,9 +94,11 @@ public class Logger {
 
 	public void error(String message, Exception ex) {
 
-		String errorMessage = ex.getCause().getClass().getName() + ": " + ex.getCause().getMessage() + DEFAULT_LINE_BREAK;
+		Throwable throwable = ex.getCause() != null ? ex.getCause() : ex;
 
-		for(StackTraceElement trace : ex.getCause().getStackTrace()) {
+		String errorMessage = throwable.getClass().getName() + ": " + throwable.getMessage() + DEFAULT_LINE_BREAK;
+
+		for(StackTraceElement trace : throwable.getStackTrace()) {
 
 			errorMessage += "     at " + trace.getClassName() + "." + trace.getMethodName() + "(" + trace.getFileName() + ":" + trace.getLineNumber() + ")" + DEFAULT_LINE_BREAK;
 		}

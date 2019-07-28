@@ -18,7 +18,6 @@ public class Constants {
 	public final String CLASS_PATH = "/bin";
 	public final String SOURCE_PATH = "/src";
 	public final String WEB_PATH = "/web";
-	public final String EXTENSION_PATH = "/ext";
 	public final String RESOURCE_PATH = "/res";
 	public final String LIBRARY_PATH = "/lib";
 	public final String LOG_PATH = "/log";

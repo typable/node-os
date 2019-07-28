@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URLDecoder;
 
 import com.prototype.Prototype;
+import com.prototype.type.Parameter;
 import com.prototype.type.Property;
 import com.prototype.util.Utils;
 
@@ -15,23 +16,23 @@ public class Formatter {
 		return URLDecoder.decode(code, Prototype.constant().CHARSET);
 	}
 
-	public static Property<String> parseQuery(String code) {
+	public static Property<Parameter> parseQuery(String code) {
 
-		Property<String> props = new Property<>();
+		Property<Parameter> params = new Property<>();
 
 		if(code.contains("&")) {
 
 			for(String param : code.split("&")) {
 
-				Utils.addAttribute(props, "=", param);
+				Utils.addParameter(params, "=", param);
 			}
 		}
 		else {
 
-			Utils.addAttribute(props, "=", code);
+			Utils.addParameter(params, "=", code);
 		}
 
-		return props;
+		return params;
 	}
 
 	public static String parse(String code, Property<String> attributes) throws Exception {

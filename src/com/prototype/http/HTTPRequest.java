@@ -2,6 +2,7 @@ package com.prototype.http;
 
 import com.prototype.http.constants.MediaType;
 import com.prototype.http.constants.RequestMethod;
+import com.prototype.type.Parameter;
 import com.prototype.type.Property;
 
 
@@ -11,14 +12,13 @@ public class HTTPRequest {
 	private RequestMethod method;
 	private Double version;
 	private Property<String> headers;
-	private Property<String> parameters;
+	private Property<Parameter> parameters;
 	private MediaType type;
 	private byte[] body;
 
 	public HTTPRequest() {
 
 		headers = new Property<>();
-		parameters = new Property<>();
 	}
 
 	public String getUrl() {
@@ -61,12 +61,12 @@ public class HTTPRequest {
 		this.headers = headers;
 	}
 
-	public Property<String> getParameters() {
+	public Property<Parameter> getParameters() {
 
 		return parameters;
 	}
 
-	public void setParameters(Property<String> parameters) {
+	public void setParameters(Property<Parameter> parameters) {
 
 		this.parameters = parameters;
 	}

@@ -89,10 +89,6 @@ public class Prototype {
 		File RESOURCE_PATH = new File(PATH + constants.RESOURCE_PATH);
 		RESOURCE_PATH.mkdir();
 
-		// TODO ext/ directory
-		//		File EXTENSION_PATH = new File(PATH + constants.EXTENSION_PATH);
-		//		EXTENSION_PATH.mkdir();
-
 		File LIBRARY_PATH = new File(PATH + constants.LIBRARY_PATH);
 		LIBRARY_PATH.mkdir();
 
@@ -115,12 +111,12 @@ public class Prototype {
 		File LAUNCH_BAT = new File(PATH + "/" + constants.LAUNCH_BAT);
 		LAUNCH_BAT.createNewFile();
 
-		loader.writeText(LAUNCH_BAT.toPath(), "@echo off" + constants.DOS_LINE_BREAK + "java -cp \"NodeOS.jar;bin/\" com.prototype.Prototype");
+		loader.writeText(LAUNCH_BAT.toPath(), "@echo off" + constants.DOS_LINE_BREAK + "java -jar NodeOS.jar");
 
 		File LAUNCH_BASH = new File(PATH + "/" + constants.LAUNCH_BASH);
 		LAUNCH_BASH.createNewFile();
 
-		loader.writeText(LAUNCH_BASH.toPath(), "java -cp \"NodeOS.jar:bin/\" com.prototype.Prototype");
+		loader.writeText(LAUNCH_BASH.toPath(), "java -jar NodeOS.jar");
 
 		if(args.length == 2) {
 
@@ -160,15 +156,6 @@ public class Prototype {
 		File CONFIG_FILE = new File(path() + "/" + constants.CONFIG_FILE);
 
 		if(CONFIG_FILE.exists()) {
-
-			String CLASSPATH = System.getProperty("java.class.path");
-
-			if(!CLASSPATH.contains("bin/")) {
-
-				logger.warn("Use the launch.bat or launch.sh file to start the server!");
-
-				System.exit(0);
-			}
 
 			loader.loadConfigurations(environment);
 			loader.loadRequests(requests);

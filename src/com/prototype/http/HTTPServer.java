@@ -81,7 +81,7 @@ public class HTTPServer {
 								}
 								else {
 
-									response.notFound();
+									response.viewNotFoundPage();
 								}
 
 								connection.commit(response);
