@@ -15,4 +15,6 @@ public @interface Request {
 	String url();
 
 	RequestMethod method() default RequestMethod.GET;
+
+	boolean ignore() default false;
 }

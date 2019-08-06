@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URLDecoder;
 
 import com.prototype.Prototype;
+import com.prototype.constants.Constants;
 import com.prototype.type.Parameter;
 import com.prototype.type.Property;
 import com.prototype.util.Utils;
@@ -13,7 +14,7 @@ public class Formatter {
 
 	public static String parseURL(String code) {
 
-		return URLDecoder.decode(code, Prototype.constant().CHARSET);
+		return URLDecoder.decode(code, Constants.CHARSET);
 	}
 
 	public static Property<Parameter> parseQuery(String code) {

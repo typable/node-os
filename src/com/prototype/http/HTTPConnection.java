@@ -5,13 +5,16 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.prototype.Prototype;
+import com.prototype.constants.Constants;
 import com.prototype.format.Formatter;
 import com.prototype.http.constants.Header;
 import com.prototype.http.constants.MediaType;
 import com.prototype.http.constants.RequestMethod;
 import com.prototype.http.constants.Status;
+import com.prototype.http.error.HTTPError;
+import com.prototype.http.error.HTTPException;
 import com.prototype.net.Connection;
+import com.prototype.type.Cookie;
 import com.prototype.type.FormData;
 import com.prototype.type.Parameter;
 import com.prototype.type.Property;
@@ -26,10 +29,10 @@ public class HTTPConnection extends Connection {
 
 		super(socket);
 
-		CHARSET = Prototype.constant().CHARSET;
+		CHARSET = Constants.CHARSET;
 	}
 
-	public HTTPRequest request() throws Exception {
+	public HTTPRequest request() throws HTTPException, Exception {
 
 		HTTPRequest request = new HTTPRequest();
 
@@ -47,10 +50,30 @@ public class HTTPConnection extends Connection {
 
 					request.setParameters(Formatter.parseQuery(query[1]));
 				}
+				else {
 
-				request.setUrl(query[0]);
-				request.setMethod(RequestMethod.valueOf(args[0]));
-				request.setVersion(Double.valueOf(args[2].split("/")[1]));
+					request.setParameters(new Property<>());
+				}
+
+				String url = query[0];
+				RequestMethod method = RequestMethod.valueOf(args[0]);
+				Double version = Double.valueOf(args[2].split("/")[1]);
+
+				if(version != 1.1) {
+
+					throw new HTTPException(HTTPError.UNSUPPORTED_HTTP_VERSION);
+				}
+
+				if(!(method == RequestMethod.GET || method == RequestMethod.POST)) {
+
+					throw new HTTPException(HTTPError.UNSUPPORTED_REQUEST_METHOD);
+				}
+
+				// TODO URL Validator
+
+				request.setUrl(url);
+				request.setMethod(method);
+				request.setVersion(version);
 			}
 			else {
 
@@ -67,7 +90,7 @@ public class HTTPConnection extends Connection {
 
 			String[] typeArgs = contentType.split("; ");
 
-			type = MediaType.getByType(typeArgs[0]);
+			type = MediaType.ofType(typeArgs[0]);
 
 			if(contentLength != null) {
 
@@ -105,7 +128,7 @@ public class HTTPConnection extends Connection {
 
 							String formDataData = sect[1];
 
-							formData = new FormData(MediaType.getByType(formDataContentType), formDataDisposition);
+							formData = new FormData(MediaType.ofType(formDataContentType), formDataDisposition);
 
 							if(i < args.length - 1) {
 
@@ -179,6 +202,35 @@ public class HTTPConnection extends Connection {
 			}
 		}
 
+		if(request.getHeaders().hasKey(Header.COOKIE.getCode())) {
+
+			String cookies = request.getHeader(Header.COOKIE);
+
+			if(cookies.contains("; ")) {
+
+				for(String arg : cookies.split("; ")) {
+
+					String[] cookie_args = arg.split("=");
+
+					if(cookie_args.length == 2) {
+
+						Cookie cookie = new Cookie(cookie_args[0], cookie_args[1]);
+						request.getCookies().put(cookie_args[0], cookie);
+					}
+				}
+			}
+			else {
+
+				String[] cookie_args = cookies.split("=");
+
+				if(cookie_args.length == 2) {
+
+					Cookie cookie = new Cookie(cookie_args[0], cookie_args[1]);
+					request.getCookies().put(cookie_args[0], cookie);
+				}
+			}
+		}
+
 		return request;
 	}
 
@@ -218,6 +270,20 @@ public class HTTPConnection extends Connection {
 
 					response.getHeaders().put(Header.CONTENT_LENGTH.getCode(), String.valueOf(body.length));
 				}
+			}
+
+			if(!response.getRequest().getCookies().isEmpty()) {
+
+				String cookies = "";
+
+				for(String key : response.getRequest().getCookies().keys()) {
+
+					Cookie cookie = response.getRequest().getCookies().get(key);
+
+					cookies += cookie.getKey() + "=" + cookie.getValue() + "; Expires=" + cookie.getAge() + "; Max-Age=" + cookie.getAge();
+				}
+
+				emit(Header.SET_COOKIE.getCode() + ": " + cookies);
 			}
 
 			if(!response.getHeaders().isEmpty()) {

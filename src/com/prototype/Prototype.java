@@ -1,6 +1,7 @@
 package com.prototype;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,6 @@ import com.prototype.environment.Environment;
 import com.prototype.http.HTTPServer;
 import com.prototype.loader.Loader;
 import com.prototype.logger.Logger;
-import com.prototype.logger.Logger.Messages;
 import com.prototype.parse.PropertyParser;
 import com.prototype.type.Property;
 import com.prototype.type.RequestHolder;
@@ -19,9 +19,12 @@ import com.prototype.type.RequestHolder;
 
 public class Prototype {
 
+	public static final String VERSION = "1.3.0";
+
 	private final String PORT = "port";
 
-	private static Constants constants;
+	public static String PATH;
+
 	private static Environment environment;
 	private static Property<String> messages;
 
@@ -35,7 +38,6 @@ public class Prototype {
 
 	public Prototype() {
 
-		constants = new Constants();
 		environment = new Environment();
 
 		messages = new Property<>();
@@ -57,21 +59,26 @@ public class Prototype {
 
 		Prototype prototype = new Prototype();
 
+		Prototype.PATH = new File(".").getCanonicalPath();
+
 		if(args.length >= 1) {
 
 			if(args[0].equals("-init")) {
 
 				prototype.init(args);
 			}
+			else if(args[0].equals("-update")) {
+
+				prototype.update();
+			}
+			else if(args[0].equals("-reload")) {
+
+				prototype.reload();
+			}
 			else {
 
 				logger.warn("Invalid command!");
 			}
-
-			//			if(args[0].equals("-update")) {
-			//
-			//				prototype.update();
-			//			}
 		}
 		else {
 
@@ -81,24 +88,24 @@ public class Prototype {
 
 	private void init(String[] args) throws Exception {
 
-		final String PATH = path();
+		final String PATH = Prototype.PATH;
 
-		File SOURCE_PATH = new File(PATH + constants.SOURCE_PATH);
+		File SOURCE_PATH = new File(PATH + Constants.PATHS.SOURCE_PATH);
 		SOURCE_PATH.mkdir();
 
-		File RESOURCE_PATH = new File(PATH + constants.RESOURCE_PATH);
+		File RESOURCE_PATH = new File(PATH + Constants.PATHS.RESOURCE_PATH);
 		RESOURCE_PATH.mkdir();
 
-		File LIBRARY_PATH = new File(PATH + constants.LIBRARY_PATH);
+		File LIBRARY_PATH = new File(PATH + Constants.PATHS.LIBRARY_PATH);
 		LIBRARY_PATH.mkdir();
 
-		File LOG_PATH = new File(PATH + constants.LOG_PATH);
+		File LOG_PATH = new File(PATH + Constants.PATHS.LOG_PATH);
 		LOG_PATH.mkdir();
 
-		File WEB_PATH = new File(PATH + constants.WEB_PATH);
+		File WEB_PATH = new File(PATH + Constants.PATHS.WEB_PATH);
 		WEB_PATH.mkdir();
 
-		File CONFIG_FILE = new File(PATH + "/" + constants.CONFIG_FILE);
+		File CONFIG_FILE = new File(PATH + "/" + Constants.FILES.CONFIG_FILE);
 		CONFIG_FILE.createNewFile();
 
 		PropertyParser propertyParser = new PropertyParser();
@@ -108,12 +115,12 @@ public class Prototype {
 
 		loader.writeText(CONFIG_FILE.toPath(), propertyParser.compose(props));
 
-		File LAUNCH_BAT = new File(PATH + "/" + constants.LAUNCH_BAT);
+		File LAUNCH_BAT = new File(PATH + "/" + Constants.FILES.LAUNCH_BAT);
 		LAUNCH_BAT.createNewFile();
 
-		loader.writeText(LAUNCH_BAT.toPath(), "@echo off" + constants.DOS_LINE_BREAK + "java -jar NodeOS.jar");
+		loader.writeText(LAUNCH_BAT.toPath(), "@echo off" + Constants.DOS_LINE_BREAK + "java -jar NodeOS.jar");
 
-		File LAUNCH_BASH = new File(PATH + "/" + constants.LAUNCH_BASH);
+		File LAUNCH_BASH = new File(PATH + "/" + Constants.FILES.LAUNCH_BASH);
 		LAUNCH_BASH.createNewFile();
 
 		loader.writeText(LAUNCH_BASH.toPath(), "java -jar NodeOS.jar");
@@ -124,17 +131,17 @@ public class Prototype {
 
 				String name = args[1].split("=")[1];
 
-				File PROJECT_FILE = new File(PATH + "/" + constants.PROJECT_FILE);
+				File PROJECT_FILE = new File(PATH + "/" + Constants.FILES.PROJECT_FILE);
 				PROJECT_FILE.createNewFile();
 
-				String data = constants.PROJECT_TEMPLATE.replaceAll("\\@\\{name\\}", name);
+				String data = Constants.TEMPLATES.PROJECT_TEMPLATE.replaceAll("\\@\\{name\\}", name);
 
 				loader.writeText(PROJECT_FILE.toPath(), data);
 
-				File CLASSPATH_FILE = new File(PATH + "/" + constants.CLASSPATH_FILE);
+				File CLASSPATH_FILE = new File(PATH + "/" + Constants.FILES.CLASSPATH_FILE);
 				CLASSPATH_FILE.createNewFile();
 
-				loader.writeText(CLASSPATH_FILE.toPath(), constants.CLASSPATH_TEMPLATE);
+				loader.writeText(CLASSPATH_FILE.toPath(), Constants.TEMPLATES.CLASSPATH_TEMPLATE);
 
 				logger.info("Project successfully initialized");
 			}
@@ -151,9 +158,11 @@ public class Prototype {
 
 	private void launch() throws Exception {
 
-		logger.logFile(Paths.get(path() + constants.LOG_PATH));
+		update();
 
-		File CONFIG_FILE = new File(path() + "/" + constants.CONFIG_FILE);
+		logger.logFile(Paths.get(Prototype.PATH + Constants.PATHS.LOG_PATH));
+
+		File CONFIG_FILE = new File(Prototype.PATH + "/" + Constants.FILES.CONFIG_FILE);
 
 		if(CONFIG_FILE.exists()) {
 
@@ -177,28 +186,31 @@ public class Prototype {
 		}
 	}
 
-	//	private void update() {
-	//
-	//		// TODO update()
-	//	}
+	private void reload() throws Exception {
 
-	public static String path() {
+		File CONFIG_FILE = new File(Prototype.PATH + "/" + Constants.FILES.CONFIG_FILE);
 
-		try {
+		if(CONFIG_FILE.exists()) {
 
-			return new File(".").getCanonicalPath();
+			loader.loadConfigurations(environment);
+			loader.loadRequests(requests);
+			loader.loadTemplates(templates);
+			loader.loadMessages(messages);
 		}
-		catch(Exception e) {
+		else {
 
-			logger.error(Messages.FATAL_ERROR.getMessage(), e);
-
-			return null;
+			logger.warn("Project must be initialized!");
 		}
 	}
 
-	public static Constants constant() {
+	private void update() {
 
-		return constants;
+		// TODO update()
+	}
+
+	public static Path path(String ref, String path) {
+
+		return Paths.get(Prototype.PATH + ref + path);
 	}
 
 	public static Environment env() {

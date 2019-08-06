@@ -7,6 +7,9 @@ import java.net.Socket;
 import com.prototype.Prototype;
 import com.prototype.http.constants.MediaType;
 import com.prototype.http.constants.RequestMethod;
+import com.prototype.http.constants.Status;
+import com.prototype.http.error.HTTPError;
+import com.prototype.http.error.HTTPException;
 import com.prototype.logger.Logger;
 import com.prototype.logger.Logger.Messages;
 import com.prototype.type.RequestHolder;
@@ -43,45 +46,69 @@ public class HTTPServer {
 
 						try {
 
-							HTTPRequest request = connection.request();
-							HTTPResponse response = new HTTPResponse(request);
+							HTTPRequest request = null;
+							HTTPResponse response = null;
 
-							String url = request.getUrl();
-							RequestMethod method = request.getMethod();
-							RequestHolder requestHolder = null;
+							try {
 
-							if(url != null) {
+								request = connection.request();
+								response = new HTTPResponse(request);
 
-								for(RequestHolder holder : Prototype.request()) {
+								String url = request.getUrl();
+								RequestMethod method = request.getMethod();
+								RequestHolder requestHolder = null;
 
-									if(url.equals(holder.getUrl()) && method == holder.getMethod()) {
+								if(url != null) {
 
-										requestHolder = holder;
+									for(RequestHolder holder : Prototype.request()) {
 
-										break;
+										if(url.equals(holder.getUrl()) && method == holder.getMethod()) {
+
+											requestHolder = holder;
+
+											break;
+										}
 									}
-								}
 
-								if(requestHolder != null) {
+									if(requestHolder != null) {
 
-									requestHolder.getCallback().call(request, response);
-								}
-								else if(url.startsWith("/res/")) {
+										requestHolder.getCallback().call(request, response);
+									}
+									else if(url.startsWith("/res/")) {
 
-									File file = new File(Prototype.path() + url);
+										File file = new File(Prototype.PATH + url);
 
-									if(file.exists() && file.isFile()) {
+										if(file.exists() && file.isFile()) {
 
-										response.viewPage(file.toPath(), MediaType.getByFileType(file.getName()));
+											response.viewPage(file.toPath(), MediaType.ofFile(file.getName()));
+										}
+										else {
+
+											response.notFound();
+										}
 									}
 									else {
 
-										response.notFound();
+										response.viewNotFoundPage();
 									}
-								}
-								else {
 
-									response.viewNotFoundPage();
+									connection.commit(response);
+								}
+							}
+							catch(HTTPException ex) {
+
+								HTTPError error = ex.getError();
+
+								response = new HTTPResponse(new HTTPRequest());
+
+								if(error == HTTPError.UNSUPPORTED_HTTP_VERSION) {
+
+									response.setStatus(Status.HTTP_VERSION_NOT_SUPPORTED);
+								}
+
+								if(error == HTTPError.UNSUPPORTED_REQUEST_METHOD || error == HTTPError.MALFORMED_URL) {
+
+									response.setStatus(Status.BAD_REQUEST);
 								}
 
 								connection.commit(response);

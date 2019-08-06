@@ -11,6 +11,16 @@ public class Parameter {
 		this.name = name;
 	}
 
+	public boolean hasValue() {
+
+		return value != null;
+	}
+
+	public boolean hasFiles() {
+
+		return files != null;
+	}
+
 	public String getName() {
 
 		return name;

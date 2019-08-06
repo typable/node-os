@@ -5,9 +5,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.prototype.Prototype;
+import com.prototype.constants.Constants;
 import com.prototype.http.constants.Header;
 import com.prototype.http.constants.MediaType;
 import com.prototype.http.constants.Status;
+import com.prototype.type.Cookie;
 import com.prototype.type.Property;
 
 
@@ -62,14 +64,14 @@ public class HTTPResponse {
 
 	public void view(String body, MediaType type) {
 
-		this.body = body.getBytes(Prototype.constant().CHARSET);
+		this.body = body.getBytes(Constants.CHARSET);
 		request.setType(type);
 		status = Status.OK;
 	}
 
 	public void viewNotFoundPage() {
 
-		Path path = Paths.get(Prototype.path() + Prototype.constant().WEB_PATH + "/404.html");
+		Path path = Paths.get(Prototype.PATH + Constants.PATHS.WEB_PATH + "/404.html");
 
 		viewPage(path, MediaType.TEXT_HTML);
 	}
@@ -126,7 +128,7 @@ public class HTTPResponse {
 
 		request.getHeaders().put(Header.CONTENT_DISPOSITION.getCode(), "attachment; filename=\"" + name + "\"");
 		request.getHeaders().put(Header.CONTENT_LENGTH.getCode(), String.valueOf(data.length));
-		request.setType(MediaType.getByFileType(name));
+		request.setType(MediaType.ofFile(name));
 		body = data;
 		status = Status.OK;
 	}
@@ -144,6 +146,16 @@ public class HTTPResponse {
 	public void addHeader(String key, String value) {
 
 		request.getHeaders().put(key, value);
+	}
+
+	public void addCookie(Cookie cookie) {
+
+		request.getCookies().put(cookie.getKey(), cookie);
+	}
+
+	public void clearCookie(String key) {
+
+		request.getCookies().remove(key);
 	}
 
 	public HTTPRequest getRequest() {

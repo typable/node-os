@@ -1,7 +1,9 @@
 package com.prototype.http;
 
+import com.prototype.http.constants.Header;
 import com.prototype.http.constants.MediaType;
 import com.prototype.http.constants.RequestMethod;
+import com.prototype.type.Cookie;
 import com.prototype.type.Parameter;
 import com.prototype.type.Property;
 
@@ -14,11 +16,23 @@ public class HTTPRequest {
 	private Property<String> headers;
 	private Property<Parameter> parameters;
 	private MediaType type;
+	private Property<Cookie> cookies;
 	private byte[] body;
 
 	public HTTPRequest() {
 
 		headers = new Property<>();
+		cookies = new Property<>();
+	}
+
+	public Parameter getParameter(String key) {
+
+		return parameters.get(key);
+	}
+
+	public String getHeader(Header header) {
+
+		return headers.get(header.getCode());
 	}
 
 	public String getUrl() {
@@ -79,6 +93,26 @@ public class HTTPRequest {
 	public void setType(MediaType type) {
 
 		this.type = type;
+	}
+
+	public Property<Cookie> getCookies() {
+
+		return cookies;
+	}
+
+	public Cookie getCookie(String key) {
+
+		return cookies.get(key);
+	}
+
+	public boolean hasCookie(String key) {
+
+		return cookies.hasKey(key);
+	}
+
+	public void setCookies(Property<Cookie> cookies) {
+
+		this.cookies = cookies;
 	}
 
 	public byte[] getBody() {

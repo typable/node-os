@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.prototype.Prototype;
+import com.prototype.constants.Constants;
 import com.prototype.environment.Environment;
 import com.prototype.logger.Logger;
 import com.prototype.logger.Logger.Messages;
@@ -26,7 +27,6 @@ import com.prototype.type.RequestHolder;
 
 public class Loader extends ClassLoader {
 
-	private String PATH;
 	private Charset CHARSET;
 	private Logger LOGGER;
 
@@ -34,8 +34,7 @@ public class Loader extends ClassLoader {
 
 	public Loader() {
 
-		PATH = Prototype.path();
-		CHARSET = Prototype.constant().CHARSET;
+		CHARSET = Constants.CHARSET;
 		LOGGER = Prototype.logger();
 
 		propertyParser = new PropertyParser();
@@ -43,9 +42,9 @@ public class Loader extends ClassLoader {
 
 	public void loadConfigurations(Environment environment) throws Exception {
 
-		final String CONFIG_FILE = Prototype.constant().CONFIG_FILE;
+		final String CONFIG_FILE = Constants.FILES.CONFIG_FILE;
 
-		File file = new File(PATH + "/" + CONFIG_FILE);
+		File file = new File(Prototype.PATH + "/" + CONFIG_FILE);
 
 		if(file.exists()) {
 
@@ -71,7 +70,7 @@ public class Loader extends ClassLoader {
 
 	public void loadRequests(List<RequestHolder> requests) throws Exception {
 
-		final String CLASS_PATH = Prototype.path() + Prototype.constant().CLASS_PATH;
+		final String CLASS_PATH = Prototype.PATH + Constants.PATHS.CLASS_PATH;
 
 		int count = 0;
 
@@ -92,12 +91,17 @@ public class Loader extends ClassLoader {
 
 						if(annotation instanceof Request) {
 
-							RequestHolder holder = new RequestHolder((Request) annotation, new Callback(instance, method));
-							instance.inject(Prototype.env());
+							Request request = (Request) annotation;
 
-							Prototype.request().add(holder);
+							if(!request.ignore()) {
 
-							count++;
+								RequestHolder holder = new RequestHolder(request, new Callback(instance, method));
+								instance.inject(Prototype.env());
+
+								Prototype.request().add(holder);
+
+								count++;
+							}
 						}
 					}
 				}
@@ -109,10 +113,10 @@ public class Loader extends ClassLoader {
 
 	public void loadTemplates(List<File> templates) throws Exception {
 
-		final String TEMPLATE_PATH = Prototype.constant().RESOURCE_PATH + "/template";
+		final String TEMPLATE_PATH = Constants.PATHS.RESOURCE_PATH + "/template";
 
 		int count = 0;
-		File directory = new File(PATH + "/" + TEMPLATE_PATH);
+		File directory = new File(Prototype.PATH + "/" + TEMPLATE_PATH);
 
 		if(directory.exists() && directory.isDirectory()) {
 
@@ -129,10 +133,10 @@ public class Loader extends ClassLoader {
 
 	public void loadMessages(Property<String> messages) throws Exception {
 
-		final String MESSAGE_PATH = Prototype.constant().RESOURCE_PATH + "/message";
+		final String MESSAGE_PATH = Constants.PATHS.RESOURCE_PATH + "/message";
 
 		int count = 0;
-		File directory = new File(PATH + "/" + MESSAGE_PATH);
+		File directory = new File(Prototype.PATH + "/" + MESSAGE_PATH);
 
 		if(directory.exists() && directory.isDirectory()) {
 

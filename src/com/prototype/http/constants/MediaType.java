@@ -184,7 +184,7 @@ public enum MediaType {
 		this.fileTypes = fileTypes;
 	}
 
-	public static MediaType getByType(String type) {
+	public static MediaType ofType(String type) {
 
 		for(MediaType mediaType : MediaType.values()) {
 
@@ -197,7 +197,7 @@ public enum MediaType {
 		return MediaType.TEXT_PLAIN;
 	}
 
-	public static MediaType getByFileType(String fileType) {
+	public static MediaType ofFile(String fileType) {
 
 		if(fileType.contains(".")) {
 
