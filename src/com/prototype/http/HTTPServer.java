@@ -17,6 +17,8 @@ import com.prototype.type.RequestHolder;
 
 public class HTTPServer {
 
+	public static final String LOG_PREFIX = "[Server] ";
+
 	private Logger LOGGER;
 
 	private ServerSocket serverSocket;
@@ -30,9 +32,10 @@ public class HTTPServer {
 
 		try {
 
+			// TODO SSLServerSocket
 			serverSocket = new ServerSocket(port);
 
-			LOGGER.info(Messages.SERVER_STARTED.getMessage(String.valueOf(port)));
+			LOGGER.info(LOG_PREFIX + Messages.SERVER_STARTED.getMessage(String.valueOf(port)));
 
 			while(!serverSocket.isClosed()) {
 
@@ -116,7 +119,7 @@ public class HTTPServer {
 						}
 						catch(Exception e) {
 
-							LOGGER.error(Messages.FATAL_ERROR.getMessage(), e);
+							LOGGER.error(LOG_PREFIX + Messages.FATAL_ERROR.getMessage(), e);
 						}
 					}
 				});
@@ -124,7 +127,7 @@ public class HTTPServer {
 		}
 		catch(Exception e) {
 
-			LOGGER.error(Messages.FATAL_ERROR.getMessage(), e);
+			LOGGER.error(LOG_PREFIX + Messages.FATAL_ERROR.getMessage(), e);
 		}
 	}
 
@@ -132,7 +135,7 @@ public class HTTPServer {
 
 		serverSocket.close();
 
-		LOGGER.info(Messages.SERVER_STOPPED.getMessage());
+		LOGGER.info(LOG_PREFIX + Messages.SERVER_STOPPED.getMessage());
 
 		System.exit(0);
 	}

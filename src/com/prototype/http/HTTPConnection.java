@@ -69,8 +69,6 @@ public class HTTPConnection extends Connection {
 					throw new HTTPException(HTTPError.UNSUPPORTED_REQUEST_METHOD);
 				}
 
-				// TODO URL Validator
-
 				request.setUrl(url);
 				request.setMethod(method);
 				request.setVersion(version);
@@ -88,7 +86,7 @@ public class HTTPConnection extends Connection {
 			MediaType type = null;
 			String body = null;
 
-			String[] typeArgs = contentType.split("; ");
+			String[] typeArgs = contentType.split("; "); // FIXME <-- [NPE] Without headers
 
 			type = MediaType.ofType(typeArgs[0]);
 

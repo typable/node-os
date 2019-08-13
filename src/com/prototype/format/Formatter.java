@@ -78,12 +78,9 @@ public class Formatter {
 
 			for(String key : Prototype.env().keys()) {
 
-				Object value = Prototype.env().get(key);
+				String value = Prototype.env().get(key);
 
-				if(value instanceof String) {
-
-					code = code.replaceAll("\\@\\{env:" + key + "\\}", (String) value);
-				}
+				code = code.replaceAll("\\@\\{env:" + key + "\\}", value);
 			}
 		}
 

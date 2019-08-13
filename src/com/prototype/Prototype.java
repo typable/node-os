@@ -6,26 +6,25 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.prototype.condition.Condition;
 import com.prototype.constants.Constants;
-import com.prototype.environment.Environment;
 import com.prototype.http.HTTPServer;
 import com.prototype.loader.Loader;
 import com.prototype.logger.Logger;
+import com.prototype.logger.Logger.Messages;
 import com.prototype.parse.PropertyParser;
 import com.prototype.type.Property;
 import com.prototype.type.RequestHolder;
+import com.prototype.update.Updater;
+import com.prototype.util.Utils;
 
 
 public class Prototype {
 
-	public static final String VERSION = "1.3.0";
-
-	private final String PORT = "port";
+	public static final String VERSION = "1.3.2";
 
 	public static String PATH;
 
-	private static Environment environment;
+	private static Property<String> environment;
 	private static Property<String> messages;
 
 	private static List<File> templates;
@@ -33,13 +32,13 @@ public class Prototype {
 
 	private static Logger logger;
 	private static Loader loader;
+	private static Updater updater;
 
 	private HTTPServer server;
 
 	public Prototype() {
 
-		environment = new Environment();
-
+		environment = new Property<>();
 		messages = new Property<>();
 
 		templates = new ArrayList<>();
@@ -47,12 +46,9 @@ public class Prototype {
 
 		logger = new Logger();
 		loader = new Loader();
+		updater = new Updater();
 
 		server = new HTTPServer();
-
-		environment.put("logger", logger);
-		environment.put("loader", loader);
-		environment.put("server", server);
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -66,10 +62,6 @@ public class Prototype {
 			if(args[0].equals("-init")) {
 
 				prototype.init(args);
-			}
-			else if(args[0].equals("-update")) {
-
-				prototype.update();
 			}
 			else if(args[0].equals("-reload")) {
 
@@ -111,19 +103,19 @@ public class Prototype {
 		PropertyParser propertyParser = new PropertyParser();
 
 		Property<String> props = new Property<>();
-		props.put(PORT, "80");
+		props.put("port", "80");
 
 		loader.writeText(CONFIG_FILE.toPath(), propertyParser.compose(props));
 
 		File LAUNCH_BAT = new File(PATH + "/" + Constants.FILES.LAUNCH_BAT);
 		LAUNCH_BAT.createNewFile();
 
-		loader.writeText(LAUNCH_BAT.toPath(), "@echo off" + Constants.DOS_LINE_BREAK + "java -jar NodeOS.jar");
+		loader.writeText(LAUNCH_BAT.toPath(), "@echo off" + Constants.DOS_LINE_BREAK + "java -cp \"NodeOS.jar;lib/*\" com.prototype.Prototype");
 
 		File LAUNCH_BASH = new File(PATH + "/" + Constants.FILES.LAUNCH_BASH);
 		LAUNCH_BASH.createNewFile();
 
-		loader.writeText(LAUNCH_BASH.toPath(), "java -jar NodeOS.jar");
+		loader.writeText(LAUNCH_BASH.toPath(), "java -cp \"NodeOS.jar:lib/*\" com.prototype.Prototype");
 
 		if(args.length == 2) {
 
@@ -158,8 +150,6 @@ public class Prototype {
 
 	private void launch() throws Exception {
 
-		update();
-
 		logger.logFile(Paths.get(Prototype.PATH + Constants.PATHS.LOG_PATH));
 
 		File CONFIG_FILE = new File(Prototype.PATH + "/" + Constants.FILES.CONFIG_FILE);
@@ -171,11 +161,36 @@ public class Prototype {
 			loader.loadTemplates(templates);
 			loader.loadMessages(messages);
 
-			String port = (String) environment.get(PORT);
+			String updateSoftware = environment.get("update.software");
 
-			if(Condition.notNull(port, PORT)) {
+			if(updateSoftware != null && updateSoftware.equals("true")) {
+
+				updater.updateSoftware();
+			}
+
+			String updateDomain = environment.get("update.domain");
+
+			if(updateDomain != null && updateDomain.equals("true")) {
+
+				String dnsDomain = environment.get("dns.domain");
+				String dnsPassword = environment.get("dns.password");
+				String dnsServer = environment.get("dns.server");
+
+				if(dnsDomain != null && !dnsDomain.isBlank() && dnsPassword != null && !dnsPassword.isBlank() && dnsServer != null && !dnsServer.isBlank()) {
+
+					updater.updateDomain(dnsDomain, Utils.encode(dnsDomain + ":" + dnsPassword), dnsServer);
+				}
+			}
+
+			String port = environment.get("port");
+
+			if(port != null) {
 
 				server.start(Integer.valueOf(port));
+			}
+			else {
+
+				logger.error(Messages.UNDEFINED.getMessage("port"));
 			}
 		}
 		else {
@@ -203,17 +218,12 @@ public class Prototype {
 		}
 	}
 
-	private void update() {
-
-		// TODO update()
-	}
-
 	public static Path path(String ref, String path) {
 
 		return Paths.get(Prototype.PATH + ref + path);
 	}
 
-	public static Environment env() {
+	public static Property<String> env() {
 
 		return environment;
 	}

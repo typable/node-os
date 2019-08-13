@@ -12,20 +12,20 @@ import java.util.List;
 
 import com.prototype.Prototype;
 import com.prototype.constants.Constants;
-import com.prototype.environment.Environment;
 import com.prototype.logger.Logger;
 import com.prototype.logger.Logger.Messages;
 import com.prototype.parse.PropertyParser;
 import com.prototype.reflect.Callback;
 import com.prototype.reflect.Instance;
 import com.prototype.type.Controller;
-import com.prototype.type.Extension;
 import com.prototype.type.Property;
 import com.prototype.type.Request;
 import com.prototype.type.RequestHolder;
 
 
 public class Loader extends ClassLoader {
+
+	public static final String LOG_PREFIX = "[Loader] ";
 
 	private Charset CHARSET;
 	private Logger LOGGER;
@@ -40,7 +40,7 @@ public class Loader extends ClassLoader {
 		propertyParser = new PropertyParser();
 	}
 
-	public void loadConfigurations(Environment environment) throws Exception {
+	public void loadConfigurations(Property<String> environment) throws Exception {
 
 		final String CONFIG_FILE = Constants.FILES.CONFIG_FILE;
 
@@ -60,11 +60,11 @@ public class Loader extends ClassLoader {
 				}
 			}
 
-			LOGGER.info("Configurations loaded");
+			LOGGER.info(LOG_PREFIX + "Configurations loaded");
 		}
 		else {
 
-			LOGGER.warn(Messages.NOT_FOUND.getMessage(CONFIG_FILE));
+			LOGGER.warn(LOG_PREFIX + Messages.NOT_FOUND.getMessage(CONFIG_FILE));
 		}
 	}
 
@@ -96,7 +96,7 @@ public class Loader extends ClassLoader {
 							if(!request.ignore()) {
 
 								RequestHolder holder = new RequestHolder(request, new Callback(instance, method));
-								instance.inject(Prototype.env());
+								// instance.inject(Prototype.env());
 
 								Prototype.request().add(holder);
 
@@ -108,7 +108,7 @@ public class Loader extends ClassLoader {
 			}
 		}
 
-		LOGGER.info("Requests loaded (" + count + ")");
+		LOGGER.info(LOG_PREFIX + "Requests loaded (" + count + ")");
 	}
 
 	public void loadTemplates(List<File> templates) throws Exception {
@@ -128,7 +128,7 @@ public class Loader extends ClassLoader {
 			}
 		}
 
-		LOGGER.info("Templates loaded (" + count + ")");
+		LOGGER.info(LOG_PREFIX + "Templates loaded (" + count + ")");
 	}
 
 	public void loadMessages(Property<String> messages) throws Exception {
@@ -155,7 +155,7 @@ public class Loader extends ClassLoader {
 			}
 		}
 
-		LOGGER.info("Messages loaded (" + count + ")");
+		LOGGER.info(LOG_PREFIX + "Messages loaded (" + count + ")");
 	}
 
 	public String readText(Path path) throws Exception {
@@ -210,21 +210,6 @@ public class Loader extends ClassLoader {
 		}
 
 		return files.toArray(new File[files.size()]);
-	}
-
-	public Class<?> loadExtension(String name, Path path) throws Exception {
-
-		Class<?> loadedClass = loadClass(name, path);
-
-		for(Annotation annotation : loadedClass.getAnnotations()) {
-
-			if(annotation.annotationType() == Extension.class) {
-
-				return loadedClass;
-			}
-		}
-
-		return null;
 	}
 
 	public Class<?> loadController(String name, Path path) throws Exception {
