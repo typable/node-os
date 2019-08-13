@@ -33,8 +33,7 @@ public class Prototype {
 	private static Logger logger;
 	private static Loader loader;
 	private static Updater updater;
-
-	private HTTPServer server;
+	private static HTTPServer server;
 
 	public Prototype() {
 
@@ -183,10 +182,20 @@ public class Prototype {
 			}
 
 			String port = environment.get("port");
+			String ssl = environment.get("ssl");
+			String sslKey = environment.get("ssl.key");
+			String sslPassword = environment.get("ssl.password");
 
 			if(port != null) {
 
-				server.start(Integer.valueOf(port));
+				if(ssl != null && sslKey != null && sslPassword != null) {
+
+					server.start(Integer.valueOf(port), Boolean.valueOf(ssl), sslKey, sslPassword);
+				}
+				else {
+
+					server.start(Integer.valueOf(port));
+				}
 			}
 			else {
 
@@ -223,6 +232,11 @@ public class Prototype {
 		return Paths.get(Prototype.PATH + ref + path);
 	}
 
+	public static Path path(String path) {
+
+		return Paths.get(Prototype.PATH + path);
+	}
+
 	public static Property<String> env() {
 
 		return environment;
@@ -251,5 +265,10 @@ public class Prototype {
 	public static Loader loader() {
 
 		return loader;
+	}
+
+	public static HTTPServer server() {
+
+		return server;
 	}
 }

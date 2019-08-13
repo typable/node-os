@@ -8,6 +8,7 @@ import com.prototype.Prototype;
 import com.prototype.constants.Constants;
 import com.prototype.http.constants.Header;
 import com.prototype.http.constants.MediaType;
+import com.prototype.http.constants.RequestMethod;
 import com.prototype.http.constants.Status;
 import com.prototype.type.Cookie;
 import com.prototype.type.Property;
@@ -18,12 +19,14 @@ public class HTTPResponse {
 	private HTTPRequest request;
 	private Status status;
 	private Property<String> attributes;
+	private Property<Cookie> cookies;
 	private byte[] body;
 
 	public HTTPResponse(HTTPRequest request) {
 
 		this.request = request;
 		attributes = new Property<>();
+		cookies = new Property<>();
 	}
 
 	public void ok() {
@@ -58,6 +61,7 @@ public class HTTPResponse {
 
 	public void redirect(String url) {
 
+		request.setMethod(RequestMethod.GET);
 		request.getHeaders().put(Header.LOCATION.getCode(), url);
 		status = Status.FOUND;
 	}
@@ -150,12 +154,12 @@ public class HTTPResponse {
 
 	public void addCookie(Cookie cookie) {
 
-		request.getCookies().put(cookie.getKey(), cookie);
+		cookies.put(cookie.getKey(), cookie);
 	}
 
 	public void clearCookie(String key) {
 
-		request.getCookies().remove(key);
+		cookies.put(key, new Cookie(key, null));
 	}
 
 	public HTTPRequest getRequest() {
@@ -216,6 +220,16 @@ public class HTTPResponse {
 	public void setType(MediaType type) {
 
 		request.setType(type);
+	}
+
+	public Property<Cookie> getCookies() {
+
+		return cookies;
+	}
+
+	public void setCookies(Property<Cookie> cookies) {
+
+		this.cookies = cookies;
 	}
 
 	public byte[] getBody() {

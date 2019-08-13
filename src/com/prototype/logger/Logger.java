@@ -96,7 +96,7 @@ public class Logger {
 
 		Throwable throwable = ex.getCause() != null ? ex.getCause() : ex;
 
-		String errorMessage = throwable.getClass().getName() + ": " + throwable.getMessage() + DEFAULT_LINE_BREAK;
+		String errorMessage = ex.getClass().getName() + ": " + throwable.getMessage() + DEFAULT_LINE_BREAK;
 
 		for(StackTraceElement trace : throwable.getStackTrace()) {
 

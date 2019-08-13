@@ -86,116 +86,119 @@ public class HTTPConnection extends Connection {
 			MediaType type = null;
 			String body = null;
 
-			String[] typeArgs = contentType.split("; "); // FIXME <-- [NPE] Without headers
+			if(contentType != null) {
 
-			type = MediaType.ofType(typeArgs[0]);
+				String[] typeArgs = contentType.split("; ");
 
-			if(contentLength != null) {
+				type = MediaType.ofType(typeArgs[0]);
 
-				Integer length = Integer.parseInt(contentLength);
+				if(contentLength != null) {
 
-				if(type == MediaType.MULTIPART_FORM_DATA) {
+					Integer length = Integer.parseInt(contentLength);
 
-					String boundary = typeArgs[1].split("=")[1];
+					if(type == MediaType.MULTIPART_FORM_DATA) {
 
-					byte[] data = read(length);
+						String boundary = typeArgs[1].split("=")[1];
 
-					String formattedData = new String(data, CHARSET);
-					String[] args = formattedData.split("--" + boundary + "\\r\\n");
+						byte[] data = read(length);
 
-					List<FormData> formDataList = new ArrayList<>();
+						String formattedData = new String(data, CHARSET);
+						String[] args = formattedData.split("--" + boundary + "\\r\\n");
 
-					for(int i = 0; i < args.length; i++) {
+						List<FormData> formDataList = new ArrayList<>();
 
-						String arg = args[i];
+						for(int i = 0; i < args.length; i++) {
 
-						if(i > 0) {
+							String arg = args[i];
 
-							FormData formData = null;
+							if(i > 0) {
 
-							String[] sect = arg.split("\\r\\n\\r\\n", 2);
+								FormData formData = null;
 
-							String formDataHeader = sect[0];
-							String formDataDisposition = formDataHeader.split("\\r\\n")[0].split(": ")[1];
-							String formDataContentType = null;
+								String[] sect = arg.split("\\r\\n\\r\\n", 2);
 
-							if(formDataHeader.split("\\r\\n").length >= 2) {
+								String formDataHeader = sect[0];
+								String formDataDisposition = formDataHeader.split("\\r\\n")[0].split(": ")[1];
+								String formDataContentType = null;
 
-								formDataContentType = formDataHeader.split("\\r\\n")[1].split(": ")[1];
-							}
+								if(formDataHeader.split("\\r\\n").length >= 2) {
 
-							String formDataData = sect[1];
-
-							formData = new FormData(MediaType.ofType(formDataContentType), formDataDisposition);
-
-							if(i < args.length - 1) {
-
-								String _data = formDataData;
-
-								formData.setData(_data.substring(0, _data.length() - "\r\n".length()).getBytes(CHARSET));
-							}
-							else {
-
-								String _data = formDataData.replace("--" + boundary + "--" + CRLF, "");
-
-								formData.setData(_data.substring(0, _data.length() - "\r\n".length()).getBytes(CHARSET));
-							}
-
-							formDataList.add(formData);
-						}
-					}
-
-					Property<Parameter> params = new Property<>();
-
-					for(FormData form : formDataList) {
-
-						String key = form.getDisposition().split("; ")[1].split("=")[1].replaceAll("\"", "");
-
-						if(!form.getDisposition().contains("filename=") && form.getData() != null) {
-
-							String value = new String(form.getData(), CHARSET);
-
-							value = Formatter.parseURL(value);
-
-							Parameter param = new Parameter(key);
-							param.setValue(value);
-
-							params.put(key, param);
-						}
-						else if(form.getDisposition().contains("filename=")) {
-
-							String fileName = form.getDisposition().split("; ")[2].split("=")[1].replaceAll("\"", "");
-
-							Property<byte[]> files = new Property<>();
-
-							files.put(fileName, form.getData());
-
-							Parameter param = new Parameter(key);
-
-							if(params.hasKey(key)) {
-
-								for(String fileKey : params.get(key).getFiles().keys()) {
-
-									files.put(fileKey, params.get(key).getFiles().get(fileKey));
+									formDataContentType = formDataHeader.split("\\r\\n")[1].split(": ")[1];
 								}
+
+								String formDataData = sect[1];
+
+								formData = new FormData(MediaType.ofType(formDataContentType), formDataDisposition);
+
+								if(i < args.length - 1) {
+
+									String _data = formDataData;
+
+									formData.setData(_data.substring(0, _data.length() - "\r\n".length()).getBytes(CHARSET));
+								}
+								else {
+
+									String _data = formDataData.replace("--" + boundary + "--" + CRLF, "");
+
+									formData.setData(_data.substring(0, _data.length() - "\r\n".length()).getBytes(CHARSET));
+								}
+
+								formDataList.add(formData);
 							}
-
-							param.setFiles(files);
-							params.put(key, param);
 						}
+
+						Property<Parameter> params = new Property<>();
+
+						for(FormData form : formDataList) {
+
+							String key = form.getDisposition().split("; ")[1].split("=")[1].replaceAll("\"", "");
+
+							if(!form.getDisposition().contains("filename=") && form.getData() != null) {
+
+								String value = new String(form.getData(), CHARSET);
+
+								value = Formatter.parseURL(value);
+
+								Parameter param = new Parameter(key);
+								param.setValue(value);
+
+								params.put(key, param);
+							}
+							else if(form.getDisposition().contains("filename=")) {
+
+								String fileName = form.getDisposition().split("; ")[2].split("=")[1].replaceAll("\"", "");
+
+								Property<byte[]> files = new Property<>();
+
+								files.put(fileName, form.getData());
+
+								Parameter param = new Parameter(key);
+
+								if(params.hasKey(key)) {
+
+									for(String fileKey : params.get(key).getFiles().keys()) {
+
+										files.put(fileKey, params.get(key).getFiles().get(fileKey));
+									}
+								}
+
+								param.setFiles(files);
+								params.put(key, param);
+							}
+						}
+
+						request.setParameters(params);
+						request.setBody(data);
 					}
+					else {
 
-					request.setParameters(params);
-					request.setBody(data);
-				}
-				else {
+						body = new String(read(length), CHARSET);
 
-					body = new String(read(length), CHARSET);
+						body = Formatter.parseURL(body);
 
-					body = Formatter.parseURL(body);
-
-					request.setParameters(Formatter.parseQuery(body));
-					request.setBody(body.getBytes(CHARSET));
+						request.setParameters(Formatter.parseQuery(body));
+						request.setBody(body.getBytes(CHARSET));
+					}
 				}
 			}
 		}
@@ -234,6 +237,8 @@ public class HTTPConnection extends Connection {
 
 	public void commit(HTTPResponse response) throws Exception {
 
+		// FIXME ERR_RESPONSE_HEADERS_TRUNCATED
+
 		if(response.getStatus() != null) {
 
 			emit("HTTP/" + response.getVersion() + " " + response.getStatus().getMessage());
@@ -270,15 +275,22 @@ public class HTTPConnection extends Connection {
 				}
 			}
 
-			if(!response.getRequest().getCookies().isEmpty()) {
+			if(!response.getCookies().isEmpty()) {
 
 				String cookies = "";
 
-				for(String key : response.getRequest().getCookies().keys()) {
+				for(String key : response.getCookies().keys()) {
 
-					Cookie cookie = response.getRequest().getCookies().get(key);
+					Cookie cookie = response.getCookies().get(key);
 
-					cookies += cookie.getKey() + "=" + cookie.getValue() + "; Expires=" + cookie.getAge() + "; Max-Age=" + cookie.getAge();
+					if(cookie.getAge() != -1) {
+
+						cookies += cookie.getKey() + "=" + cookie.getValue() + "; Expires=" + cookie.getAge() + "; Max-Age=" + cookie.getAge();
+					}
+					else {
+
+						cookies += cookie.getKey() + "=" + cookie.getValue() + "; Expires=0; Max-Age=0";
+					}
 				}
 
 				emit(Header.SET_COOKIE.getCode() + ": " + cookies);
