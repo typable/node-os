@@ -6,6 +6,7 @@ import com.prototype.http.constants.RequestMethod;
 import com.prototype.type.Cookie;
 import com.prototype.type.Parameter;
 import com.prototype.type.Property;
+import com.prototype.type.Session;
 
 
 public class HTTPRequest {
@@ -17,6 +18,7 @@ public class HTTPRequest {
 	private Property<Parameter> parameters;
 	private MediaType type;
 	private Property<Cookie> cookies;
+	private Session session;
 	private byte[] body;
 
 	public HTTPRequest() {
@@ -113,6 +115,16 @@ public class HTTPRequest {
 	public void setCookies(Property<Cookie> cookies) {
 
 		this.cookies = cookies;
+	}
+
+	public Session getSession() {
+
+		return session;
+	}
+
+	public void setSession(Session session) {
+
+		this.session = session;
 	}
 
 	public byte[] getBody() {

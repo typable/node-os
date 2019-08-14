@@ -237,7 +237,7 @@ public class HTTPConnection extends Connection {
 
 	public void commit(HTTPResponse response) throws Exception {
 
-		// FIXME ERR_RESPONSE_HEADERS_TRUNCATED
+		// FIXME HTTPS/SSL ERR_RESPONSE_HEADERS_TRUNCATED
 
 		if(response.getStatus() != null) {
 

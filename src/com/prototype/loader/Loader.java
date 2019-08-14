@@ -15,12 +15,11 @@ import com.prototype.constants.Constants;
 import com.prototype.logger.Logger;
 import com.prototype.logger.Logger.Messages;
 import com.prototype.parse.PropertyParser;
-import com.prototype.reflect.Callback;
+import com.prototype.reflect.Caller;
 import com.prototype.reflect.Instance;
 import com.prototype.type.Controller;
 import com.prototype.type.Property;
 import com.prototype.type.Request;
-import com.prototype.type.RequestHolder;
 
 
 public class Loader extends ClassLoader {
@@ -68,7 +67,7 @@ public class Loader extends ClassLoader {
 		}
 	}
 
-	public void loadRequests(List<RequestHolder> requests) throws Exception {
+	public void loadRequests(List<Caller<Request>> requests) throws Exception {
 
 		final String CLASS_PATH = Prototype.PATH + Constants.PATHS.CLASS_PATH;
 
@@ -83,9 +82,9 @@ public class Loader extends ClassLoader {
 
 			if(controller != null) {
 
-				Instance instance = new Instance(controller);
+				Object instance = Instance.of(controller);
 
-				for(Method method : instance.getType().getDeclaredMethods()) {
+				for(Method method : controller.getDeclaredMethods()) {
 
 					for(Annotation annotation : method.getAnnotations()) {
 
@@ -95,10 +94,9 @@ public class Loader extends ClassLoader {
 
 							if(!request.ignore()) {
 
-								RequestHolder holder = new RequestHolder(request, new Callback(instance, method));
-								// instance.inject(Prototype.env());
+								Caller<Request> caller = new Caller<Request>(request, method, instance);
 
-								Prototype.request().add(holder);
+								Prototype.request().add(caller);
 
 								count++;
 							}

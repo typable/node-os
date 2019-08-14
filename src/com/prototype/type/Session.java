@@ -1,39 +1,38 @@
 package com.prototype.type;
 
-import java.util.Set;
+import com.prototype.Prototype;
 
 
-public class Session {
+public class Session extends Property<Object> {
 
-	private Property<Object> props;
+	private String uid;
 
-	public Session() {
+	public static Session of(Cookie cookie) {
 
-		props = new Property<>();
+		if(cookie != null) {
+
+			for(Session session : Prototype.sessions()) {
+
+				if(session.getUid() != null && cookie.getValue() != null) {
+
+					if(session.getUid().equals(cookie.getValue())) {
+
+						return session;
+					}
+				}
+			}
+		}
+
+		return null;
 	}
 
-	public void put(String key, Object value) {
+	public Session(String uid) {
 
-		props.put(key, value);
+		this.uid = uid;
 	}
 
-	public void remove(String key) {
+	public String getUid() {
 
-		props.remove(key);
-	}
-
-	public Object get(String key) {
-
-		return props.get(key);
-	}
-
-	public boolean has(String key) {
-
-		return props.hasKey(key);
-	}
-
-	public Set<String> keys() {
-
-		return props.keys();
+		return uid;
 	}
 }

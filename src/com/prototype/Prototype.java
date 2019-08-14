@@ -12,13 +12,22 @@ import com.prototype.loader.Loader;
 import com.prototype.logger.Logger;
 import com.prototype.logger.Logger.Messages;
 import com.prototype.parse.PropertyParser;
+import com.prototype.reflect.Caller;
 import com.prototype.type.Property;
-import com.prototype.type.RequestHolder;
+import com.prototype.type.Request;
+import com.prototype.type.Session;
 import com.prototype.update.Updater;
 import com.prototype.util.Utils;
 
 
 public class Prototype {
+
+	/*
+	TODO inject()
+	TODO Caller
+	TODO Event
+	TODO Runtime
+	 */
 
 	public static final String VERSION = "1.3.2";
 
@@ -28,7 +37,8 @@ public class Prototype {
 	private static Property<String> messages;
 
 	private static List<File> templates;
-	private static List<RequestHolder> requests;
+	private static List<Caller<Request>> requests;
+	private static List<Session> sessions;
 
 	private static Logger logger;
 	private static Loader loader;
@@ -42,6 +52,7 @@ public class Prototype {
 
 		templates = new ArrayList<>();
 		requests = new ArrayList<>();
+		sessions = new ArrayList<>();
 
 		logger = new Logger();
 		loader = new Loader();
@@ -252,7 +263,7 @@ public class Prototype {
 		return templates;
 	}
 
-	public static List<RequestHolder> request() {
+	public static List<Caller<Request>> request() {
 
 		return requests;
 	}
@@ -270,5 +281,10 @@ public class Prototype {
 	public static HTTPServer server() {
 
 		return server;
+	}
+
+	public static List<Session> sessions() {
+
+		return sessions;
 	}
 }

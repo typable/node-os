@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyStore;
+import java.util.UUID;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -23,7 +24,10 @@ import com.prototype.http.error.HTTPError;
 import com.prototype.http.error.HTTPException;
 import com.prototype.logger.Logger;
 import com.prototype.logger.Logger.Messages;
-import com.prototype.type.RequestHolder;
+import com.prototype.reflect.Caller;
+import com.prototype.type.Cookie;
+import com.prototype.type.Request;
+import com.prototype.type.Session;
 
 
 public class HTTPServer {
@@ -118,23 +122,41 @@ public class HTTPServer {
 
 									String url = request.getUrl();
 									RequestMethod method = request.getMethod();
-									RequestHolder requestHolder = null;
+									Caller<Request> caller = null;
 
 									if(url != null) {
 
-										for(RequestHolder holder : Prototype.request()) {
+										for(Caller<Request> requestCaller : Prototype.request()) {
 
-											if(url.equals(holder.getUrl()) && method == holder.getMethod()) {
+											if(url.equals(requestCaller.get().url()) && method == requestCaller.get().method()) {
 
-												requestHolder = holder;
+												caller = requestCaller;
 
 												break;
 											}
 										}
 
-										if(requestHolder != null) {
+										if(caller != null) {
 
-											requestHolder.getCallback().call(request, response);
+											Session session = null;
+
+											if(request.hasCookie("ucid")) {
+
+												session = Session.of(request.getCookie("ucid"));
+											}
+											else {
+
+												session = new Session(UUID.randomUUID().toString());
+
+												Cookie cookie = new Cookie("ucid", session.getUid());
+												cookie.setAge(60 * 60 * 24);
+
+												response.addCookie(cookie);
+											}
+
+											request.setSession(session);
+
+											caller.call(request, response);
 										}
 										else if(url.startsWith("/res/")) {
 

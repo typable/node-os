@@ -11,6 +11,11 @@ public class Instance {
 	private Class<?> type;
 	private Object instance;
 
+	public static Object of(Class<?> type) throws Exception {
+
+		return type.getConstructor().newInstance();
+	}
+
 	public Instance(Class<?> type) throws Exception {
 
 		this.setType(type);
