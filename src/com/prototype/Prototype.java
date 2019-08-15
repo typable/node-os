@@ -29,63 +29,70 @@ public class Prototype {
 	TODO Runtime
 	 */
 
-	public static final String VERSION = "1.3.2";
+	public static final String VERSION = "1.3.4";
 
 	public static String PATH;
 
-	private static Property<String> environment;
-	private static Property<String> messages;
+	private Property<String> environment;
+	private Property<String> messages;
 
-	private static List<File> templates;
-	private static List<Caller<Request>> requests;
-	private static List<Session> sessions;
+	private List<File> templates;
+	private List<Caller<Request>> requests;
+	private List<Session> sessions;
 
-	private static Logger logger;
-	private static Loader loader;
-	private static Updater updater;
-	private static HTTPServer server;
+	private Logger logger;
+	private Loader loader;
+	private Updater updater;
+	private HTTPServer server;
 
-	public Prototype() {
+	public Prototype(String[] args) {
 
-		environment = new Property<>();
-		messages = new Property<>();
+		try {
 
-		templates = new ArrayList<>();
-		requests = new ArrayList<>();
-		sessions = new ArrayList<>();
+			environment = new Property<>();
+			messages = new Property<>();
 
-		logger = new Logger();
-		loader = new Loader();
-		updater = new Updater();
+			templates = new ArrayList<>();
+			requests = new ArrayList<>();
+			sessions = new ArrayList<>();
 
-		server = new HTTPServer();
-	}
+			logger = new Logger(this);
+			loader = new Loader(this);
+			updater = new Updater(this);
 
-	public static void main(String[] args) throws Exception {
+			server = new HTTPServer(this);
 
-		Prototype prototype = new Prototype();
+			Prototype.PATH = new File(".").getCanonicalPath();
 
-		Prototype.PATH = new File(".").getCanonicalPath();
+			if(args.length >= 1) {
 
-		if(args.length >= 1) {
+				if(args[0].equals("-init")) {
 
-			if(args[0].equals("-init")) {
+					init(args);
+				}
+				else if(args[0].equals("-reload")) {
 
-				prototype.init(args);
-			}
-			else if(args[0].equals("-reload")) {
+					reload();
+				}
+				else {
 
-				prototype.reload();
+					logger.warn("Invalid command!");
+				}
 			}
 			else {
 
-				logger.warn("Invalid command!");
+				launch();
 			}
 		}
-		else {
+		catch(Exception ex) {
 
-			prototype.launch();
+			logger.error(Messages.FATAL_ERROR.getMessage(), ex);
 		}
+	}
+
+	public static void main(String[] args) {
+
+		new Prototype(args);
 	}
 
 	private void init(String[] args) throws Exception {
@@ -248,43 +255,48 @@ public class Prototype {
 		return Paths.get(Prototype.PATH + path);
 	}
 
-	public static Property<String> env() {
+	public Property<String> getEnvironment() {
 
 		return environment;
 	}
 
-	public static Property<String> message() {
+	public Property<String> getMessages() {
 
 		return messages;
 	}
 
-	public static List<File> template() {
+	public List<File> getTemplates() {
 
 		return templates;
 	}
 
-	public static List<Caller<Request>> request() {
+	public List<Caller<Request>> getRequests() {
 
 		return requests;
 	}
 
-	public static Logger logger() {
+	public List<Session> getSessions() {
+
+		return sessions;
+	}
+
+	public Logger getLogger() {
 
 		return logger;
 	}
 
-	public static Loader loader() {
+	public Loader getLoader() {
 
 		return loader;
 	}
 
-	public static HTTPServer server() {
+	public Updater getUpdater() {
 
-		return server;
+		return updater;
 	}
 
-	public static List<Session> sessions() {
+	public HTTPServer getServer() {
 
-		return sessions;
+		return server;
 	}
 }

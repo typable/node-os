@@ -12,6 +12,8 @@ import com.prototype.util.Utils;
 
 public class Formatter {
 
+	private static Prototype prototype;
+
 	public static String parseURL(String code) {
 
 		return URLDecoder.decode(code, Constants.CHARSET);
@@ -74,11 +76,11 @@ public class Formatter {
 
 	public static String parseEnv(String code) {
 
-		if(Prototype.env() != null) {
+		if(prototype.getEnvironment() != null) {
 
-			for(String key : Prototype.env().keys()) {
+			for(String key : prototype.getEnvironment().keys()) {
 
-				String value = Prototype.env().get(key);
+				String value = prototype.getEnvironment().get(key);
 
 				code = code.replaceAll("\\@\\{env:" + key + "\\}", value);
 			}
@@ -89,11 +91,11 @@ public class Formatter {
 
 	public static String parseText(String code) {
 
-		if(Prototype.message() != null) {
+		if(prototype.getMessages() != null) {
 
-			for(String key : Prototype.message().keys()) {
+			for(String key : prototype.getMessages().keys()) {
 
-				code = code.replaceAll("\\@\\{text:" + key + "\\}", Prototype.message().get(key));
+				code = code.replaceAll("\\@\\{text:" + key + "\\}", prototype.getMessages().get(key));
 			}
 		}
 
@@ -102,7 +104,7 @@ public class Formatter {
 
 	public static String parseTemplate(String code, Property<String> attributes) throws Exception {
 
-		for(File file : Prototype.template()) {
+		for(File file : prototype.getTemplates()) {
 
 			if(file != null) {
 
@@ -112,7 +114,7 @@ public class Formatter {
 
 				if(textFile.exists()) {
 
-					String text = Prototype.loader().readText(file.toPath());
+					String text = prototype.getLoader().readText(file.toPath());
 
 					text = parseText(text);
 					text = parseEnv(text);
@@ -127,5 +129,10 @@ public class Formatter {
 		}
 
 		return code;
+	}
+
+	public Formatter(Prototype prototype) {
+
+		Formatter.prototype = prototype;
 	}
 }

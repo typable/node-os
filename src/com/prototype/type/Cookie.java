@@ -6,6 +6,11 @@ public class Cookie {
 	private String value;
 	private long age;
 
+	public static Cookie of(Session session) {
+
+		return new Cookie(Session.USID, session.getUid());
+	}
+
 	public Cookie(String key, String value) {
 
 		this.key = key;

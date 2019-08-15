@@ -23,9 +23,9 @@ public class Updater {
 
 	private Logger logger;
 
-	public Updater() {
+	public Updater(Prototype prototype) {
 
-		logger = Prototype.logger();
+		logger = prototype.getLogger();
 	}
 
 	public void updateDomain(String domain, String auth, String server) {

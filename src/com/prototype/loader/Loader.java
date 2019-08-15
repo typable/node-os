@@ -27,14 +27,20 @@ public class Loader extends ClassLoader {
 	public static final String LOG_PREFIX = "[Loader] ";
 
 	private Charset CHARSET;
-	private Logger LOGGER;
+	private Logger logger;
+	private List<Caller<Request>> requests;
+	private List<File> templates;
+	private Property<String> messages;
 
 	private PropertyParser propertyParser;
 
-	public Loader() {
+	public Loader(Prototype prototype) {
 
 		CHARSET = Constants.CHARSET;
-		LOGGER = Prototype.logger();
+		logger = prototype.getLogger();
+		requests = prototype.getRequests();
+		templates = prototype.getTemplates();
+		messages = prototype.getMessages();
 
 		propertyParser = new PropertyParser();
 	}
@@ -59,11 +65,11 @@ public class Loader extends ClassLoader {
 				}
 			}
 
-			LOGGER.info(LOG_PREFIX + "Configurations loaded");
+			logger.info(LOG_PREFIX + "Configurations loaded");
 		}
 		else {
 
-			LOGGER.warn(LOG_PREFIX + Messages.NOT_FOUND.getMessage(CONFIG_FILE));
+			logger.warn(LOG_PREFIX + Messages.NOT_FOUND.getMessage(CONFIG_FILE));
 		}
 	}
 
@@ -96,7 +102,7 @@ public class Loader extends ClassLoader {
 
 								Caller<Request> caller = new Caller<Request>(request, method, instance);
 
-								Prototype.request().add(caller);
+								this.requests.add(caller);
 
 								count++;
 							}
@@ -106,7 +112,7 @@ public class Loader extends ClassLoader {
 			}
 		}
 
-		LOGGER.info(LOG_PREFIX + "Requests loaded (" + count + ")");
+		logger.info(LOG_PREFIX + "Requests loaded (" + count + ")");
 	}
 
 	public void loadTemplates(List<File> templates) throws Exception {
@@ -120,13 +126,13 @@ public class Loader extends ClassLoader {
 
 			for(File file : loadFiles(directory.toPath(), ".*\\.html")) {
 
-				Prototype.template().add(file);
+				this.templates.add(file);
 
 				count++;
 			}
 		}
 
-		LOGGER.info(LOG_PREFIX + "Templates loaded (" + count + ")");
+		logger.info(LOG_PREFIX + "Templates loaded (" + count + ")");
 	}
 
 	public void loadMessages(Property<String> messages) throws Exception {
@@ -146,14 +152,14 @@ public class Loader extends ClassLoader {
 
 				for(String key : props.keys()) {
 
-					Prototype.message().put(key, props.get(key));
+					this.messages.put(key, props.get(key));
 
 					count++;
 				}
 			}
 		}
 
-		LOGGER.info(LOG_PREFIX + "Messages loaded (" + count + ")");
+		logger.info(LOG_PREFIX + "Messages loaded (" + count + ")");
 	}
 
 	public String readText(Path path) throws Exception {

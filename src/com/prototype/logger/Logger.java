@@ -12,7 +12,8 @@ import com.prototype.loader.Loader;
 
 public class Logger {
 
-	private Loader LOADER;
+	private Prototype prototype;
+	private Loader loader;
 
 	private DateTimeFormatter dateFormatter;
 	private DateTimeFormatter timeFormatter;
@@ -20,7 +21,9 @@ public class Logger {
 
 	private String DEFAULT_LINE_BREAK;
 
-	public Logger() {
+	public Logger(Prototype prototype) {
+
+		this.prototype = prototype;
 
 		dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 		timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -32,7 +35,7 @@ public class Logger {
 
 	public void logFile(Path path) {
 
-		LOADER = Prototype.loader();
+		loader = prototype.getLoader();
 
 		if(path.toFile().isDirectory()) {
 
@@ -66,9 +69,9 @@ public class Logger {
 
 			try {
 
-				String data = LOADER.readText(file.toPath());
+				String data = loader.readText(file.toPath());
 				data += (value + DEFAULT_LINE_BREAK);
-				LOADER.writeText(file.toPath(), data);
+				loader.writeText(file.toPath(), data);
 			}
 			catch(Exception e) {
 

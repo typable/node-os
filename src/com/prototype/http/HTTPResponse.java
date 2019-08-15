@@ -16,14 +16,16 @@ import com.prototype.type.Property;
 
 public class HTTPResponse {
 
+	private Prototype prototype;
 	private HTTPRequest request;
 	private Status status;
 	private Property<String> attributes;
 	private Property<Cookie> cookies;
 	private byte[] body;
 
-	public HTTPResponse(HTTPRequest request) {
+	public HTTPResponse(Prototype prototype, HTTPRequest request) {
 
+		this.prototype = prototype;
 		this.request = request;
 		attributes = new Property<>();
 		cookies = new Property<>();
@@ -88,7 +90,7 @@ public class HTTPResponse {
 
 			try {
 
-				byte[] data = Prototype.loader().read(path);
+				byte[] data = prototype.getLoader().read(path);
 
 				body = data;
 				request.setType(type);
@@ -113,7 +115,7 @@ public class HTTPResponse {
 
 			try {
 
-				byte[] data = Prototype.loader().read(path);
+				byte[] data = prototype.getLoader().read(path);
 
 				download(data, file.getName());
 			}

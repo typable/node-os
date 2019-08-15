@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyStore;
-import java.util.UUID;
+import java.util.List;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -25,23 +25,27 @@ import com.prototype.http.error.HTTPException;
 import com.prototype.logger.Logger;
 import com.prototype.logger.Logger.Messages;
 import com.prototype.reflect.Caller;
-import com.prototype.type.Cookie;
+import com.prototype.service.SessionService;
 import com.prototype.type.Request;
-import com.prototype.type.Session;
 
 
 public class HTTPServer {
 
 	public static final String LOG_PREFIX = "[Server] ";
 
+	private Prototype prototype;
 	private Logger logger;
+	private List<Caller<Request>> requests;
+	private SessionService sessionService;
 
 	private ServerSocket serverSocket;
 	private boolean isSSL;
 
-	public HTTPServer() {
+	public HTTPServer(Prototype prototype) {
 
-		logger = Prototype.logger();
+		this.prototype = prototype;
+		logger = prototype.getLogger();
+		requests = prototype.getRequests();
 	}
 
 	public void start(int port) {
@@ -118,7 +122,7 @@ public class HTTPServer {
 								try {
 
 									request = connection.request();
-									response = new HTTPResponse(request);
+									response = new HTTPResponse(prototype, request);
 
 									String url = request.getUrl();
 									RequestMethod method = request.getMethod();
@@ -126,7 +130,7 @@ public class HTTPServer {
 
 									if(url != null) {
 
-										for(Caller<Request> requestCaller : Prototype.request()) {
+										for(Caller<Request> requestCaller : requests) {
 
 											if(url.equals(requestCaller.get().url()) && method == requestCaller.get().method()) {
 
@@ -138,23 +142,7 @@ public class HTTPServer {
 
 										if(caller != null) {
 
-											Session session = null;
-
-											if(request.hasCookie("ucid")) {
-
-												session = Session.of(request.getCookie("ucid"));
-											}
-											else {
-
-												session = new Session(UUID.randomUUID().toString());
-
-												Cookie cookie = new Cookie("ucid", session.getUid());
-												cookie.setAge(60 * 60 * 24);
-
-												response.addCookie(cookie);
-											}
-
-											request.setSession(session);
+											sessionService.prepareSession(request, response);
 
 											caller.call(request, response);
 										}
@@ -183,7 +171,7 @@ public class HTTPServer {
 
 									HTTPError error = ex.getError();
 
-									response = new HTTPResponse(new HTTPRequest());
+									response = new HTTPResponse(prototype, new HTTPRequest());
 
 									if(error == HTTPError.UNSUPPORTED_HTTP_VERSION) {
 
@@ -234,7 +222,10 @@ public class HTTPServer {
 
 		SSLServerSocketFactory sslServerSocketFactory = context.getServerSocketFactory();
 		SSLServerSocket sslServerSocket = (SSLServerSocket) sslServerSocketFactory.createServerSocket(443);
-		sslServerSocket.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
+		sslServerSocket.setEnabledProtocols(new String[] {
+		      "TLSv1.1",
+		      "TLSv1.2"
+		});
 		sslServerSocket.setEnabledCipherSuites(sslServerSocket.getSupportedCipherSuites());
 		sslServerSocket.setUseClientMode(false);
 		sslServerSocket.setNeedClientAuth(true);
