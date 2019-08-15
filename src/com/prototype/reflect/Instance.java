@@ -16,13 +16,7 @@ public class Instance {
 		return type.getConstructor().newInstance();
 	}
 
-	public Instance(Class<?> type) throws Exception {
-
-		this.setType(type);
-		instance = type.getConstructor().newInstance();
-	}
-
-	public void inject(Property<Object> args) throws Exception {
+	public static void inject(Class<?> type, Object instance, Property<Object> args) throws Exception {
 
 		for(Field field : type.getDeclaredFields()) {
 
@@ -41,6 +35,12 @@ public class Instance {
 				}
 			}
 		}
+	}
+
+	public Instance(Class<?> type) throws Exception {
+
+		this.setType(type);
+		instance = type.getConstructor().newInstance();
 	}
 
 	public Class<?> getType() {

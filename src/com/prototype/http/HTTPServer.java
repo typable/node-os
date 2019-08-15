@@ -46,6 +46,7 @@ public class HTTPServer {
 		this.prototype = prototype;
 		logger = prototype.getLogger();
 		requests = prototype.getRequests();
+		sessionService = prototype.getSessionService();
 	}
 
 	public void start(int port) {
@@ -108,7 +109,7 @@ public class HTTPServer {
 						((SSLSocket) socket).startHandshake();
 					}
 
-					HTTPConnection connection = new HTTPConnection(socket);
+					HTTPConnection connection = new HTTPConnection(prototype, socket);
 					connection.connect(new Runnable() {
 
 						@Override
@@ -222,10 +223,7 @@ public class HTTPServer {
 
 		SSLServerSocketFactory sslServerSocketFactory = context.getServerSocketFactory();
 		SSLServerSocket sslServerSocket = (SSLServerSocket) sslServerSocketFactory.createServerSocket(443);
-		sslServerSocket.setEnabledProtocols(new String[] {
-		      "TLSv1.1",
-		      "TLSv1.2"
-		});
+		sslServerSocket.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
 		sslServerSocket.setEnabledCipherSuites(sslServerSocket.getSupportedCipherSuites());
 		sslServerSocket.setUseClientMode(false);
 		sslServerSocket.setNeedClientAuth(true);

@@ -1,5 +1,6 @@
 package com.prototype.service;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import com.prototype.Prototype;
@@ -9,7 +10,7 @@ import com.prototype.type.Cookie;
 import com.prototype.type.Session;
 
 
-public class SessionService {
+public class SessionService extends Service {
 
 	private Prototype prototype;
 
@@ -45,5 +46,11 @@ public class SessionService {
 			request.setSession(session);
 			response.addCookie(cookie);
 		}
+	}
+
+	@Override
+	public void close() throws IOException {
+
+		//
 	}
 }

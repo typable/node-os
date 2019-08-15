@@ -27,6 +27,7 @@ public class Loader extends ClassLoader {
 	public static final String LOG_PREFIX = "[Loader] ";
 
 	private Charset CHARSET;
+	private Prototype prototype;
 	private Logger logger;
 	private List<Caller<Request>> requests;
 	private List<File> templates;
@@ -37,6 +38,7 @@ public class Loader extends ClassLoader {
 	public Loader(Prototype prototype) {
 
 		CHARSET = Constants.CHARSET;
+		this.prototype = prototype;
 		logger = prototype.getLogger();
 		requests = prototype.getRequests();
 		templates = prototype.getTemplates();
@@ -45,7 +47,7 @@ public class Loader extends ClassLoader {
 		propertyParser = new PropertyParser();
 	}
 
-	public void loadConfigurations(Property<String> environment) throws Exception {
+	public void loadConfigurations(Property<Object> environment) throws Exception {
 
 		final String CONFIG_FILE = Constants.FILES.CONFIG_FILE;
 
@@ -89,6 +91,7 @@ public class Loader extends ClassLoader {
 			if(controller != null) {
 
 				Object instance = Instance.of(controller);
+				Instance.inject(controller, instance, prototype.getEnvironment());
 
 				for(Method method : controller.getDeclaredMethods()) {
 

@@ -7,12 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.prototype.constants.Constants;
+import com.prototype.format.Formatter;
 import com.prototype.http.HTTPServer;
 import com.prototype.loader.Loader;
 import com.prototype.logger.Logger;
 import com.prototype.logger.Logger.Messages;
 import com.prototype.parse.PropertyParser;
 import com.prototype.reflect.Caller;
+import com.prototype.service.SessionService;
 import com.prototype.type.Property;
 import com.prototype.type.Request;
 import com.prototype.type.Session;
@@ -23,8 +25,6 @@ import com.prototype.util.Utils;
 public class Prototype {
 
 	/*
-	TODO inject()
-	TODO Caller
 	TODO Event
 	TODO Runtime
 	 */
@@ -33,7 +33,7 @@ public class Prototype {
 
 	public static String PATH;
 
-	private Property<String> environment;
+	private Property<Object> environment;
 	private Property<String> messages;
 
 	private List<File> templates;
@@ -44,6 +44,8 @@ public class Prototype {
 	private Loader loader;
 	private Updater updater;
 	private HTTPServer server;
+	private SessionService sessionService;
+	private Formatter formatter;
 
 	public Prototype(String[] args) {
 
@@ -59,8 +61,20 @@ public class Prototype {
 			logger = new Logger(this);
 			loader = new Loader(this);
 			updater = new Updater(this);
+			sessionService = new SessionService(this);
+			formatter = new Formatter(this);
 
 			server = new HTTPServer(this);
+
+			environment.put("environment", environment);
+			environment.put("messages", messages);
+			environment.put("templates", templates);
+			environment.put("requests", requests);
+			environment.put("logger", logger);
+			environment.put("loader", loader);
+			environment.put("updater", updater);
+			environment.put("server", server);
+			environment.put("formatter", formatter);
 
 			Prototype.PATH = new File(".").getCanonicalPath();
 
@@ -178,20 +192,20 @@ public class Prototype {
 			loader.loadTemplates(templates);
 			loader.loadMessages(messages);
 
-			String updateSoftware = environment.get("update.software");
+			String updateSoftware = (String) environment.get("update.software");
 
 			if(updateSoftware != null && updateSoftware.equals("true")) {
 
 				updater.updateSoftware();
 			}
 
-			String updateDomain = environment.get("update.domain");
+			String updateDomain = (String) environment.get("update.domain");
 
 			if(updateDomain != null && updateDomain.equals("true")) {
 
-				String dnsDomain = environment.get("dns.domain");
-				String dnsPassword = environment.get("dns.password");
-				String dnsServer = environment.get("dns.server");
+				String dnsDomain = (String) environment.get("dns.domain");
+				String dnsPassword = (String) environment.get("dns.password");
+				String dnsServer = (String) environment.get("dns.server");
 
 				if(dnsDomain != null && !dnsDomain.isBlank() && dnsPassword != null && !dnsPassword.isBlank() && dnsServer != null && !dnsServer.isBlank()) {
 
@@ -199,10 +213,10 @@ public class Prototype {
 				}
 			}
 
-			String port = environment.get("port");
-			String ssl = environment.get("ssl");
-			String sslKey = environment.get("ssl.key");
-			String sslPassword = environment.get("ssl.password");
+			String port = (String) environment.get("port");
+			String ssl = (String) environment.get("ssl");
+			String sslKey = (String) environment.get("ssl.key");
+			String sslPassword = (String) environment.get("ssl.password");
 
 			if(port != null) {
 
@@ -255,7 +269,7 @@ public class Prototype {
 		return Paths.get(Prototype.PATH + path);
 	}
 
-	public Property<String> getEnvironment() {
+	public Property<Object> getEnvironment() {
 
 		return environment;
 	}
@@ -298,5 +312,25 @@ public class Prototype {
 	public HTTPServer getServer() {
 
 		return server;
+	}
+
+	public SessionService getSessionService() {
+
+		return sessionService;
+	}
+
+	public void setSessionService(SessionService sessionService) {
+
+		this.sessionService = sessionService;
+	}
+
+	public Formatter getFormatter() {
+
+		return formatter;
+	}
+
+	public void setFormatter(Formatter formatter) {
+
+		this.formatter = formatter;
 	}
 }

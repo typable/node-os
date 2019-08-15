@@ -12,7 +12,7 @@ import com.prototype.util.Utils;
 
 public class Formatter {
 
-	private static Prototype prototype;
+	private Prototype prototype;
 
 	public static String parseURL(String code) {
 
@@ -36,16 +36,6 @@ public class Formatter {
 		}
 
 		return params;
-	}
-
-	public static String parse(String code, Property<String> attributes) throws Exception {
-
-		code = parseText(code);
-		code = parseEnv(code);
-		code = parseTemplate(code, attributes);
-		code = parseHTML(code, attributes);
-
-		return code;
 	}
 
 	public static String parseHTML(String code, Property<String> attributes) {
@@ -74,22 +64,40 @@ public class Formatter {
 		return code;
 	}
 
-	public static String parseEnv(String code) {
+	public Formatter(Prototype prototype) {
+
+		this.prototype = prototype;
+	}
+
+	public String parse(String code, Property<String> attributes) throws Exception {
+
+		code = parseText(code);
+		code = parseEnv(code);
+		code = parseTemplate(code, attributes);
+		code = parseHTML(code, attributes);
+
+		return code;
+	}
+
+	public String parseEnv(String code) {
 
 		if(prototype.getEnvironment() != null) {
 
 			for(String key : prototype.getEnvironment().keys()) {
 
-				String value = prototype.getEnvironment().get(key);
+				if(prototype.getEnvironment().get(key) instanceof String) {
 
-				code = code.replaceAll("\\@\\{env:" + key + "\\}", value);
+					String value = (String) prototype.getEnvironment().get(key);
+
+					code = code.replaceAll("\\@\\{env:" + key + "\\}", value);
+				}
 			}
 		}
 
 		return code;
 	}
 
-	public static String parseText(String code) {
+	public String parseText(String code) {
 
 		if(prototype.getMessages() != null) {
 
@@ -102,7 +110,7 @@ public class Formatter {
 		return code;
 	}
 
-	public static String parseTemplate(String code, Property<String> attributes) throws Exception {
+	public String parseTemplate(String code, Property<String> attributes) throws Exception {
 
 		for(File file : prototype.getTemplates()) {
 
@@ -129,10 +137,5 @@ public class Formatter {
 		}
 
 		return code;
-	}
-
-	public Formatter(Prototype prototype) {
-
-		Formatter.prototype = prototype;
 	}
 }

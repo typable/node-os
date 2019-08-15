@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.prototype.Prototype;
 import com.prototype.constants.Constants;
 import com.prototype.format.Formatter;
 import com.prototype.http.constants.Header;
@@ -23,12 +24,14 @@ import com.prototype.util.Utils;
 
 public class HTTPConnection extends Connection {
 
+	private Prototype prototype;
 	private Charset CHARSET;
 
-	public HTTPConnection(Socket socket) {
+	public HTTPConnection(Prototype prototype, Socket socket) {
 
 		super(socket);
 
+		this.prototype = prototype;
 		CHARSET = Constants.CHARSET;
 	}
 
@@ -260,7 +263,7 @@ public class HTTPConnection extends Connection {
 
 					String formattedBody = new String(response.getBody(), CHARSET);
 
-					formattedBody = Formatter.parse(formattedBody, response.getAttributes());
+					formattedBody = prototype.getFormatter().parse(formattedBody, response.getAttributes());
 
 					body = formattedBody.getBytes(CHARSET);
 				}
