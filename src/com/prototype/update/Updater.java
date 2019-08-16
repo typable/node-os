@@ -14,23 +14,27 @@ import java.nio.file.Paths;
 import com.prototype.Prototype;
 import com.prototype.http.constants.Header;
 import com.prototype.logger.Logger;
+import com.prototype.reflect.Inject;
 
 
 public class Updater {
 
-	public static final String CHECKIP = "http://checkip.amazonaws.com";
-	public static final String LOG_PREFIX = "[Updater] ";
+	public static final String NAME = "prototype.updater";
+	public static final String PREFIX = "[Updater] ";
 
+	private final String CHECKIP = "http://checkip.amazonaws.com";
+
+	@Inject(name = Logger.NAME)
 	private Logger logger;
 
-	public Updater(Prototype prototype) {
+	public Updater() {
 
-		logger = prototype.getLogger();
+		//
 	}
 
 	public void updateDomain(String domain, String auth, String server) {
 
-		logger.info(LOG_PREFIX + "Checking domain availability...");
+		logger.info(PREFIX + "Checking domain availability...");
 
 		try {
 
@@ -57,40 +61,40 @@ public class Updater {
 
 					if(response.startsWith("badauth")) {
 
-						logger.warn(LOG_PREFIX + "Authorization failed! (" + response + ")");
+						logger.warn(PREFIX + "Authorization failed! (" + response + ")");
 					}
 					else if(response.startsWith("good")) {
 
-						logger.info(LOG_PREFIX + "Domain updated successfully. (" + response + ")");
+						logger.info(PREFIX + "Domain updated successfully. (" + response + ")");
 					}
 					else if(response.startsWith("nochg")) {
 
-						logger.info(LOG_PREFIX + "Nothing hast changed. (" + response + ")");
+						logger.info(PREFIX + "Nothing hast changed. (" + response + ")");
 					}
 					else {
 
-						logger.warn(LOG_PREFIX + "Unknown response? (" + response + ")");
+						logger.warn(PREFIX + "Unknown response? (" + response + ")");
 					}
 				}
 				else {
 
-					logger.warn(LOG_PREFIX + "Server is not reachable! Code: " + code);
+					logger.warn(PREFIX + "Server is not reachable! Code: " + code);
 				}
 			}
 			else {
 
-				logger.info(LOG_PREFIX + "Domain up to date. (" + DOMAIN_IP_ADDRESS + ")");
+				logger.info(PREFIX + "Domain up to date. (" + DOMAIN_IP_ADDRESS + ")");
 			}
 		}
 		catch(Exception ex) {
 
-			logger.error(LOG_PREFIX + "Update domain failed!", ex);
+			logger.error(PREFIX + "Update domain failed!", ex);
 		}
 	}
 
 	public void updateSoftware() {
 
-		logger.info(LOG_PREFIX + "Checking for updates...");
+		logger.info(PREFIX + "Checking for updates...");
 
 		try {
 
@@ -119,11 +123,11 @@ public class Updater {
 		}
 		catch(SocketTimeoutException ex) {
 
-			logger.warn(LOG_PREFIX + "Server is not reachable!");
+			logger.warn(PREFIX + "Server is not reachable!");
 		}
 		catch(Exception ex) {
 
-			logger.error(LOG_PREFIX + "Update software failed!", ex);
+			logger.error(PREFIX + "Update software failed!", ex);
 		}
 	}
 
@@ -138,7 +142,7 @@ public class Updater {
 		}
 		catch(Exception e) {
 
-			logger.error(LOG_PREFIX + "Server is not reachable! IP-Address: " + CHECKIP);
+			logger.error(PREFIX + "Server is not reachable! IP-Address: " + CHECKIP);
 		}
 
 		return null;

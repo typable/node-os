@@ -3,7 +3,6 @@ package com.prototype.loader;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,10 +11,12 @@ import java.util.List;
 
 import com.prototype.Prototype;
 import com.prototype.constants.Constants;
+import com.prototype.core.Core;
 import com.prototype.logger.Logger;
 import com.prototype.logger.Logger.Messages;
 import com.prototype.parse.PropertyParser;
 import com.prototype.reflect.Caller;
+import com.prototype.reflect.Inject;
 import com.prototype.reflect.Instance;
 import com.prototype.type.Controller;
 import com.prototype.type.Property;
@@ -24,34 +25,28 @@ import com.prototype.type.Request;
 
 public class Loader extends ClassLoader {
 
-	public static final String LOG_PREFIX = "[Loader] ";
+	public static final String NAME = "prototype.loader";
+	public static final String PREFIX = "[Loader] ";
 
-	private Charset CHARSET;
-	private Prototype prototype;
+	@Inject(name = Core.NAME)
+	private Core core;
+
+	@Inject(name = Logger.NAME)
 	private Logger logger;
-	private List<Caller<Request>> requests;
-	private List<File> templates;
-	private Property<String> messages;
+
+	@Inject(name = "configurations")
+	private Property<String> configurations;
 
 	private PropertyParser propertyParser;
 
-	public Loader(Prototype prototype) {
-
-		CHARSET = Constants.CHARSET;
-		this.prototype = prototype;
-		logger = prototype.getLogger();
-		requests = prototype.getRequests();
-		templates = prototype.getTemplates();
-		messages = prototype.getMessages();
+	public Loader() {
 
 		propertyParser = new PropertyParser();
 	}
 
-	public void loadConfigurations(Property<Object> environment) throws Exception {
+	public void loadConfigurations(Property<String> configurations) throws Exception {
 
-		final String CONFIG_FILE = Constants.FILES.CONFIG_FILE;
-
-		File file = new File(Prototype.PATH + "/" + CONFIG_FILE);
+		File file = Prototype.path("/" + Constants.FILES.CONFIG_FILE).toFile();
 
 		if(file.exists()) {
 
@@ -63,15 +58,15 @@ public class Loader extends ClassLoader {
 
 				for(String key : props.keys()) {
 
-					environment.put(key, props.get(key));
+					configurations.put(key, props.get(key));
 				}
 			}
 
-			logger.info(LOG_PREFIX + "Configurations loaded");
+			logger.info(PREFIX + "Configurations loaded");
 		}
 		else {
 
-			logger.warn(LOG_PREFIX + Messages.NOT_FOUND.getMessage(CONFIG_FILE));
+			logger.warn(PREFIX + Messages.NOT_FOUND.getMessage(Constants.FILES.CONFIG_FILE));
 		}
 	}
 
@@ -91,7 +86,7 @@ public class Loader extends ClassLoader {
 			if(controller != null) {
 
 				Object instance = Instance.of(controller);
-				Instance.inject(controller, instance, prototype.getEnvironment());
+				Instance.inject(controller, instance, core.environment);
 
 				for(Method method : controller.getDeclaredMethods()) {
 
@@ -105,7 +100,7 @@ public class Loader extends ClassLoader {
 
 								Caller<Request> caller = new Caller<Request>(request, method, instance);
 
-								this.requests.add(caller);
+								requests.add(caller);
 
 								count++;
 							}
@@ -115,7 +110,7 @@ public class Loader extends ClassLoader {
 			}
 		}
 
-		logger.info(LOG_PREFIX + "Requests loaded (" + count + ")");
+		logger.info(PREFIX + "Requests loaded (" + count + ")");
 	}
 
 	public void loadTemplates(List<File> templates) throws Exception {
@@ -129,13 +124,13 @@ public class Loader extends ClassLoader {
 
 			for(File file : loadFiles(directory.toPath(), ".*\\.html")) {
 
-				this.templates.add(file);
+				templates.add(file);
 
 				count++;
 			}
 		}
 
-		logger.info(LOG_PREFIX + "Templates loaded (" + count + ")");
+		logger.info(PREFIX + "Templates loaded (" + count + ")");
 	}
 
 	public void loadMessages(Property<String> messages) throws Exception {
@@ -155,19 +150,19 @@ public class Loader extends ClassLoader {
 
 				for(String key : props.keys()) {
 
-					this.messages.put(key, props.get(key));
+					messages.put(key, props.get(key));
 
 					count++;
 				}
 			}
 		}
 
-		logger.info(LOG_PREFIX + "Messages loaded (" + count + ")");
+		logger.info(PREFIX + "Messages loaded (" + count + ")");
 	}
 
 	public String readText(Path path) throws Exception {
 
-		return Files.readString(path, CHARSET);
+		return Files.readString(path, Constants.CHARSET);
 	}
 
 	public byte[] read(Path path) throws Exception {
@@ -177,7 +172,7 @@ public class Loader extends ClassLoader {
 
 	public void writeText(Path path, String data) throws Exception {
 
-		Files.writeString(path, data, CHARSET);
+		Files.writeString(path, data, Constants.CHARSET);
 	}
 
 	public void write(Path path, byte[] data) throws Exception {
@@ -257,5 +252,4 @@ public class Loader extends ClassLoader {
 
 		return null;
 	}
-
 }

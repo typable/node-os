@@ -9,9 +9,8 @@ import java.util.UUID;
 import com.prototype.service.Service;
 
 
-public class LifeCycle implements Runnable, Closeable, AutoCloseable {
+public abstract class LifeCycle implements Runnable, Closeable, AutoCloseable {
 
-	private boolean running;
 	private List<Service> services;
 
 	public LifeCycle() {
@@ -20,20 +19,7 @@ public class LifeCycle implements Runnable, Closeable, AutoCloseable {
 	}
 
 	@Override
-	public void run() {
-
-		running = true;
-
-		while(running) {
-
-			//
-		}
-	}
-
-	@Override
 	public void close() throws IOException {
-
-		running = false;
 
 		for(Service service : services) {
 

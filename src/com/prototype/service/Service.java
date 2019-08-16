@@ -4,7 +4,7 @@ import java.io.Closeable;
 import java.util.UUID;
 
 
-public abstract class Service implements Closeable {
+public abstract class Service implements Runnable, Closeable, AutoCloseable {
 
 	private UUID uuid;
 

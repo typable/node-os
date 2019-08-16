@@ -2,9 +2,11 @@ package com.prototype.format;
 
 import java.io.File;
 import java.net.URLDecoder;
+import java.util.List;
 
-import com.prototype.Prototype;
 import com.prototype.constants.Constants;
+import com.prototype.loader.Loader;
+import com.prototype.reflect.Inject;
 import com.prototype.type.Parameter;
 import com.prototype.type.Property;
 import com.prototype.util.Utils;
@@ -12,7 +14,19 @@ import com.prototype.util.Utils;
 
 public class Formatter {
 
-	private Prototype prototype;
+	public static final String NAME = "prototype.formatter";
+
+	@Inject(name = Loader.NAME)
+	private Loader loader;
+
+	@Inject(name = "configurations")
+	private Property<String> conifgurations;
+
+	@Inject(name = "templates")
+	private List<File> templates;
+
+	@Inject(name = "messages")
+	private Property<String> messages;
 
 	public static String parseURL(String code) {
 
@@ -64,30 +78,30 @@ public class Formatter {
 		return code;
 	}
 
-	public Formatter(Prototype prototype) {
+	public Formatter() {
 
-		this.prototype = prototype;
+		//
 	}
 
 	public String parse(String code, Property<String> attributes) throws Exception {
 
 		code = parseText(code);
-		code = parseEnv(code);
+		code = parseConfigurations(code);
 		code = parseTemplate(code, attributes);
 		code = parseHTML(code, attributes);
 
 		return code;
 	}
 
-	public String parseEnv(String code) {
+	public String parseConfigurations(String code) {
 
-		if(prototype.getEnvironment() != null) {
+		if(conifgurations != null) {
 
-			for(String key : prototype.getEnvironment().keys()) {
+			for(String key : conifgurations.keys()) {
 
-				if(prototype.getEnvironment().get(key) instanceof String) {
+				if(conifgurations.get(key) instanceof String) {
 
-					String value = (String) prototype.getEnvironment().get(key);
+					String value = (String) conifgurations.get(key);
 
 					code = code.replaceAll("\\@\\{env:" + key + "\\}", value);
 				}
@@ -99,11 +113,11 @@ public class Formatter {
 
 	public String parseText(String code) {
 
-		if(prototype.getMessages() != null) {
+		if(messages != null) {
 
-			for(String key : prototype.getMessages().keys()) {
+			for(String key : messages.keys()) {
 
-				code = code.replaceAll("\\@\\{text:" + key + "\\}", prototype.getMessages().get(key));
+				code = code.replaceAll("\\@\\{text:" + key + "\\}", messages.get(key));
 			}
 		}
 
@@ -112,7 +126,7 @@ public class Formatter {
 
 	public String parseTemplate(String code, Property<String> attributes) throws Exception {
 
-		for(File file : prototype.getTemplates()) {
+		for(File file : templates) {
 
 			if(file != null) {
 
@@ -122,10 +136,10 @@ public class Formatter {
 
 				if(textFile.exists()) {
 
-					String text = prototype.getLoader().readText(file.toPath());
+					String text = loader.readText(file.toPath());
 
 					text = parseText(text);
-					text = parseEnv(text);
+					text = parseConfigurations(text);
 					text = parseHTML(text, attributes);
 
 					if(key != null) {

@@ -109,7 +109,7 @@ public class HTTPRequest {
 
 	public boolean hasCookie(String key) {
 
-		return cookies.hasKey(key);
+		return cookies.has(key);
 	}
 
 	public void setCookies(Property<Cookie> cookies) {

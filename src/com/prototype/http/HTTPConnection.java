@@ -1,12 +1,9 @@
 package com.prototype.http;
 
 import java.net.Socket;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.prototype.Prototype;
-import com.prototype.constants.Constants;
 import com.prototype.format.Formatter;
 import com.prototype.http.constants.Header;
 import com.prototype.http.constants.MediaType;
@@ -15,6 +12,7 @@ import com.prototype.http.constants.Status;
 import com.prototype.http.error.HTTPError;
 import com.prototype.http.error.HTTPException;
 import com.prototype.net.Connection;
+import com.prototype.reflect.Inject;
 import com.prototype.type.Cookie;
 import com.prototype.type.FormData;
 import com.prototype.type.Parameter;
@@ -24,15 +22,12 @@ import com.prototype.util.Utils;
 
 public class HTTPConnection extends Connection {
 
-	private Prototype prototype;
-	private Charset CHARSET;
+	@Inject(name = Formatter.NAME)
+	private Formatter formatter;
 
-	public HTTPConnection(Prototype prototype, Socket socket) {
+	public HTTPConnection(Socket socket) {
 
 		super(socket);
-
-		this.prototype = prototype;
-		CHARSET = Constants.CHARSET;
 	}
 
 	public HTTPRequest request() throws HTTPException, Exception {
@@ -177,7 +172,7 @@ public class HTTPConnection extends Connection {
 
 								Parameter param = new Parameter(key);
 
-								if(params.hasKey(key)) {
+								if(params.has(key)) {
 
 									for(String fileKey : params.get(key).getFiles().keys()) {
 
@@ -206,7 +201,7 @@ public class HTTPConnection extends Connection {
 			}
 		}
 
-		if(request.getHeaders().hasKey(Header.COOKIE.getCode())) {
+		if(request.getHeaders().has(Header.COOKIE.getCode())) {
 
 			String cookies = request.getHeader(Header.COOKIE);
 
@@ -263,7 +258,7 @@ public class HTTPConnection extends Connection {
 
 					String formattedBody = new String(response.getBody(), CHARSET);
 
-					formattedBody = prototype.getFormatter().parse(formattedBody, response.getAttributes());
+					formattedBody = formatter.parse(formattedBody, response.getAttributes());
 
 					body = formattedBody.getBytes(CHARSET);
 				}
@@ -272,7 +267,7 @@ public class HTTPConnection extends Connection {
 					body = response.getBody();
 				}
 
-				if(!response.getHeaders().hasKey(Header.CONTENT_LENGTH.getCode())) {
+				if(!response.getHeaders().has(Header.CONTENT_LENGTH.getCode())) {
 
 					response.getHeaders().put(Header.CONTENT_LENGTH.getCode(), String.valueOf(body.length));
 				}

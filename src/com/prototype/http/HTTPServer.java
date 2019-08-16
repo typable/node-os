@@ -1,22 +1,16 @@
 package com.prototype.http;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.KeyStore;
 import java.util.List;
 
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
-import javax.net.ssl.TrustManagerFactory;
 
 import com.prototype.Prototype;
+import com.prototype.constants.Constants;
 import com.prototype.http.constants.MediaType;
 import com.prototype.http.constants.RequestMethod;
 import com.prototype.http.constants.Status;
@@ -25,80 +19,41 @@ import com.prototype.http.error.HTTPException;
 import com.prototype.logger.Logger;
 import com.prototype.logger.Logger.Messages;
 import com.prototype.reflect.Caller;
+import com.prototype.reflect.Inject;
+import com.prototype.service.Service;
 import com.prototype.service.SessionService;
 import com.prototype.type.Request;
 
 
-public class HTTPServer {
+public class HTTPServer extends Service {
 
-	public static final String LOG_PREFIX = "[Server] ";
+	public static final String PREFIX = "[Server] ";
 
-	private Prototype prototype;
+	@Inject(name = Logger.NAME)
 	private Logger logger;
+
+	@Inject(name = "requests")
 	private List<Caller<Request>> requests;
+
+	@Inject(name = "")
 	private SessionService sessionService;
 
 	private ServerSocket serverSocket;
-	private boolean isSSL;
+	private boolean ssl;
 
-	public HTTPServer(Prototype prototype) {
+	public HTTPServer(ServerSocket serverSocket) {
 
-		this.prototype = prototype;
-		logger = prototype.getLogger();
-		requests = prototype.getRequests();
-		sessionService = prototype.getSessionService();
+		this.serverSocket = serverSocket;
 	}
 
-	public void start(int port) {
+	@Override
+	public void run() {
 
-		start(port, false, null, null);
-	}
+		logger.info(PREFIX + Messages.SERVER_STARTED.getMessage(String.valueOf(serverSocket.getLocalPort())));
 
-	public void start(int port, boolean ssl, String key, String password) {
+		while(!serverSocket.isClosed()) {
 
-		boolean isSSL = false;
-
-		try {
-
-			if(ssl && key != null && !key.isBlank() && password != null && !password.isBlank()) {
-
-				isSSL = ssl;
-
-				File file = Prototype.path(key).toFile();
-
-				if(!file.exists()) {
-
-					logger.warn(Messages.NOT_FOUND.getMessage(file.getName()));
-
-					isSSL = false;
-				}
-				else {
-
-					try {
-
-						serverSocket = createSSLServerSocket(file, password);
-
-						port = 443;
-					}
-					catch(IOException e) {
-
-						logger.warn("Invalid SSL-Key password!");
-
-						isSSL = false;
-					}
-				}
-			}
-
-			if(!isSSL) {
-
-				serverSocket = new ServerSocket(port);
-			}
-
-			this.isSSL = isSSL;
-
-			logger.info(LOG_PREFIX + Messages.SERVER_STARTED.getMessage(String.valueOf(port)));
-
-			while(!serverSocket.isClosed()) {
+			try {
 
 				Socket socket = serverSocket.accept();
 
@@ -109,7 +64,7 @@ public class HTTPServer {
 						((SSLSocket) socket).startHandshake();
 					}
 
-					HTTPConnection connection = new HTTPConnection(prototype, socket);
+					HTTPConnection connection = new HTTPConnection(socket);
 					connection.connect(new Runnable() {
 
 						@Override
@@ -122,57 +77,66 @@ public class HTTPServer {
 
 								try {
 
+									/** Get request **/
 									request = connection.request();
-									response = new HTTPResponse(prototype, request);
+									response = new HTTPResponse(request);
 
 									String url = request.getUrl();
 									RequestMethod method = request.getMethod();
+
 									Caller<Request> caller = null;
 
-									if(url != null) {
+									for(Caller<Request> c : requests) {
 
-										for(Caller<Request> requestCaller : requests) {
+										Request r = c.get();
 
-											if(url.equals(requestCaller.get().url()) && method == requestCaller.get().method()) {
+										/** Checks if request has no ignore tag **/
+										if(!r.ignore()) {
 
-												caller = requestCaller;
+											if(r.url().equals(url) && r.method() == method) {
+
+												caller = c;
 
 												break;
 											}
 										}
+									}
 
-										if(caller != null) {
+									if(caller != null) {
 
-											sessionService.prepareSession(request, response);
+										/** Prepare Session **/
+										sessionService.prepareSession(request, response);
 
-											caller.call(request, response);
-										}
-										else if(url.startsWith("/res/")) {
+										/** Calls method of current request **/
+										caller.call(request, response);
+									}
+									else if(url.startsWith(Constants.PATHS.RESOURCE_PATH)) {
 
-											File file = new File(Prototype.PATH + url);
+										/** Handle '/res' requests **/
+										File file = Prototype.path(url).toFile();
 
-											if(file.exists() && file.isFile()) {
+										if(file.exists() && file.isFile()) {
 
-												response.viewPage(file.toPath(), MediaType.ofFile(file.getName()));
-											}
-											else {
-
-												response.notFound();
-											}
+											response.viewPage(file.toPath(), MediaType.ofFile(file.getName()));
 										}
 										else {
 
-											response.viewNotFoundPage();
+											response.notFound();
 										}
-
-										connection.commit(response);
 									}
+									else {
+
+										/** Views 404 page if exists **/
+										response.viewNotFoundPage();
+									}
+
+									/** Send response **/
+									connection.commit(response);
 								}
 								catch(HTTPException ex) {
 
+									/** Handle HTTPException **/
 									HTTPError error = ex.getError();
-
-									response = new HTTPResponse(prototype, new HTTPRequest());
 
 									if(error == HTTPError.UNSUPPORTED_HTTP_VERSION) {
 
@@ -181,83 +145,42 @@ public class HTTPServer {
 
 									if(error == HTTPError.UNSUPPORTED_REQUEST_METHOD || error == HTTPError.MALFORMED_URL) {
 
-										response.setStatus(Status.BAD_REQUEST);
+										response.badRequest();
 									}
 
+									/** Send response **/
 									connection.commit(response);
 								}
 							}
-							catch(Exception e) {
+							catch(Exception ex) {
 
-								logger.error(LOG_PREFIX + Messages.FATAL_ERROR.getMessage(), e);
+								// TODO Exception
 							}
 						}
 					});
 				}
-				catch(SSLException e) {
+				catch(SSLException ex) {
 
-					// TODO Certificate not verified!
+					/** Certificate not trusted! **/
 				}
 			}
-		}
-		catch(Exception e) {
+			catch(Exception ex) {
 
-			logger.error(LOG_PREFIX + Messages.FATAL_ERROR.getMessage(), e);
+				// TODO Exception
+			}
 		}
 	}
 
-	public void stop() throws Exception {
+	@Override
+	public void close() throws IOException {
 
 		serverSocket.close();
 
-		logger.info(LOG_PREFIX + Messages.SERVER_STOPPED.getMessage());
-
-		System.exit(0);
-	}
-
-	private ServerSocket createSSLServerSocket(File file, String password) throws Exception {
-
-		KeyStore keyStore = generateKey(file, password);
-
-		SSLContext context = generateSSLContext(keyStore, password);
-
-		SSLServerSocketFactory sslServerSocketFactory = context.getServerSocketFactory();
-		SSLServerSocket sslServerSocket = (SSLServerSocket) sslServerSocketFactory.createServerSocket(443);
-		sslServerSocket.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
-		sslServerSocket.setEnabledCipherSuites(sslServerSocket.getSupportedCipherSuites());
-		sslServerSocket.setUseClientMode(false);
-		sslServerSocket.setNeedClientAuth(true);
-		sslServerSocket.setWantClientAuth(true);
-		sslServerSocket.setEnableSessionCreation(true);
-
-		return sslServerSocket;
-	}
-
-	private SSLContext generateSSLContext(KeyStore keyStore, String password) throws Exception {
-
-		KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-		keyManagerFactory.init(keyStore, password.toCharArray());
-
-		TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-		trustManagerFactory.init(keyStore);
-
-		SSLContext context = SSLContext.getInstance("SSL");
-		context.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
-
-		return context;
-	}
-
-	private KeyStore generateKey(File file, String password) throws Exception {
-
-		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-
-		keyStore.load(new FileInputStream(file), password.toCharArray());
-
-		return keyStore;
+		logger.info(PREFIX + Messages.SERVER_STOPPED.getMessage());
 	}
 
 	public boolean isSSL() {
 
-		return isSSL;
+		return ssl;
 	}
 }

@@ -3,10 +3,12 @@ package com.prototype;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.prototype.constants.Constants;
+import com.prototype.core.Core;
+import com.prototype.factory.HTTPServerFactory;
 import com.prototype.format.Formatter;
 import com.prototype.http.HTTPServer;
 import com.prototype.loader.Loader;
@@ -33,6 +35,8 @@ public class Prototype {
 
 	public static String PATH;
 
+	private Core core;
+
 	private Property<Object> environment;
 	private Property<String> messages;
 
@@ -49,58 +53,32 @@ public class Prototype {
 
 	public Prototype(String[] args) {
 
-		try {
+		try(Core core = new Core()) {
 
-			environment = new Property<>();
-			messages = new Property<>();
+			core.init();
+			core.run();
 
-			templates = new ArrayList<>();
-			requests = new ArrayList<>();
-			sessions = new ArrayList<>();
-
-			logger = new Logger(this);
-			loader = new Loader(this);
-			updater = new Updater(this);
-			sessionService = new SessionService(this);
-			formatter = new Formatter(this);
-
-			server = new HTTPServer(this);
-
-			environment.put("environment", environment);
-			environment.put("messages", messages);
-			environment.put("templates", templates);
-			environment.put("requests", requests);
-			environment.put("logger", logger);
-			environment.put("loader", loader);
-			environment.put("updater", updater);
-			environment.put("server", server);
-			environment.put("formatter", formatter);
-
-			Prototype.PATH = new File(".").getCanonicalPath();
-
+			/*
 			if(args.length >= 1) {
-
+			
 				if(args[0].equals("-init")) {
-
+			
 					init(args);
 				}
-				else if(args[0].equals("-reload")) {
-
-					reload();
-				}
 				else {
-
+			
 					logger.warn("Invalid command!");
 				}
 			}
 			else {
-
+			
 				launch();
 			}
+			 */
 		}
 		catch(Exception ex) {
 
-			logger.error(Messages.FATAL_ERROR.getMessage(), ex);
+			// TODO Exception
 		}
 	}
 
@@ -181,81 +159,89 @@ public class Prototype {
 
 	private void launch() throws Exception {
 
-		logger.logFile(Paths.get(Prototype.PATH + Constants.PATHS.LOG_PATH));
+		logger.logFile(path(Constants.PATHS.LOG_PATH));
 
-		File CONFIG_FILE = new File(Prototype.PATH + "/" + Constants.FILES.CONFIG_FILE);
+		File configFile = path("/" + Constants.FILES.CONFIG_FILE).toFile();
 
-		if(CONFIG_FILE.exists()) {
+		if(!configFile.exists()) {
 
-			loader.loadConfigurations(environment);
-			loader.loadRequests(requests);
-			loader.loadTemplates(templates);
-			loader.loadMessages(messages);
+			logger.warn("Project must be initialized!");
 
-			String updateSoftware = (String) environment.get("update.software");
+			return;
+		}
 
-			if(updateSoftware != null && updateSoftware.equals("true")) {
+		update();
+
+		Optional<Object> port_opt = environment.getNullable("port");
+		Optional<Object> ssl_opt = environment.getNullable("ssl");
+		Optional<Object> ssl_key_opt = environment.getNullable("ssl.key");
+		Optional<Object> ssl_password_opt = environment.getNullable("ssl.password");
+
+		if(!port_opt.isPresent()) {
+
+			logger.error(Messages.UNDEFINED.getMessage("port"));
+
+			return;
+		}
+
+		int port = Integer.parseInt((String) port_opt.get());
+
+		if(ssl_opt.isPresent() && ssl_key_opt.isPresent() && ssl_password_opt.isPresent()) {
+
+			boolean ssl = Boolean.parseBoolean((String) ssl_opt.get());
+			Path ssl_key = Paths.get((String) ssl_key_opt.get());
+			String ssl_password = (String) ssl_password_opt.get();
+
+			server = HTTPServerFactory.create(port, ssl, ssl_key, ssl_password);
+		}
+		else {
+
+			server = HTTPServerFactory.create(port);
+		}
+
+		server.run();
+	}
+
+	private void update() throws Exception {
+
+		Optional<Object> update_software_opt = environment.getNullable("update.software");
+		Optional<Object> update_domain_opt = environment.getNullable("update.domain");
+
+		if(update_software_opt.isPresent()) {
+
+			boolean update_software = Boolean.parseBoolean((String) update_software_opt.get());
+
+			if(update_software) {
 
 				updater.updateSoftware();
 			}
+		}
 
-			String updateDomain = (String) environment.get("update.domain");
+		if(update_domain_opt.isPresent()) {
 
-			if(updateDomain != null && updateDomain.equals("true")) {
+			boolean update_domain = Boolean.parseBoolean((String) update_domain_opt.get());
 
-				String dnsDomain = (String) environment.get("dns.domain");
-				String dnsPassword = (String) environment.get("dns.password");
-				String dnsServer = (String) environment.get("dns.server");
+			if(update_domain) {
 
-				if(dnsDomain != null && !dnsDomain.isBlank() && dnsPassword != null && !dnsPassword.isBlank() && dnsServer != null && !dnsServer.isBlank()) {
+				Optional<Object> dns_domain_opt = environment.getNullable("dns.domain");
+				Optional<Object> dns_password_opt = environment.getNullable("dns.password");
+				Optional<Object> dns_server_opt = environment.getNullable("dns.server");
 
-					updater.updateDomain(dnsDomain, Utils.encode(dnsDomain + ":" + dnsPassword), dnsServer);
-				}
-			}
+				if(dns_domain_opt.isPresent() && dns_password_opt.isPresent() && dns_server_opt.isPresent()) {
 
-			String port = (String) environment.get("port");
-			String ssl = (String) environment.get("ssl");
-			String sslKey = (String) environment.get("ssl.key");
-			String sslPassword = (String) environment.get("ssl.password");
+					String dns_domain = (String) dns_domain_opt.get();
+					String dns_password = (String) dns_password_opt.get();
+					String dns_server = (String) dns_server_opt.get();
 
-			if(port != null) {
+					String dns_auth = Utils.encode(dns_domain + ":" + dns_password);
 
-				if(ssl != null && sslKey != null && sslPassword != null) {
-
-					server.start(Integer.valueOf(port), Boolean.valueOf(ssl), sslKey, sslPassword);
+					updater.updateDomain(dns_domain, dns_auth, dns_server);
 				}
 				else {
 
-					server.start(Integer.valueOf(port));
+					logger.warn(Messages.UNDEFINED.getMessage("dns.<domain,password,server>"));
 				}
 			}
-			else {
-
-				logger.error(Messages.UNDEFINED.getMessage("port"));
-			}
-		}
-		else {
-
-			logger.warn("Project must be initialized!");
-
-			System.exit(0);
-		}
-	}
-
-	private void reload() throws Exception {
-
-		File CONFIG_FILE = new File(Prototype.PATH + "/" + Constants.FILES.CONFIG_FILE);
-
-		if(CONFIG_FILE.exists()) {
-
-			loader.loadConfigurations(environment);
-			loader.loadRequests(requests);
-			loader.loadTemplates(templates);
-			loader.loadMessages(messages);
-		}
-		else {
-
-			logger.warn("Project must be initialized!");
 		}
 	}
 

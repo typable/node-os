@@ -6,13 +6,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-import com.prototype.Prototype;
 import com.prototype.loader.Loader;
+import com.prototype.reflect.Inject;
 
 
 public class Logger {
 
-	private Prototype prototype;
+	public static final String NAME = "prototype.logger";
+
+	@Inject(name = Loader.NAME)
 	private Loader loader;
 
 	private DateTimeFormatter dateFormatter;
@@ -21,9 +23,7 @@ public class Logger {
 
 	private String DEFAULT_LINE_BREAK;
 
-	public Logger(Prototype prototype) {
-
-		this.prototype = prototype;
+	public Logger() {
 
 		dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 		timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -34,8 +34,6 @@ public class Logger {
 	}
 
 	public void logFile(Path path) {
-
-		loader = prototype.getLoader();
 
 		if(path.toFile().isDirectory()) {
 

@@ -49,6 +49,12 @@ public class SessionService extends Service {
 	}
 
 	@Override
+	public void run() {
+
+		//
+	}
+
+	@Override
 	public void close() throws IOException {
 
 		//

@@ -10,22 +10,25 @@ import com.prototype.http.constants.Header;
 import com.prototype.http.constants.MediaType;
 import com.prototype.http.constants.RequestMethod;
 import com.prototype.http.constants.Status;
+import com.prototype.loader.Loader;
+import com.prototype.reflect.Inject;
 import com.prototype.type.Cookie;
 import com.prototype.type.Property;
 
 
 public class HTTPResponse {
 
-	private Prototype prototype;
+	@Inject(name = Loader.NAME)
+	private Loader loader;
+
 	private HTTPRequest request;
 	private Status status;
 	private Property<String> attributes;
 	private Property<Cookie> cookies;
 	private byte[] body;
 
-	public HTTPResponse(Prototype prototype, HTTPRequest request) {
+	public HTTPResponse(HTTPRequest request) {
 
-		this.prototype = prototype;
 		this.request = request;
 		attributes = new Property<>();
 		cookies = new Property<>();
@@ -90,7 +93,7 @@ public class HTTPResponse {
 
 			try {
 
-				byte[] data = prototype.getLoader().read(path);
+				byte[] data = loader.read(path);
 
 				body = data;
 				request.setType(type);
@@ -115,7 +118,7 @@ public class HTTPResponse {
 
 			try {
 
-				byte[] data = prototype.getLoader().read(path);
+				byte[] data = loader.read(path);
 
 				download(data, file.getName());
 			}

@@ -16,6 +16,11 @@ public class Instance {
 		return type.getConstructor().newInstance();
 	}
 
+	public static <T> void inject(T type, Property<Object> args) throws Exception {
+
+		inject(type.getClass(), type, args);
+	}
+
 	public static void inject(Class<?> type, Object instance, Property<Object> args) throws Exception {
 
 		for(Field field : type.getDeclaredFields()) {
@@ -26,7 +31,7 @@ public class Instance {
 
 					for(String key : args.keys()) {
 
-						if(field.getName().equals(key)) {
+						if(((Inject) annotation).name().equals(key)) {
 
 							field.setAccessible(true);
 							field.set(instance, args.get(key));

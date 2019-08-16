@@ -1,8 +1,8 @@
 package com.prototype.type;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -15,24 +15,9 @@ public class Property<T extends Object> {
 		map = new LinkedHashMap<String, T>();
 	}
 
-	public Property(LinkedHashMap<String, T> map) {
-
-		this.map = map;
-	}
-
-	public Property(HashMap<String, T> map) {
-
-		this.map = new LinkedHashMap<>(map);
-	}
-
-	public boolean hasKey(String key) {
+	public boolean has(String key) {
 
 		return map.containsKey(key);
-	}
-
-	public boolean hasValue(T value) {
-
-		return map.containsValue(value);
 	}
 
 	public int size() {
@@ -48,6 +33,11 @@ public class Property<T extends Object> {
 	public void put(String key, T value) {
 
 		map.put(key, value);
+	}
+
+	public Optional<T> getNullable(String key) {
+
+		return Optional.ofNullable(map.get(key));
 	}
 
 	public T get(String key) {
