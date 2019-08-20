@@ -9,8 +9,13 @@ import java.util.List;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocket;
 
+import com.core.reflect.Caller;
+import com.core.reflect.Inject;
+import com.core.reflect.Injectable;
+import com.core.service.Service;
 import com.prototype.Prototype;
 import com.prototype.constants.Constants;
+import com.prototype.core.Core;
 import com.prototype.http.constants.MediaType;
 import com.prototype.http.constants.RequestMethod;
 import com.prototype.http.constants.Status;
@@ -18,24 +23,22 @@ import com.prototype.http.error.HTTPError;
 import com.prototype.http.error.HTTPException;
 import com.prototype.logger.Logger;
 import com.prototype.logger.Logger.Messages;
-import com.prototype.reflect.Caller;
-import com.prototype.reflect.Inject;
-import com.prototype.service.Service;
 import com.prototype.service.SessionService;
 import com.prototype.type.Request;
 
 
-public class HTTPServer extends Service {
+public class HTTPServer extends Service implements Injectable {
 
+	public static final String CODE = "server";
 	public static final String PREFIX = "[Server] ";
 
-	@Inject(name = Logger.NAME)
+	@Inject(code = Logger.CODE)
 	private Logger logger;
 
-	@Inject(name = "requests")
+	@Inject(code = "requests")
 	private List<Caller<Request>> requests;
 
-	@Inject(name = "")
+	@Inject(code = "sessionService")
 	private SessionService sessionService;
 
 	private ServerSocket serverSocket;
@@ -44,6 +47,13 @@ public class HTTPServer extends Service {
 	public HTTPServer(ServerSocket serverSocket) {
 
 		this.serverSocket = serverSocket;
+
+		if(serverSocket.getLocalPort() == 443) {
+
+			ssl = true;
+		}
+
+		inject(this, Core.environment);
 	}
 
 	@Override
@@ -154,7 +164,8 @@ public class HTTPServer extends Service {
 							}
 							catch(Exception ex) {
 
-								// TODO Exception
+								/** SSLException: socket write error **/
+								// ex.printStackTrace();
 							}
 						}
 					});
@@ -166,7 +177,7 @@ public class HTTPServer extends Service {
 			}
 			catch(Exception ex) {
 
-				// TODO Exception
+				ex.printStackTrace();
 			}
 		}
 	}

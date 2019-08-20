@@ -1,5 +1,8 @@
 package com.prototype.type;
 
+import com.core.lang.Property;
+
+
 public class Session extends Property<Object> {
 
 	public static final String USID = "usid";

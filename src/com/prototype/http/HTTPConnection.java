@@ -4,6 +4,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.core.base.Condition;
+import com.core.lang.Property;
+import com.core.net.Connection;
+import com.core.reflect.Inject;
+import com.core.reflect.Injectable;
+import com.prototype.core.Core;
 import com.prototype.format.Formatter;
 import com.prototype.http.constants.Header;
 import com.prototype.http.constants.MediaType;
@@ -11,23 +17,25 @@ import com.prototype.http.constants.RequestMethod;
 import com.prototype.http.constants.Status;
 import com.prototype.http.error.HTTPError;
 import com.prototype.http.error.HTTPException;
-import com.prototype.net.Connection;
-import com.prototype.reflect.Inject;
 import com.prototype.type.Cookie;
 import com.prototype.type.FormData;
 import com.prototype.type.Parameter;
-import com.prototype.type.Property;
-import com.prototype.util.Utils;
+import com.prototype.util.HTTPUtils;
 
 
-public class HTTPConnection extends Connection {
+public class HTTPConnection extends Connection implements Injectable {
 
-	@Inject(name = Formatter.NAME)
+	@Inject(code = Formatter.CODE)
 	private Formatter formatter;
+
+	@Inject(code = HTTPServer.CODE)
+	private HTTPServer server;
 
 	public HTTPConnection(Socket socket) {
 
 		super(socket);
+
+		inject(this, Core.environment);
 	}
 
 	public HTTPRequest request() throws HTTPException, Exception {
@@ -73,7 +81,7 @@ public class HTTPConnection extends Connection {
 			}
 			else {
 
-				Utils.addAttribute(request.getHeaders(), ": ", line);
+				HTTPUtils.addAttribute(request.getHeaders(), ": ", line);
 			}
 		}
 
@@ -235,8 +243,6 @@ public class HTTPConnection extends Connection {
 
 	public void commit(HTTPResponse response) throws Exception {
 
-		// FIXME HTTPS/SSL ERR_RESPONSE_HEADERS_TRUNCATED
-
 		if(response.getStatus() != null) {
 
 			emit("HTTP/" + response.getVersion() + " " + response.getStatus().getMessage());
@@ -258,7 +264,7 @@ public class HTTPConnection extends Connection {
 
 					String formattedBody = new String(response.getBody(), CHARSET);
 
-					formattedBody = formatter.parse(formattedBody, response.getAttributes());
+					formattedBody = formatter.parse(formattedBody, response.getAttributes(), true);
 
 					body = formattedBody.getBytes(CHARSET);
 				}
@@ -298,7 +304,14 @@ public class HTTPConnection extends Connection {
 
 				for(String key : response.getHeaders().keys()) {
 
-					emit(key + ": " + response.getHeaders().get(key));
+					if(server.isSSL() && Condition.equals(key, Header.LOCATION.getCode())) {
+
+						emit(key + ":" + response.getHeaders().get(key) + "\r\n");
+					}
+					else {
+
+						emit(key + ": " + response.getHeaders().get(key));
+					}
 				}
 			}
 

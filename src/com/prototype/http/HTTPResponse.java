@@ -4,21 +4,24 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.core.base.Environment;
+import com.core.lang.Property;
+import com.core.reflect.Inject;
+import com.core.reflect.Injectable;
 import com.prototype.Prototype;
 import com.prototype.constants.Constants;
+import com.prototype.core.Core;
 import com.prototype.http.constants.Header;
 import com.prototype.http.constants.MediaType;
 import com.prototype.http.constants.RequestMethod;
 import com.prototype.http.constants.Status;
 import com.prototype.loader.Loader;
-import com.prototype.reflect.Inject;
 import com.prototype.type.Cookie;
-import com.prototype.type.Property;
 
 
-public class HTTPResponse {
+public class HTTPResponse implements Injectable {
 
-	@Inject(name = Loader.NAME)
+	@Inject(code = Loader.CODE)
 	private Loader loader;
 
 	private HTTPRequest request;
@@ -32,6 +35,8 @@ public class HTTPResponse {
 		this.request = request;
 		attributes = new Property<>();
 		cookies = new Property<>();
+
+		inject(this, Core.environment);
 	}
 
 	public void ok() {
@@ -73,7 +78,7 @@ public class HTTPResponse {
 
 	public void view(String body, MediaType type) {
 
-		this.body = body.getBytes(Constants.CHARSET);
+		this.body = body.getBytes(Environment.CHARSET);
 		request.setType(type);
 		status = Status.OK;
 	}

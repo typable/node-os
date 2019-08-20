@@ -4,33 +4,56 @@ import java.io.File;
 import java.net.URLDecoder;
 import java.util.List;
 
-import com.prototype.constants.Constants;
+import com.core.base.Condition;
+import com.core.base.Environment;
+import com.core.lang.Property;
+import com.core.reflect.Inject;
+import com.core.reflect.Injectable;
+import com.prototype.core.Core;
 import com.prototype.loader.Loader;
-import com.prototype.reflect.Inject;
 import com.prototype.type.Parameter;
-import com.prototype.type.Property;
-import com.prototype.util.Utils;
+import com.prototype.util.HTTPUtils;
 
 
-public class Formatter {
+public class Formatter implements Injectable {
 
-	public static final String NAME = "prototype.formatter";
+	public static final String CODE = "formatter";
 
-	@Inject(name = Loader.NAME)
+	@Inject(code = Loader.CODE)
 	private Loader loader;
 
-	@Inject(name = "configurations")
+	@Inject(code = "configurations")
 	private Property<String> conifgurations;
 
-	@Inject(name = "templates")
+	@Inject(code = "templates")
 	private List<File> templates;
 
-	@Inject(name = "messages")
+	@Inject(code = "messages")
 	private Property<String> messages;
+
+	public static String format(String code, String tag, String key, String text) {
+
+		if(Condition.notBlank(key) && Condition.notBlank(text)) {
+
+			code = code.replaceAll("\\@\\{" + (Condition.notBlank(tag) ? tag : "") + key + "\\}", text);
+		}
+
+		return code;
+	}
+
+	public static String format(String code, String tag, Property<String> args) {
+
+		for(String key : args.keys()) {
+
+			format(code, tag, key, args.get(key));
+		}
+
+		return code;
+	}
 
 	public static String parseURL(String code) {
 
-		return URLDecoder.decode(code, Constants.CHARSET);
+		return URLDecoder.decode(code, Environment.CHARSET);
 	}
 
 	public static Property<Parameter> parseQuery(String code) {
@@ -41,94 +64,44 @@ public class Formatter {
 
 			for(String param : code.split("&")) {
 
-				Utils.addParameter(params, "=", param);
+				HTTPUtils.addParameter(params, "=", param);
 			}
 		}
 		else {
 
-			Utils.addParameter(params, "=", code);
+			HTTPUtils.addParameter(params, "=", code);
 		}
 
 		return params;
 	}
 
-	public static String parseHTML(String code, Property<String> attributes) {
-
-		for(String key : attributes.keys()) {
-
-			if(attributes.get(key) != null) {
-
-				code = code.replaceAll("\\@\\{" + key + "\\}", attributes.get(key));
-			}
-		}
-
-		return code;
-	}
-
-	public static String parseLang(String code, String lang, Property<String> languages) {
-
-		for(String key : languages.keys()) {
-
-			if(key.startsWith(lang)) {
-
-				code = code.replaceAll("\\@\\{lang:" + key.substring(3, key.length()) + "\\}", languages.get(key));
-			}
-		}
-
-		return code;
-	}
-
 	public Formatter() {
 
-		//
+		inject(this, Core.environment);
 	}
 
-	public String parse(String code, Property<String> attributes) throws Exception {
+	public String parse(String code, Property<String> args, boolean injectTemplate) throws Exception {
 
-		code = parseText(code);
-		code = parseConfigurations(code);
-		code = parseTemplate(code, attributes);
-		code = parseHTML(code, attributes);
+		code = format(code, "text", messages);
+		code = format(code, "env", conifgurations);
 
-		return code;
-	}
+		/** inject templates **/
+		if(injectTemplate) {
 
-	public String parseConfigurations(String code) {
-
-		if(conifgurations != null) {
-
-			for(String key : conifgurations.keys()) {
-
-				if(conifgurations.get(key) instanceof String) {
-
-					String value = (String) conifgurations.get(key);
-
-					code = code.replaceAll("\\@\\{env:" + key + "\\}", value);
-				}
-			}
+			code = injectTemplate(code, args);
 		}
 
-		return code;
-	}
-
-	public String parseText(String code) {
-
-		if(messages != null) {
-
-			for(String key : messages.keys()) {
-
-				code = code.replaceAll("\\@\\{text:" + key + "\\}", messages.get(key));
-			}
-		}
+		/** format attributes **/
+		code = format(code, null, args);
 
 		return code;
 	}
 
-	public String parseTemplate(String code, Property<String> attributes) throws Exception {
+	public String injectTemplate(String code, Property<String> args) throws Exception {
 
 		for(File file : templates) {
 
-			if(file != null) {
+			if(Condition.notNull(file)) {
 
 				File textFile = new File(file.getAbsolutePath());
 
@@ -138,13 +111,11 @@ public class Formatter {
 
 					String text = loader.readText(file.toPath());
 
-					text = parseText(text);
-					text = parseConfigurations(text);
-					text = parseHTML(text, attributes);
+					text = parse(text, args, false);
 
-					if(key != null) {
+					if(Condition.notNull(key)) {
 
-						code = code.replaceAll("\\@\\{template:" + key + "\\}", text);
+						code = format(code, "template", key, text);
 					}
 				}
 			}

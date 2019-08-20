@@ -9,32 +9,34 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.core.base.Environment;
+import com.core.lang.Property;
+import com.core.parse.PropertyParser;
+import com.core.reflect.Caller;
+import com.core.reflect.Inject;
+import com.core.reflect.Injectable;
+import com.core.reflect.Reflect;
 import com.prototype.Prototype;
 import com.prototype.constants.Constants;
 import com.prototype.core.Core;
 import com.prototype.logger.Logger;
 import com.prototype.logger.Logger.Messages;
-import com.prototype.parse.PropertyParser;
-import com.prototype.reflect.Caller;
-import com.prototype.reflect.Inject;
-import com.prototype.reflect.Instance;
 import com.prototype.type.Controller;
-import com.prototype.type.Property;
 import com.prototype.type.Request;
 
 
-public class Loader extends ClassLoader {
+public class Loader extends ClassLoader implements Injectable {
 
-	public static final String NAME = "prototype.loader";
+	public static final String CODE = "loader";
 	public static final String PREFIX = "[Loader] ";
 
-	@Inject(name = Core.NAME)
+	@Inject(code = Core.CODE)
 	private Core core;
 
-	@Inject(name = Logger.NAME)
+	@Inject(code = Logger.CODE)
 	private Logger logger;
 
-	@Inject(name = "configurations")
+	@Inject(code = "configurations")
 	private Property<String> configurations;
 
 	private PropertyParser propertyParser;
@@ -42,6 +44,8 @@ public class Loader extends ClassLoader {
 	public Loader() {
 
 		propertyParser = new PropertyParser();
+
+		inject(this, Core.environment);
 	}
 
 	public void loadConfigurations(Property<String> configurations) throws Exception {
@@ -85,8 +89,8 @@ public class Loader extends ClassLoader {
 
 			if(controller != null) {
 
-				Object instance = Instance.of(controller);
-				Instance.inject(controller, instance, core.environment);
+				Object instance = Reflect.newInstance(controller);
+				Reflect.inject(instance, Core.environment);
 
 				for(Method method : controller.getDeclaredMethods()) {
 
@@ -162,7 +166,7 @@ public class Loader extends ClassLoader {
 
 	public String readText(Path path) throws Exception {
 
-		return Files.readString(path, Constants.CHARSET);
+		return Files.readString(path, Environment.CHARSET);
 	}
 
 	public byte[] read(Path path) throws Exception {
@@ -172,7 +176,7 @@ public class Loader extends ClassLoader {
 
 	public void writeText(Path path, String data) throws Exception {
 
-		Files.writeString(path, data, Constants.CHARSET);
+		Files.writeString(path, data, Environment.CHARSET);
 	}
 
 	public void write(Path path, byte[] data) throws Exception {

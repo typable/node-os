@@ -1,11 +1,11 @@
 package com.prototype.http;
 
+import com.core.lang.Property;
 import com.prototype.http.constants.Header;
 import com.prototype.http.constants.MediaType;
 import com.prototype.http.constants.RequestMethod;
 import com.prototype.type.Cookie;
 import com.prototype.type.Parameter;
-import com.prototype.type.Property;
 import com.prototype.type.Session;
 
 

@@ -6,15 +6,17 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+import com.core.reflect.Inject;
+import com.core.reflect.Injectable;
+import com.prototype.core.Core;
 import com.prototype.loader.Loader;
-import com.prototype.reflect.Inject;
 
 
-public class Logger {
+public class Logger implements Injectable {
 
-	public static final String NAME = "prototype.logger";
+	public static final String CODE = "logger";
 
-	@Inject(name = Loader.NAME)
+	@Inject(code = Loader.CODE)
 	private Loader loader;
 
 	private DateTimeFormatter dateFormatter;
@@ -31,6 +33,8 @@ public class Logger {
 		final String osName = System.getProperty("os.name");
 
 		DEFAULT_LINE_BREAK = osName.startsWith("Windows") ? "\r\n" : "\n";
+
+		inject(this, Core.environment);
 	}
 
 	public void logFile(Path path) {

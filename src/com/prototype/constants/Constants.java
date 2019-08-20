@@ -1,14 +1,6 @@
 package com.prototype.constants;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-
-
 public interface Constants {
-
-	public final Charset CHARSET = StandardCharsets.ISO_8859_1;
-	public final String DOS_LINE_BREAK = "\r\n";
-	public final String UNIX_LINE_BREAK = "\n";
 
 	public interface PATHS {
 

@@ -11,25 +11,27 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import com.core.reflect.Inject;
+import com.core.reflect.Injectable;
 import com.prototype.Prototype;
+import com.prototype.core.Core;
 import com.prototype.http.constants.Header;
 import com.prototype.logger.Logger;
-import com.prototype.reflect.Inject;
 
 
-public class Updater {
+public class Updater implements Injectable {
 
-	public static final String NAME = "prototype.updater";
+	public static final String CODE = "updater";
 	public static final String PREFIX = "[Updater] ";
 
 	private final String CHECKIP = "http://checkip.amazonaws.com";
 
-	@Inject(name = Logger.NAME)
+	@Inject(code = Logger.CODE)
 	private Logger logger;
 
 	public Updater() {
 
-		//
+		inject(this, Core.environment);
 	}
 
 	public void updateDomain(String domain, String auth, String server) {

@@ -79,7 +79,7 @@ public class HTTPServerFactory {
 		SSLServerSocketFactory sslServerSocketFactory = context.getServerSocketFactory();
 
 		SSLServerSocket sslServerSocket = (SSLServerSocket) sslServerSocketFactory.createServerSocket(443);
-		sslServerSocket.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
+		sslServerSocket.setEnabledProtocols(new String[] { "TLSv1", "TLSv1.1", "TLSv1.2" });
 		sslServerSocket.setEnabledCipherSuites(sslServerSocket.getSupportedCipherSuites());
 		sslServerSocket.setUseClientMode(false);
 		sslServerSocket.setNeedClientAuth(true);

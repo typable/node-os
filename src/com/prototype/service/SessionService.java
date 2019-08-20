@@ -1,22 +1,27 @@
 package com.prototype.service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
-import com.prototype.Prototype;
+import com.core.reflect.Inject;
+import com.core.reflect.Injectable;
+import com.core.service.Service;
+import com.prototype.core.Core;
 import com.prototype.http.HTTPRequest;
 import com.prototype.http.HTTPResponse;
 import com.prototype.type.Cookie;
 import com.prototype.type.Session;
 
 
-public class SessionService extends Service {
+public class SessionService extends Service implements Injectable {
 
-	private Prototype prototype;
+	@Inject(code = "sessions")
+	private List<Session> sessions;
 
-	public SessionService(Prototype prototype) {
+	public SessionService() {
 
-		this.prototype = prototype;
+		inject(this, Core.environment);
 	}
 
 	public void prepareSession(HTTPRequest request, HTTPResponse response) {
@@ -25,7 +30,7 @@ public class SessionService extends Service {
 
 			Cookie cookie = request.getCookie(Session.USID);
 
-			for(Session session : prototype.getSessions()) {
+			for(Session session : sessions) {
 
 				if(session.getUid() != null && cookie.getValue() != null) {
 

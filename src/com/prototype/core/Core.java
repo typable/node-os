@@ -4,30 +4,46 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.core.base.Condition;
+import com.core.lang.Property;
+import com.core.parse.PropertyParser;
+import com.core.reflect.Caller;
+import com.core.reflect.Reflect;
+import com.core.service.LifeCycle;
 import com.prototype.Prototype;
+import com.prototype.constants.Constants;
+import com.prototype.factory.HTTPServerFactory;
 import com.prototype.format.Formatter;
-import com.prototype.lifecycle.LifeCycle;
+import com.prototype.http.HTTPServer;
 import com.prototype.loader.Loader;
 import com.prototype.logger.Logger;
-import com.prototype.reflect.Caller;
-import com.prototype.reflect.Instance;
-import com.prototype.type.Property;
+import com.prototype.service.SessionService;
 import com.prototype.type.Request;
 import com.prototype.type.Session;
 import com.prototype.update.Updater;
+import com.prototype.util.HTTPUtils;
 
 
 public class Core extends LifeCycle {
 
-	public static final String NAME = "prototype.core";
+	public static final String CODE = "core";
 
-	public Property<Object> environment;
+	public static Property<Object> environment;
+
+	public Logger logger;
+	public Loader loader;
+	public Updater updater;
+	public Formatter formatter;
+	public SessionService sessionService;
+
 	public Property<String> configurations;
 	public Property<String> messages;
 
 	public List<Caller<Request>> requests;
 	public List<Session> sessions;
 	public List<File> templates;
+
+	public HTTPServer server;
 
 	public Core() {
 
@@ -44,21 +60,22 @@ public class Core extends LifeCycle {
 
 		Prototype.PATH = new File(".").getCanonicalPath();
 
-		Logger logger = new Logger();
-		environment.put(Logger.NAME, logger);
+		logger = new Logger();
+		environment.put(Logger.CODE, logger);
 
-		Loader loader = new Loader();
-		environment.put(Loader.NAME, loader);
+		loader = new Loader();
+		environment.put(Loader.CODE, loader);
 
-		Updater updater = new Updater();
-		environment.put(Updater.NAME, updater);
+		updater = new Updater();
+		environment.put(Updater.CODE, updater);
 
-		Formatter formatter = new Formatter();
-		environment.put(Formatter.NAME, formatter);
+		formatter = new Formatter();
+		environment.put(Formatter.CODE, formatter);
 
-		environment.put(Core.NAME, this);
+		sessionService = new SessionService();
+		environment.put("sessionService", sessionService);
 
-		inject();
+		environment.put(Core.CODE, this);
 
 		loader.loadConfigurations(configurations);
 		environment.put("configurations", configurations);
@@ -72,20 +89,127 @@ public class Core extends LifeCycle {
 		loader.loadTemplates(templates);
 		environment.put("templates", templates);
 
+		environment.put("sessions", sessions);
+
 		inject();
 	}
 
 	@Override
 	public void run() {
 
-		//
+		File configFile = Prototype.path("/" + Constants.FILES.CONFIG_FILE).toFile();
+
+		if(!configFile.exists()) {
+
+			logger.warn("Project must be initialized!");
+
+			return;
+		}
+
+		try {
+
+			update();
+
+			Integer port = configurations.get("port", Integer.class, true);
+
+			Boolean ssl = configurations.get("ssl", Boolean.class);
+
+			if(Condition.notNull(ssl)) {
+
+				String key = configurations.get("ssl.key", true);
+				String password = configurations.get("ssl.password", true);
+
+				server = HTTPServerFactory.create(port, ssl, Prototype.path(key), password);
+			}
+			else {
+
+				server = HTTPServerFactory.create(port);
+			}
+
+			environment.put(HTTPServer.CODE, server);
+
+			inject();
+
+			server.run();
+		}
+		catch(Exception ex) {
+
+			ex.printStackTrace();
+		}
+	}
+
+	public void setup() throws Exception {
+
+		// TODO setup()
+		File sourceDirectory = Prototype.path(Constants.PATHS.SOURCE_PATH).toFile();
+		sourceDirectory.mkdir();
+
+		File classDirectory = Prototype.path(Constants.PATHS.CLASS_PATH).toFile();
+		classDirectory.mkdir();
+
+		File libaryDirectory = Prototype.path(Constants.PATHS.LIBRARY_PATH).toFile();
+		libaryDirectory.mkdir();
+
+		File webDirectory = Prototype.path(Constants.PATHS.WEB_PATH).toFile();
+		webDirectory.mkdir();
+
+		File resourceDirectory = Prototype.path(Constants.PATHS.RESOURCE_PATH).toFile();
+		resourceDirectory.mkdir();
+
+		File logDirectory = Prototype.path(Constants.PATHS.LOG_PATH).toFile();
+		logDirectory.mkdir();
+
+		File configFile = Prototype.path("/" + Constants.FILES.CONFIG_FILE).toFile();
+		configFile.createNewFile();
+
+		Property<String> args = new Property<>();
+		args.put("port", "80");
+
+		PropertyParser propertyParser = new PropertyParser();
+
+		loader.writeText(configFile.toPath(), propertyParser.compose(args));
+
+		File projectFile = Prototype.path("/" + Constants.FILES.PROJECT_FILE).toFile();
+		projectFile.createNewFile();
+
+		loader.writeText(projectFile.toPath(), Constants.TEMPLATES.PROJECT_TEMPLATE);
+
+		File classpathFile = Prototype.path("/" + Constants.FILES.CLASSPATH_FILE).toFile();
+		classpathFile.createNewFile();
+
+		loader.writeText(classpathFile.toPath(), Constants.TEMPLATES.CLASSPATH_TEMPLATE);
+
+		logger.info("Project successfully initialized");
+	}
+
+	public void update() {
+
+		Boolean updateSoftware = configurations.get("update.software", Boolean.class);
+
+		if(Condition.notNull(updateSoftware) && Condition.isTrue(updateSoftware)) {
+
+			updater.updateSoftware();
+		}
+
+		Boolean updateDomain = configurations.get("update.domain", Boolean.class);
+
+		if(Condition.notNull(updateDomain) && Condition.isTrue(updateDomain)) {
+
+			String domain = configurations.get("dns.domain", true);
+			String password = configurations.get("dns.password", true);
+			String server = configurations.get("dns.server", true);
+
+			String auth = HTTPUtils.encode(domain + ":" + password);
+
+			updater.updateDomain(domain, auth, server);
+		}
 	}
 
 	private void inject() throws Exception {
 
 		for(String key : environment.keys()) {
 
-			Instance.inject(environment.get(key), environment);
+			Reflect.inject(environment.get(key), environment);
 		}
 	}
 }

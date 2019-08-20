@@ -1,5 +1,8 @@
 package com.prototype.type;
 
+import com.core.lang.Property;
+
+
 public class PropertyObject extends Property<Object> {
 
 	public PropertyObject() {
