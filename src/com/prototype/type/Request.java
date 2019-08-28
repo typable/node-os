@@ -12,7 +12,7 @@ import com.prototype.http.constants.RequestMethod;
 @Target(ElementType.METHOD)
 public @interface Request {
 
-	String url();
+	String[] url();
 
 	RequestMethod method() default RequestMethod.GET;
 

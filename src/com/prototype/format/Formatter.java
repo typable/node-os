@@ -33,10 +33,7 @@ public class Formatter implements Injectable {
 
 	public static String format(String code, String tag, String key, String text) {
 
-		if(Condition.notBlank(key) && Condition.notBlank(text)) {
-
-			code = code.replaceAll("\\@\\{" + (Condition.notBlank(tag) ? tag : "") + key + "\\}", text);
-		}
+		code = code.replaceAll("\\@\\{" + (Condition.notBlank(tag) ? tag + ":" : "") + key + "\\}", text);
 
 		return code;
 	}
@@ -45,7 +42,7 @@ public class Formatter implements Injectable {
 
 		for(String key : args.keys()) {
 
-			format(code, tag, key, args.get(key));
+			code = format(code, tag, key, args.get(key));
 		}
 
 		return code;

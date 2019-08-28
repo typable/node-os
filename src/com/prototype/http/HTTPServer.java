@@ -103,11 +103,17 @@ public class HTTPServer extends Service implements Injectable {
 										/** Checks if request has no ignore tag **/
 										if(!r.ignore()) {
 
-											if(r.url().equals(url) && r.method() == method) {
+											if(r.method() == method) {
 
-												caller = c;
+												for(String u : r.url()) {
 
-												break;
+													if(u.equals(url)) {
+
+														caller = c;
+
+														break;
+													}
+												}
 											}
 										}
 									}
