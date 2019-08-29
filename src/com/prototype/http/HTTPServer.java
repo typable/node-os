@@ -142,8 +142,15 @@ public class HTTPServer extends Service implements Injectable {
 									}
 									else {
 
-										/** Views 404 page if exists **/
-										response.viewNotFoundPage();
+										if(RequestMethod.GET == request.getMethod()) {
+
+											/** Views 404 page if exists **/
+											response.viewNotFoundPage();
+										}
+										else {
+
+											response.notFound();
+										}
 									}
 
 									/** Send response **/
