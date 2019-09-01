@@ -91,65 +91,69 @@ public class HTTPServer extends Service implements Injectable {
 									request = connection.request();
 									response = new HTTPResponse(request);
 
+									// FIXME url NULL
 									String url = request.getUrl();
 									RequestMethod method = request.getMethod();
 
-									Caller<Request> caller = null;
+									if(url != null) {
 
-									for(Caller<Request> c : requests) {
+										Caller<Request> caller = null;
 
-										Request r = c.get();
+										for(Caller<Request> c : requests) {
 
-										/** Checks if request has no ignore tag **/
-										if(!r.ignore()) {
+											Request r = c.get();
 
-											if(r.method() == method) {
+											/** Checks if request has no ignore tag **/
+											if(!r.ignore()) {
 
-												for(String u : r.url()) {
+												if(r.method() == method) {
 
-													if(u.equals(url)) {
+													for(String u : r.url()) {
 
-														caller = c;
+														if(u.equals(url)) {
 
-														break;
+															caller = c;
+
+															break;
+														}
 													}
 												}
 											}
 										}
-									}
 
-									if(caller != null) {
+										if(caller != null) {
 
-										/** Prepare Session **/
-										sessionService.prepareSession(request, response);
+											/** Prepare Session **/
+											sessionService.prepareSession(request, response);
 
-										/** Calls method of current request **/
-										caller.call(request, response);
-									}
-									else if(url.startsWith(Constants.PATHS.RESOURCE_PATH)) {
+											/** Calls method of current request **/
+											caller.call(request, response);
+										}
+										else if(url.startsWith(Constants.PATHS.CMS_PATH) || url.startsWith(Constants.PATHS.RESOURCE_PATH)) {
 
-										/** Handle '/res' requests **/
-										File file = Prototype.path(url).toFile();
+											/** Handle '/cms' | '/res' requests **/
+											File file = Prototype.path(url).toFile();
 
-										if(file.exists() && file.isFile()) {
+											if(file.exists() && file.isFile()) {
 
-											response.viewPage(file.toPath(), MediaType.ofFile(file.getName()));
+												response.viewPage(file.toPath(), MediaType.ofFile(file.getName()));
+											}
+											else {
+
+												response.notFound();
+											}
 										}
 										else {
 
-											response.notFound();
-										}
-									}
-									else {
+											if(RequestMethod.GET == request.getMethod()) {
 
-										if(RequestMethod.GET == request.getMethod()) {
+												/** Views 404 page if exists **/
+												response.viewNotFoundPage();
+											}
+											else {
 
-											/** Views 404 page if exists **/
-											response.viewNotFoundPage();
-										}
-										else {
-
-											response.notFound();
+												response.notFound();
+											}
 										}
 									}
 
@@ -178,7 +182,11 @@ public class HTTPServer extends Service implements Injectable {
 							catch(Exception ex) {
 
 								/** SSLException: socket write error **/
-								// ex.printStackTrace();
+
+								if(!ex.getMessage().equals("Software caused connection abort: socket write error")) {
+
+									ex.printStackTrace();
+								}
 							}
 						}
 					});

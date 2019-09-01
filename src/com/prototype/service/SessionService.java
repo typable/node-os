@@ -37,13 +37,27 @@ public class SessionService extends Service implements Injectable {
 					if(session.getUid().equals(cookie.getValue())) {
 
 						request.setSession(session);
+
+						return;
 					}
 				}
 			}
+
+			Session session = new Session(UUID.randomUUID().toString());
+
+			cookie = Cookie.of(session);
+			cookie.setAge(60 * 60 * 24);
+
+			sessions.add(session);
+
+			request.setSession(session);
+			response.addCookie(cookie);
 		}
 		else {
 
 			Session session = new Session(UUID.randomUUID().toString());
+
+			sessions.add(session);
 
 			Cookie cookie = Cookie.of(session);
 			cookie.setAge(60 * 60 * 24);

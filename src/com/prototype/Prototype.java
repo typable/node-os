@@ -9,6 +9,7 @@ import com.prototype.core.Core;
 public class Prototype {
 
 	/*
+	FIXME POST Body truncated
 	TODO Event
 	TODO Runtime
 	 */

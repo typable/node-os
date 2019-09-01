@@ -8,6 +8,7 @@ public interface Constants {
 		public final String SOURCE_PATH = "/src";
 		public final String WEB_PATH = "/web";
 		public final String RESOURCE_PATH = "/res";
+		public final String CMS_PATH = "/cms";
 		public final String LIBRARY_PATH = "/lib";
 		public final String LOG_PATH = "/log";
 	}

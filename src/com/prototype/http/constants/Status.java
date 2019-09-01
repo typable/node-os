@@ -125,6 +125,16 @@ public enum Status {
 	BAD_REQUEST(400, "BAD REQUEST"),
 
 	/**
+	 * The <a href="https://tools.ietf.org/html/rfc7235#section-3.1">401
+	 * (Unauthorized)</a> status code indicates that the request has not been
+	 * applied because it lacks valid authentication credentials for the target
+	 * resource.<br/>
+	 * <br/>
+	 * Type: Client Error<br/>
+	 */
+	UNAUTHORIZED(401, "UNAUTHORIZED"),
+
+	/**
 	 * The <a href="https://tools.ietf.org/rfcmarkup?doc=7231#section-6.5.3">403
 	 * (Forbidden)</a> status code indicates that the server understood<br/>
 	 * the request but refuses to authorize it.<br/>
