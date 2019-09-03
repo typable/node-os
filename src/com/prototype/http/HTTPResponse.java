@@ -29,6 +29,7 @@ public class HTTPResponse implements Injectable {
 	private Property<String> attributes;
 	private Property<Cookie> cookies;
 	private byte[] body;
+	private boolean committed;
 
 	public HTTPResponse(HTTPRequest request) {
 
@@ -250,5 +251,10 @@ public class HTTPResponse implements Injectable {
 	public void setBody(byte[] body) {
 
 		this.body = body;
+	}
+
+	public boolean isCommitted() {
+
+		return committed;
 	}
 }
