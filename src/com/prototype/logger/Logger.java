@@ -22,10 +22,12 @@ public class Logger implements Injectable {
 	private DateTimeFormatter dateFormatter;
 	private DateTimeFormatter timeFormatter;
 	private File file;
+	private boolean debug;
+	private boolean save;
 
 	private String DEFAULT_LINE_BREAK;
 
-	public Logger() {
+	public Logger(Path path) {
 
 		dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 		timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -34,32 +36,22 @@ public class Logger implements Injectable {
 
 		DEFAULT_LINE_BREAK = osName.startsWith("Windows") ? "\r\n" : "\n";
 
-		inject(this, Core.environment);
-	}
-
-	public void logFile(Path path) {
-
 		if(path.toFile().isDirectory()) {
 
 			LocalDate date = LocalDate.now();
 
 			file = new File(path + "/" + date.format(dateFormatter) + ".log");
-
-			try {
-
-				if(!file.exists()) {
-
-					file.createNewFile();
-				}
-			}
-			catch(Exception e) {
-
-				e.printStackTrace();
-			}
 		}
+
+		inject(this, Core.environment);
 	}
 
 	public void log(Logger.Type type, String message) {
+
+		if(type == Logger.Type.DEBUG && !debug) {
+
+			return;
+		}
 
 		LocalTime time = LocalTime.now();
 
@@ -67,17 +59,25 @@ public class Logger implements Injectable {
 
 		System.out.println(value);
 
-		if(file != null) {
+		if(save) {
 
-			try {
+			if(file != null) {
 
-				String data = loader.readText(file.toPath());
-				data += (value + DEFAULT_LINE_BREAK);
-				loader.writeText(file.toPath(), data);
-			}
-			catch(Exception e) {
+				try {
 
-				e.printStackTrace();
+					if(!file.exists()) {
+
+						file.createNewFile();
+					}
+
+					String data = loader.readText(file.toPath());
+					data += (value + DEFAULT_LINE_BREAK);
+					loader.writeText(file.toPath(), data);
+				}
+				catch(Exception e) {
+
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -116,6 +116,20 @@ public class Logger implements Injectable {
 		log(Type.DEBUG, message);
 	}
 
+	public void debug(String message, Exception ex) {
+
+		Throwable throwable = ex.getCause() != null ? ex.getCause() : ex;
+
+		String errorMessage = ex.getClass().getName() + ": " + throwable.getMessage() + DEFAULT_LINE_BREAK;
+
+		for(StackTraceElement trace : throwable.getStackTrace()) {
+
+			errorMessage += "     at " + trace.getClassName() + "." + trace.getMethodName() + "(" + trace.getFileName() + ":" + trace.getLineNumber() + ")" + DEFAULT_LINE_BREAK;
+		}
+
+		log(Type.DEBUG, message + ": " + errorMessage);
+	}
+
 	public enum Type {
 
 		INFO, WARN, ERROR, DEBUG;
@@ -146,5 +160,25 @@ public class Logger implements Injectable {
 
 			return message;
 		}
+	}
+
+	public boolean isDebug() {
+
+		return debug;
+	}
+
+	public void setDebug(boolean debug) {
+
+		this.debug = debug;
+	}
+
+	public boolean isSave() {
+
+		return save;
+	}
+
+	public void setSave(boolean save) {
+
+		this.save = save;
 	}
 }

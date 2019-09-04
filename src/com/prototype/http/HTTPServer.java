@@ -182,11 +182,7 @@ public class HTTPServer extends Service implements Injectable {
 							catch(Exception ex) {
 
 								/** SSLException: socket write error **/
-
-								if(ex.getMessage() != null && !ex.getMessage().equals("Software caused connection abort: socket write error")) {
-
-									ex.printStackTrace();
-								}
+								logger.debug(Messages.FATAL_ERROR.getMessage(), ex);
 							}
 						}
 					});
@@ -198,7 +194,7 @@ public class HTTPServer extends Service implements Injectable {
 			}
 			catch(Exception ex) {
 
-				ex.printStackTrace();
+				logger.debug(Messages.FATAL_ERROR.getMessage(), ex);
 			}
 		}
 	}

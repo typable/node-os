@@ -60,7 +60,7 @@ public class Core extends LifeCycle {
 
 		Prototype.PATH = new File(".").getCanonicalPath();
 
-		logger = new Logger();
+		logger = new Logger(Prototype.path(Constants.PATHS.LOG_PATH));
 		environment.put(Logger.CODE, logger);
 
 		loader = new Loader();
@@ -77,38 +77,52 @@ public class Core extends LifeCycle {
 
 		environment.put(Core.CODE, this);
 
-		loader.loadConfigurations(configurations);
-		environment.put("configurations", configurations);
-
-		loader.loadRequests(requests);
-		environment.put("requests", requests);
-
-		loader.loadMessages(messages);
-		environment.put("messages", messages);
-
-		loader.loadTemplates(templates);
-		environment.put("templates", templates);
-
-		environment.put("sessions", sessions);
-
 		inject();
 	}
 
 	@Override
 	public void run() {
 
-		File configFile = Prototype.path("/" + Constants.FILES.CONFIG_FILE).toFile();
-
-		if(!configFile.exists()) {
-
-			logger.warn("Project must be initialized!");
-
-			return;
-		}
-
 		try {
 
+			loader.loadConfigurations(configurations);
+			environment.put("configurations", configurations);
+
+			File configFile = Prototype.path("/" + Constants.FILES.CONFIG_FILE).toFile();
+
+			if(!configFile.exists()) {
+
+				logger.warn("Project must be initialized!");
+
+				return;
+			}
+
+			Boolean debug = configurations.get("log.debug", Boolean.class);
+
+			if(Condition.notNull(debug)) {
+
+				logger.setDebug(debug);
+			}
+
+			Boolean save = configurations.get("log.save", Boolean.class);
+
+			if(Condition.notNull(save)) {
+
+				logger.setSave(save);
+			}
+
 			update();
+
+			loader.loadRequests(requests);
+			environment.put("requests", requests);
+
+			loader.loadMessages(messages);
+			environment.put("messages", messages);
+
+			loader.loadTemplates(templates);
+			environment.put("templates", templates);
+
+			environment.put("sessions", sessions);
 
 			Integer port = configurations.get("port", Integer.class, true);
 
