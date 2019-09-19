@@ -1,5 +1,6 @@
 package com.prototype.http;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -27,7 +28,7 @@ import com.prototype.service.SessionService;
 import com.prototype.type.Request;
 
 
-public class HTTPServer extends Service implements Injectable {
+public class HTTPServer extends Service implements Runnable, Closeable, Injectable {
 
 	public static final String CODE = "server";
 	public static final String PREFIX = "[Server] ";

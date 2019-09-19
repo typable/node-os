@@ -9,7 +9,6 @@ import com.prototype.core.Core;
 public class Prototype {
 
 	/*
-	FIXME POST Body truncated
 	TODO Event
 	TODO Runtime
 	 */
@@ -20,7 +19,9 @@ public class Prototype {
 
 	public static void run(String[] args) {
 
-		try(Core core = new Core()) {
+		Core core = new Core();
+
+		try {
 
 			core.init();
 			core.run();

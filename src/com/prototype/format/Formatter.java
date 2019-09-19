@@ -33,7 +33,7 @@ public class Formatter implements Injectable {
 
 	public static String format(String code, String tag, String key, String text) {
 
-		code = code.replaceAll("\\@\\{" + (Condition.notBlank(tag) ? tag + ":" : "") + key + "\\}", text);
+		code = code.replaceAll("\\@\\{" + (Condition.isNotBlank(tag) ? tag + ":" : "") + key + "\\}", text);
 
 		return code;
 	}
@@ -98,7 +98,7 @@ public class Formatter implements Injectable {
 
 		for(File file : templates) {
 
-			if(Condition.notNull(file)) {
+			if(Condition.isNotNull(file)) {
 
 				File textFile = new File(file.getAbsolutePath());
 
@@ -110,7 +110,7 @@ public class Formatter implements Injectable {
 
 					text = parse(text, args, false);
 
-					if(Condition.notNull(key)) {
+					if(Condition.isNotNull(key)) {
 
 						code = format(code, "template", key, text);
 					}

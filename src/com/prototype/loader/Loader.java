@@ -222,11 +222,14 @@ public class Loader extends ClassLoader implements Injectable {
 
 		Class<?> loadedClass = loadClass(name, path);
 
-		for(Annotation annotation : loadedClass.getAnnotations()) {
+		if(loadedClass != null) {
 
-			if(annotation.annotationType() == Controller.class) {
+			for(Annotation annotation : loadedClass.getAnnotations()) {
 
-				return loadedClass;
+				if(annotation.annotationType() == Controller.class) {
+
+					return loadedClass;
+				}
 			}
 		}
 
@@ -237,7 +240,12 @@ public class Loader extends ClassLoader implements Injectable {
 
 		byte[] data = read(path);
 
-		return defineClass(name, data, 0, data.length);
+		if(findLoadedClass(name) == null) {
+
+			return defineClass(name, data, 0, data.length);
+		}
+
+		return null;
 	}
 
 	public <T> T loadClass(String name, Path path, Class<T> type) throws Exception {

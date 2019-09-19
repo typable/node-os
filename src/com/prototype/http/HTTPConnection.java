@@ -273,10 +273,7 @@ public class HTTPConnection extends Connection implements Injectable {
 					body = response.getBody();
 				}
 
-				if(!response.getHeaders().has(Header.CONTENT_LENGTH.getCode())) {
-
-					response.getHeaders().put(Header.CONTENT_LENGTH.getCode(), String.valueOf(body.length));
-				}
+				response.getHeaders().put(Header.CONTENT_LENGTH.getCode(), String.valueOf(body.length));
 			}
 
 			if(!response.getCookies().isEmpty()) {

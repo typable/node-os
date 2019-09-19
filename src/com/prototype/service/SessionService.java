@@ -1,6 +1,5 @@
 package com.prototype.service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -65,17 +64,5 @@ public class SessionService extends Service implements Injectable {
 			request.setSession(session);
 			response.addCookie(cookie);
 		}
-	}
-
-	@Override
-	public void run() {
-
-		//
-	}
-
-	@Override
-	public void close() throws IOException {
-
-		//
 	}
 }

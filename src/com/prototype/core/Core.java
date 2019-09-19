@@ -9,7 +9,6 @@ import com.core.lang.Property;
 import com.core.parse.PropertyParser;
 import com.core.reflect.Caller;
 import com.core.reflect.Reflect;
-import com.core.service.LifeCycle;
 import com.prototype.Prototype;
 import com.prototype.constants.Constants;
 import com.prototype.factory.HTTPServerFactory;
@@ -24,7 +23,7 @@ import com.prototype.update.Updater;
 import com.prototype.util.HTTPUtils;
 
 
-public class Core extends LifeCycle {
+public class Core implements Runnable {
 
 	public static final String CODE = "core";
 
@@ -99,14 +98,14 @@ public class Core extends LifeCycle {
 
 			Boolean debug = configurations.get("log.debug", Boolean.class);
 
-			if(Condition.notNull(debug)) {
+			if(Condition.isNotNull(debug)) {
 
 				logger.setDebug(debug);
 			}
 
 			Boolean save = configurations.get("log.save", Boolean.class);
 
-			if(Condition.notNull(save)) {
+			if(Condition.isNotNull(save)) {
 
 				logger.setSave(save);
 			}
@@ -128,7 +127,7 @@ public class Core extends LifeCycle {
 
 			Boolean ssl = configurations.get("ssl", Boolean.class);
 
-			if(Condition.notNull(ssl)) {
+			if(Condition.isNotNull(ssl)) {
 
 				String key = configurations.get("ssl.key", true);
 				String password = configurations.get("ssl.password", true);
@@ -200,14 +199,14 @@ public class Core extends LifeCycle {
 
 		Boolean updateSoftware = configurations.get("update.software", Boolean.class);
 
-		if(Condition.notNull(updateSoftware) && Condition.isTrue(updateSoftware)) {
+		if(Condition.isNotNull(updateSoftware) && Condition.isTrue(updateSoftware)) {
 
 			updater.updateSoftware();
 		}
 
 		Boolean updateDomain = configurations.get("update.domain", Boolean.class);
 
-		if(Condition.notNull(updateDomain) && Condition.isTrue(updateDomain)) {
+		if(Condition.isNotNull(updateDomain) && Condition.isTrue(updateDomain)) {
 
 			String domain = configurations.get("dns.domain", true);
 			String password = configurations.get("dns.password", true);

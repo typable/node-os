@@ -31,6 +31,7 @@ public class HTTPResponse implements Injectable {
 	private byte[] body;
 	private boolean committed;
 
+	// TODO Give HTTPResponse separate Fields without HTTPRequest
 	public HTTPResponse(HTTPRequest request) {
 
 		this.request = request;
