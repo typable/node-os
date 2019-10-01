@@ -3,6 +3,7 @@ package com.prototype.format;
 import java.io.File;
 import java.net.URLDecoder;
 import java.util.List;
+import java.util.regex.Matcher;
 
 import com.core.base.Condition;
 import com.core.base.Environment;
@@ -33,7 +34,7 @@ public class Formatter implements Injectable {
 
 	public static String format(String code, String tag, String key, String text) {
 
-		code = code.replaceAll("\\@\\{" + (Condition.isNotBlank(tag) ? tag + ":" : "") + key + "\\}", text);
+		code = code.replaceAll("\\$\\{" + (Condition.isNotBlank(tag) ? tag + ":" : "") + key + "\\}", Matcher.quoteReplacement(text));
 
 		return code;
 	}
