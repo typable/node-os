@@ -16,8 +16,8 @@ import com.prototype.type.Parameter;
 import com.prototype.util.HTTPUtils;
 
 
-public class Formatter implements Injectable {
-
+public class Formatter implements Injectable
+{
 	public static final String CODE = "formatter";
 
 	@Inject(code = Loader.CODE)
@@ -32,60 +32,61 @@ public class Formatter implements Injectable {
 	@Inject(code = "messages")
 	private Property<String> messages;
 
-	public static String format(String code, String tag, String key, String text) {
-
-		code = code.replaceAll("\\$\\{" + (Condition.isNotBlank(tag) ? tag + ":" : "") + key + "\\}", Matcher.quoteReplacement(text));
+	public static String format(String code, String tag, String key, String text)
+	{
+		code = code.replaceAll("\\$\\{" + (Condition
+		      .isNotBlank(tag) ? tag + ":" : "") + key + "\\}", Matcher.quoteReplacement(text));
 
 		return code;
 	}
 
-	public static String format(String code, String tag, Property<String> args) {
-
-		for(String key : args.keys()) {
-
+	public static String format(String code, String tag, Property<String> args)
+	{
+		for(String key : args.keys())
+		{
 			code = format(code, tag, key, args.get(key));
 		}
 
 		return code;
 	}
 
-	public static String parseURL(String code) {
-
+	public static String parseURL(String code)
+	{
 		return URLDecoder.decode(code, Environment.CHARSET);
 	}
 
-	public static Property<Parameter> parseQuery(String code) {
-
+	public static Property<Parameter> parseQuery(String code)
+	{
 		Property<Parameter> params = new Property<>();
 
-		if(code.contains("&")) {
-
-			for(String param : code.split("&")) {
-
+		if(code.contains("&"))
+		{
+			for(String param : code.split("&"))
+			{
 				HTTPUtils.addParameter(params, "=", param);
 			}
 		}
-		else {
-
+		else
+		{
 			HTTPUtils.addParameter(params, "=", code);
 		}
 
 		return params;
 	}
 
-	public Formatter() {
-
+	public Formatter()
+	{
 		inject(this, Core.environment);
 	}
 
-	public String parse(String code, Property<String> args, boolean injectTemplate) throws Exception {
-
+	public String parse(String code, Property<String> args, boolean injectTemplate) throws Exception
+	{
 		code = format(code, "text", messages);
 		code = format(code, "env", conifgurations);
 
 		/** inject templates **/
-		if(injectTemplate) {
-
+		if(injectTemplate)
+		{
 			code = injectTemplate(code, args);
 		}
 
@@ -95,24 +96,25 @@ public class Formatter implements Injectable {
 		return code;
 	}
 
-	public String injectTemplate(String code, Property<String> args) throws Exception {
-
-		for(File file : templates) {
-
-			if(Condition.isNotNull(file)) {
-
+	public String injectTemplate(String code, Property<String> args) throws Exception
+	{
+		for(File file : templates)
+		{
+			if(Condition.isNotNull(file))
+			{
 				File textFile = new File(file.getAbsolutePath());
 
-				String key = file.getName().contains(".") ? file.getName().split("\\.")[0] : file.getName();
+				String key = file.getName().contains(".") ? file.getName().split("\\.")[0] : file
+				      .getName();
 
-				if(textFile.exists()) {
-
+				if(textFile.exists())
+				{
 					String text = loader.readText(file.toPath());
 
 					text = parse(text, args, false);
 
-					if(Condition.isNotNull(key)) {
-
+					if(Condition.isNotNull(key))
+					{
 						code = format(code, "template", key, text);
 					}
 				}

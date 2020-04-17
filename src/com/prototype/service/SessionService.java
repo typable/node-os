@@ -13,28 +13,28 @@ import com.prototype.type.Cookie;
 import com.prototype.type.Session;
 
 
-public class SessionService extends Service implements Injectable {
-
+public class SessionService extends Service implements Injectable
+{
 	@Inject(code = "sessions")
 	private List<Session> sessions;
 
-	public SessionService() {
-
+	public SessionService()
+	{
 		inject(this, Core.environment);
 	}
 
-	public void prepareSession(HTTPRequest request, HTTPResponse response) {
-
-		if(request.hasCookie(Session.USID)) {
-
+	public void prepareSession(HTTPRequest request, HTTPResponse response)
+	{
+		if(request.hasCookie(Session.USID))
+		{
 			Cookie cookie = request.getCookie(Session.USID);
 
-			for(Session session : sessions) {
-
-				if(session.getUid() != null && cookie.getValue() != null) {
-
-					if(session.getUid().equals(cookie.getValue())) {
-
+			for(Session session : sessions)
+			{
+				if(session.getUid() != null && cookie.getValue() != null)
+				{
+					if(session.getUid().equals(cookie.getValue()))
+					{
 						request.setSession(session);
 
 						return;
@@ -52,8 +52,8 @@ public class SessionService extends Service implements Injectable {
 			request.setSession(session);
 			response.addCookie(cookie);
 		}
-		else {
-
+		else
+		{
 			Session session = new Session(UUID.randomUUID().toString());
 
 			sessions.add(session);

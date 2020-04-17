@@ -1,7 +1,7 @@
 package com.prototype.http.constants;
 
-public enum Header {
-
+public enum Header
+{
 	/**
 	 * WWW-Authenticate<br/>
 	 * Defines the authentication method that should be used to gain access to a
@@ -59,9 +59,9 @@ public enum Header {
 	/**
 	 * Accept-Language<br/>
 	 * Informs the server about the language the server is expected to send back.
-	 * This is a hint and is not necessarily under the full control of the user: the
-	 * server should always pay attention not to override an explicit user choice
-	 * (like selecting a language in a drop down list).
+	 * This is a hint and is not necessarily under the full control of the user:
+	 * the server should always pay attention not to override an explicit user
+	 * choice (like selecting a language in a drop down list).
 	 */
 	ACCEPT_LANGUAGE("Accept-Language", null),
 
@@ -73,8 +73,8 @@ public enum Header {
 
 	/**
 	 * Content-Length<br/>
-	 * Indicates the size of the entity-body, in decimal number of octets, sent to
-	 * the recipient.
+	 * Indicates the size of the entity-body, in decimal number of octets, sent
+	 * to the recipient.
 	 */
 	CONTENT_LENGTH("Content-Length", null),
 
@@ -88,8 +88,8 @@ public enum Header {
 
 	/**
 	 * Content-Language<br/>
-	 * Describes the language(s) intended for the audience, so that it allows a user
-	 * to differentiate according to the users' own preferred language.
+	 * Describes the language(s) intended for the audience, so that it allows a
+	 * user to differentiate according to the users' own preferred language.
 	 */
 	CONTENT_LANGUAGE("Content-Language", null),
 
@@ -101,9 +101,10 @@ public enum Header {
 
 	/**
 	 * Content-Disposition<br/>
-	 * Is a response header if the resource transmitted should be displayed inline
-	 * (default behavior when the header is not present), or it should be handled
-	 * like a download and the browser should present a 'Save As' window.<br/>
+	 * Is a response header if the resource transmitted should be displayed
+	 * inline (default behavior when the header is not present), or it should be
+	 * handled like a download and the browser should present a 'Save As'
+	 * window.<br/>
 	 * <br/>
 	 * Options: inline, attachment, form-data
 	 */
@@ -130,31 +131,29 @@ public enum Header {
 
 	/**
 	 * Sec-WebSocket-Accept<br/>
-	 * The Sec-WebSocket-Accept header is used in the websocket opening handshake.
-	 * It would appear in the response headers. That is, this is header is sent from
-	 * server to client to inform that server is willing to initiate a websocket
-	 * connection.
+	 * The Sec-WebSocket-Accept header is used in the websocket opening
+	 * handshake. It would appear in the response headers. That is, this is
+	 * header is sent from server to client to inform that server is willing to
+	 * initiate a websocket connection.
 	 */
-	SEC_WEBSOCKET_ACCEPT("Sec-WebSocket-Accept", null),
-
-	;
+	SEC_WEBSOCKET_ACCEPT("Sec-WebSocket-Accept", null);
 
 	private String code;
 	private String[] options;
 
-	private Header(String code, String[] options) {
-
+	private Header(String code, String[] options)
+	{
 		this.code = code;
 		this.options = options;
 	}
 
-	public String getCode() {
-
+	public String getCode()
+	{
 		return code;
 	}
 
-	public String[] getOptions() {
-
+	public String[] getOptions()
+	{
 		return options;
 	}
 

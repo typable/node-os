@@ -5,8 +5,8 @@ package com.prototype.http.constants;
  * type) is a standard that indicates the nature and format of a document, file,
  * or assortment of bytes.
  */
-public enum MediaType {
-
+public enum MediaType
+{
 	/**
 	 * Plain Text<br/>
 	 * <br/>
@@ -178,18 +178,18 @@ public enum MediaType {
 	private String type;
 	private String[] fileTypes;
 
-	private MediaType(String type, String[] fileTypes) {
-
+	private MediaType(String type, String[] fileTypes)
+	{
 		this.type = type;
 		this.fileTypes = fileTypes;
 	}
 
-	public static MediaType ofType(String type) {
-
-		for(MediaType mediaType : MediaType.values()) {
-
-			if(mediaType.getType().equals(type)) {
-
+	public static MediaType ofType(String type)
+	{
+		for(MediaType mediaType : MediaType.values())
+		{
+			if(mediaType.getType().equals(type))
+			{
 				return mediaType;
 			}
 		}
@@ -197,24 +197,24 @@ public enum MediaType {
 		return MediaType.TEXT_PLAIN;
 	}
 
-	public static MediaType ofFile(String fileType) {
-
-		if(fileType.contains(".")) {
-
-			if(fileType.split("\\.").length == 2) {
-
+	public static MediaType ofFile(String fileType)
+	{
+		if(fileType.contains("."))
+		{
+			if(fileType.split("\\.").length == 2)
+			{
 				fileType = fileType.split("\\.")[1];
 
-				for(MediaType mediaType : MediaType.values()) {
-
+				for(MediaType mediaType : MediaType.values())
+				{
 					String[] fileTypes = mediaType.getFileTypes();
 
-					if(fileType != null && fileTypes != null) {
-
-						for(String type : fileTypes) {
-
-							if(type.equals(fileType)) {
-
+					if(fileType != null && fileTypes != null)
+					{
+						for(String type : fileTypes)
+						{
+							if(type.equals(fileType))
+							{
 								return mediaType;
 							}
 						}
@@ -226,13 +226,13 @@ public enum MediaType {
 		return MediaType.TEXT_PLAIN;
 	}
 
-	public String getType() {
-
+	public String getType()
+	{
 		return type;
 	}
 
-	public String[] getFileTypes() {
-
+	public String[] getFileTypes()
+	{
 		return fileTypes;
 	}
 }

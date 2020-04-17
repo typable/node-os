@@ -28,8 +28,8 @@ import com.prototype.service.SessionService;
 import com.prototype.type.Request;
 
 
-public class HTTPServer extends Service implements Runnable, Closeable, Injectable {
-
+public class HTTPServer extends Service implements Runnable, Closeable, Injectable
+{
 	public static final String CODE = "server";
 	public static final String PREFIX = "[Server] ";
 
@@ -45,12 +45,12 @@ public class HTTPServer extends Service implements Runnable, Closeable, Injectab
 	private ServerSocket serverSocket;
 	private boolean ssl;
 
-	public HTTPServer(ServerSocket serverSocket) {
-
+	public HTTPServer(ServerSocket serverSocket)
+	{
 		this.serverSocket = serverSocket;
 
-		if(serverSocket.getLocalPort() == 443) {
-
+		if(serverSocket.getLocalPort() == 443)
+		{
 			ssl = true;
 		}
 
@@ -58,36 +58,37 @@ public class HTTPServer extends Service implements Runnable, Closeable, Injectab
 	}
 
 	@Override
-	public void run() {
+	public void run()
+	{
+		logger.info(PREFIX + Messages.SERVER_STARTED
+		      .getMessage(String.valueOf(serverSocket.getLocalPort())));
 
-		logger.info(PREFIX + Messages.SERVER_STARTED.getMessage(String.valueOf(serverSocket.getLocalPort())));
-
-		while(!serverSocket.isClosed()) {
-
-			try {
-
+		while(!serverSocket.isClosed())
+		{
+			try
+			{
 				Socket socket = serverSocket.accept();
 
-				try {
-
-					if(ssl) {
-
+				try
+				{
+					if(ssl)
+					{
 						((SSLSocket) socket).startHandshake();
 					}
 
 					HTTPConnection connection = new HTTPConnection(socket);
-					connection.connect(new Runnable() {
-
+					connection.connect(new Runnable()
+					{
 						@Override
-						public void run() {
-
-							try {
-
+						public void run()
+						{
+							try
+							{
 								HTTPRequest request = null;
 								HTTPResponse response = null;
 
-								try {
-
+								try
+								{
 									/** Get request **/
 									request = connection.request();
 									response = new HTTPResponse(request);
@@ -96,23 +97,23 @@ public class HTTPServer extends Service implements Runnable, Closeable, Injectab
 									String url = request.getUrl();
 									RequestMethod method = request.getMethod();
 
-									if(url != null) {
-
+									if(url != null)
+									{
 										Caller<Request> caller = null;
 
-										for(Caller<Request> c : requests) {
-
+										for(Caller<Request> c : requests)
+										{
 											Request r = c.get();
 
 											/** Checks if request has no ignore tag **/
-											if(!r.ignore()) {
-
-												if(r.method() == method) {
-
-													for(String u : r.url()) {
-
-														if(u.equals(url)) {
-
+											if(!r.ignore())
+											{
+												if(r.method() == method)
+												{
+													for(String u : r.url())
+													{
+														if(u.equals(url))
+														{
 															caller = c;
 
 															break;
@@ -122,37 +123,39 @@ public class HTTPServer extends Service implements Runnable, Closeable, Injectab
 											}
 										}
 
-										if(caller != null) {
-
+										if(caller != null)
+										{
 											/** Prepare Session **/
 											sessionService.prepareSession(request, response);
 
 											/** Calls method of current request **/
 											caller.call(request, response);
 										}
-										else if(url.startsWith(Constants.PATHS.CMS_PATH) || url.startsWith(Constants.PATHS.RESOURCE_PATH)) {
-
+										else if(url.startsWith(Constants.PATHS.CMS_PATH) || url
+										      .startsWith(Constants.PATHS.RESOURCE_PATH))
+										{
 											/** Handle '/cms' | '/res' requests **/
 											File file = Prototype.path(url).toFile();
 
-											if(file.exists() && file.isFile()) {
-
-												response.viewPage(file.toPath(), MediaType.ofFile(file.getName()));
+											if(file.exists() && file.isFile())
+											{
+												response.viewPage(file.toPath(), MediaType
+												      .ofFile(file.getName()));
 											}
-											else {
-
+											else
+											{
 												response.notFound();
 											}
 										}
-										else {
-
-											if(RequestMethod.GET == request.getMethod()) {
-
+										else
+										{
+											if(RequestMethod.GET == request.getMethod())
+											{
 												/** Views 404 page if exists **/
 												response.viewNotFoundPage();
 											}
-											else {
-
+											else
+											{
 												response.notFound();
 											}
 										}
@@ -161,18 +164,18 @@ public class HTTPServer extends Service implements Runnable, Closeable, Injectab
 									/** Send response **/
 									connection.commit(response);
 								}
-								catch(HTTPException ex) {
-
+								catch(HTTPException ex)
+								{
 									/** Handle HTTPException **/
 									HTTPError error = ex.getError();
 
-									if(error == HTTPError.UNSUPPORTED_HTTP_VERSION) {
-
+									if(error == HTTPError.UNSUPPORTED_HTTP_VERSION)
+									{
 										response.setStatus(Status.HTTP_VERSION_NOT_SUPPORTED);
 									}
 
-									if(error == HTTPError.UNSUPPORTED_REQUEST_METHOD || error == HTTPError.MALFORMED_URL) {
-
+									if(error == HTTPError.UNSUPPORTED_REQUEST_METHOD || error == HTTPError.MALFORMED_URL)
+									{
 										response.badRequest();
 									}
 
@@ -180,36 +183,36 @@ public class HTTPServer extends Service implements Runnable, Closeable, Injectab
 									connection.commit(response);
 								}
 							}
-							catch(Exception ex) {
-
+							catch(Exception ex)
+							{
 								/** SSLException: socket write error **/
 								logger.debug(Messages.FATAL_ERROR.getMessage(), ex);
 							}
 						}
 					});
 				}
-				catch(SSLException ex) {
-
+				catch(SSLException ex)
+				{
 					/** Certificate not trusted! **/
 				}
 			}
-			catch(Exception ex) {
-
+			catch(Exception ex)
+			{
 				logger.debug(Messages.FATAL_ERROR.getMessage(), ex);
 			}
 		}
 	}
 
 	@Override
-	public void close() throws IOException {
-
+	public void close() throws IOException
+	{
 		serverSocket.close();
 
 		logger.info(PREFIX + Messages.SERVER_STOPPED.getMessage());
 	}
 
-	public boolean isSSL() {
-
+	public boolean isSSL()
+	{
 		return ssl;
 	}
 }

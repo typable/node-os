@@ -10,8 +10,8 @@ import com.prototype.http.constants.RequestMethod;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Request {
-
+public @interface Request
+{
 	String[] url();
 
 	RequestMethod method() default RequestMethod.GET;

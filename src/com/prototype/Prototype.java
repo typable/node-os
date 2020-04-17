@@ -6,8 +6,8 @@ import java.nio.file.Paths;
 import com.prototype.core.Core;
 
 
-public class Prototype {
-
+public class Prototype
+{
 	/*
 	TODO Event
 	TODO Runtime
@@ -17,24 +17,24 @@ public class Prototype {
 
 	public static String PATH;
 
-	public static void run(String[] args) {
-
+	public static void run(String[] args)
+	{
 		Core core = new Core();
 
-		try {
-
+		try
+		{
 			core.init();
 			core.run();
 		}
-		catch(Exception ex) {
-
+		catch(Exception ex)
+		{
 			ex.printStackTrace();
 		}
 	}
 
 	/*
-	private void init(String[] args) throws Exception {
-	
+	private void init(String[] args) throws Exception
+	{
 		final String PATH = Prototype.PATH;
 	
 		File SOURCE_PATH = new File(PATH + Constants.PATHS.SOURCE_PATH);
@@ -72,10 +72,10 @@ public class Prototype {
 	
 		loader.writeText(LAUNCH_BASH.toPath(), "java -cp \"NodeOS.jar:lib/*\" com.prototype.Prototype");
 	
-		if(args.length == 2) {
-	
-			if(args[1].startsWith("eclipse=") && args[1].split("=").length == 2) {
-	
+		if(args.length == 2)
+		{
+			if(args[1].startsWith("eclipse=") && args[1].split("=").length == 2)
+			{
 				String name = args[1].split("=")[1];
 	
 				File PROJECT_FILE = new File(PATH + "/" + Constants.FILES.PROJECT_FILE);
@@ -92,25 +92,25 @@ public class Prototype {
 	
 				logger.info("Project successfully initialized");
 			}
-			else {
-	
+			else
+			{
 				logger.warn("Invalid command!");
 			}
 		}
-		else {
-	
+		else
+		{
 			logger.info("Project successfully initialized");
 		}
 	}
 	*/
 
-	public static Path path(String ref, String path) {
-
+	public static Path path(String ref, String path)
+	{
 		return Paths.get(Prototype.PATH + ref + path);
 	}
 
-	public static Path path(String path) {
-
+	public static Path path(String path)
+	{
 		return Paths.get(Prototype.PATH + path);
 	}
 }

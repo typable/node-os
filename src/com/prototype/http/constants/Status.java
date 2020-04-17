@@ -36,12 +36,13 @@ package com.prototype.http.constants;
  * Source: <a href=
  * "https://tools.ietf.org/rfcmarkup?doc=7231#section-6">https://tools.ietf.org/rfcmarkup?doc=7231</a><br/>
  */
-public enum Status {
-
+public enum Status
+{
 	/**
 	 * The <a href="https://tools.ietf.org/rfcmarkup?doc=7231#section-6.2.1">100
 	 * (Continue)</a> status code indicates that the initial part of a<br/>
-	 * request has been received and has not yet been rejected by the server.<br/>
+	 * request has been received and has not yet been rejected by the
+	 * server.<br/>
 	 * <br/>
 	 * Type: Informational<br/>
 	 */
@@ -58,7 +59,8 @@ public enum Status {
 	/**
 	 * The <a href="https://tools.ietf.org/rfcmarkup?doc=7231#section-6.3.2">201
 	 * (Created)</a> status code indicates that the request has been<br/>
-	 * fulfilled and has resulted in one or more new resources being created.<br/>
+	 * fulfilled and has resulted in one or more new resources being
+	 * created.<br/>
 	 * <br/>
 	 * Type: Successful<br/>
 	 */
@@ -74,10 +76,10 @@ public enum Status {
 	ACCEPTED(202, "ACCEPTED"),
 
 	/**
-	 * The <a href="https://tools.ietf.org/rfcmarkup?doc=7231#section-6.3.5">204 (No
-	 * Content)</a> status code indicates that the server has<br/>
-	 * successfully fulfilled the request and that there is no additional content to
-	 * send in the response payload body.<br/>
+	 * The <a href="https://tools.ietf.org/rfcmarkup?doc=7231#section-6.3.5">204
+	 * (No Content)</a> status code indicates that the server has<br/>
+	 * successfully fulfilled the request and that there is no additional content
+	 * to send in the response payload body.<br/>
 	 * <br/>
 	 * Type: Successful<br/>
 	 */
@@ -86,8 +88,8 @@ public enum Status {
 	/**
 	 * The <a href="https://tools.ietf.org/rfcmarkup?doc=7231#section-6.4.2">301
 	 * (Moved Permanently)</a> status code indicates that the target<br/>
-	 * resource has been assigned a new permanent URI and any future references to
-	 * this resource ought to use one of the enclosed URIs.<br/>
+	 * resource has been assigned a new permanent URI and any future references
+	 * to this resource ought to use one of the enclosed URIs.<br/>
 	 * <br/>
 	 * Type: Redirection<br/>
 	 */
@@ -146,8 +148,8 @@ public enum Status {
 	/**
 	 * The <a href="https://tools.ietf.org/rfcmarkup?doc=7231#section-6.5.4">404
 	 * (Not Found)</a> status code indicates that the origin server did<br/>
-	 * not find a current representation for the target resource or is not willing
-	 * to disclose that one exists.<br/>
+	 * not find a current representation for the target resource or is not
+	 * willing to disclose that one exists.<br/>
 	 * <br/>
 	 * Type: Client Error<br/>
 	 */
@@ -156,8 +158,8 @@ public enum Status {
 	/**
 	 * The <a href="https://tools.ietf.org/rfcmarkup?doc=7231#section-6.5.7">408
 	 * (Request Timeout)</a> status code indicates that the server did<br/>
-	 * not receive a complete request message within the time that it was prepared
-	 * to wait.<br/>
+	 * not receive a complete request message within the time that it was
+	 * prepared to wait.<br/>
 	 * <br/>
 	 * Type: Client Error<br/>
 	 */
@@ -166,8 +168,8 @@ public enum Status {
 	/**
 	 * The <a href="https://tools.ietf.org/rfcmarkup?doc=7231#section-6.5.13">415
 	 * (Unsupported Media Type)</a> status code indicates that the<br/>
-	 * origin server is refusing to service the request because the payload is in a
-	 * format not supported by this method on the target resource.<br/>
+	 * origin server is refusing to service the request because the payload is in
+	 * a format not supported by this method on the target resource.<br/>
 	 * <br/>
 	 * Type: Client Error<br/>
 	 */
@@ -207,8 +209,8 @@ public enum Status {
 	/**
 	 * The <a href="https://tools.ietf.org/rfcmarkup?doc=7231#section-6.6.5">504
 	 * (Gateway Timeout)</a> status code indicates that the server,<br/>
-	 * while acting as a gateway or proxy, did not receive a timely response from an
-	 * upstream server it needed to access in order to complete the<br/>
+	 * while acting as a gateway or proxy, did not receive a timely response from
+	 * an upstream server it needed to access in order to complete the<br/>
 	 * request.<br/>
 	 * <br/>
 	 * Type: Server Error<br/>
@@ -228,24 +230,24 @@ public enum Status {
 	private int code;
 	private String type;
 
-	private Status(int code, String type) {
-
+	private Status(int code, String type)
+	{
 		this.code = code;
 		this.type = type;
 	}
 
-	public int getCode() {
-
+	public int getCode()
+	{
 		return code;
 	}
 
-	public String getType() {
-
+	public String getType()
+	{
 		return type;
 	}
 
-	public String getMessage() {
-
+	public String getMessage()
+	{
 		return code + " " + type;
 	}
 }

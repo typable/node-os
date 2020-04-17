@@ -19,8 +19,8 @@ import com.prototype.http.constants.Header;
 import com.prototype.logger.Logger;
 
 
-public class Updater implements Injectable {
-
+public class Updater implements Injectable
+{
 	public static final String CODE = "updater";
 	public static final String PREFIX = "[Updater] ";
 
@@ -29,91 +29,95 @@ public class Updater implements Injectable {
 	@Inject(code = Logger.CODE)
 	private Logger logger;
 
-	public Updater() {
-
+	public Updater()
+	{
 		inject(this, Core.environment);
 	}
 
-	public void updateDomain(String domain, String auth, String server) {
-
+	public void updateDomain(String domain, String auth, String server)
+	{
 		logger.info(PREFIX + "Checking domain availability...");
 
-		try {
-
+		try
+		{
 			String DOMAIN_IP_ADDRESS = InetAddress.getByName(domain).getHostAddress();
 			String PUBLIC_IP_ADDRESS = getPublicIPAddress();
 
-			if(!DOMAIN_IP_ADDRESS.equals(PUBLIC_IP_ADDRESS)) {
-
+			if(!DOMAIN_IP_ADDRESS.equals(PUBLIC_IP_ADDRESS))
+			{
 				URL url = new URL(server + "?hostname=" + domain);
 				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 				connection.setRequestMethod("GET");
 				connection.setRequestProperty("Authorization", "Basic " + auth);
-				connection.setRequestProperty("User-Agent", "Prototype-Studio NodeOS " + Prototype.VERSION);
+				connection
+				      .setRequestProperty("User-Agent", "Prototype-Studio NodeOS " + Prototype.VERSION);
 
 				int code = connection.getResponseCode();
 				String response = null;
 
-				if(code == 200) {
-
-					BufferedReader in = new BufferedReader(new InputStreamReader((InputStream) connection.getContent()));
+				if(code == 200)
+				{
+					BufferedReader in = new BufferedReader(new InputStreamReader((InputStream) connection
+					      .getContent()));
 
 					response = in.readLine();
 					connection.disconnect();
 
-					if(response.startsWith("badauth")) {
-
+					if(response.startsWith("badauth"))
+					{
 						logger.warn(PREFIX + "Authorization failed! (" + response + ")");
 					}
-					else if(response.startsWith("good")) {
-
+					else if(response.startsWith("good"))
+					{
 						logger.info(PREFIX + "Domain updated successfully. (" + response + ")");
 					}
-					else if(response.startsWith("nochg")) {
-
+					else if(response.startsWith("nochg"))
+					{
 						logger.info(PREFIX + "Nothing hast changed. (" + response + ")");
 					}
-					else {
-
+					else
+					{
 						logger.warn(PREFIX + "Unknown response? (" + response + ")");
 					}
 				}
-				else {
-
+				else
+				{
 					logger.warn(PREFIX + "Server is not reachable! Code: " + code);
 				}
 			}
-			else {
-
+			else
+			{
 				logger.info(PREFIX + "Domain up to date. (" + DOMAIN_IP_ADDRESS + ")");
 			}
 		}
-		catch(Exception ex) {
-
+		catch(Exception ex)
+		{
 			logger.error(PREFIX + "Update domain failed!", ex);
 		}
 	}
 
-	public void updateSoftware() {
-
+	public void updateSoftware()
+	{
 		logger.info(PREFIX + "Checking for updates...");
 
-		try {
-
+		try
+		{
 			URL url = new URL("http://prototype-studio.de/update?version=" + Prototype.VERSION);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.setConnectTimeout(5000);
-			connection.setRequestProperty("User-Agent", "Prototype-Studio NodeOS " + Prototype.VERSION);
+			connection
+			      .setRequestProperty("User-Agent", "Prototype-Studio NodeOS " + Prototype.VERSION);
 
 			int code = connection.getResponseCode();
 
-			if(code == 200) {
-
+			if(code == 200)
+			{
 				String download = connection.getHeaderField(Header.CONTENT_DISPOSITION.getCode());
 				String length = connection.getHeaderField(Header.CONTENT_LENGTH.getCode());
 
-				if(download != null && length != null) {
+				if(download != null && length != null)
+				{
 
 					BufferedInputStream input = new BufferedInputStream(connection.getInputStream());
 
@@ -123,27 +127,27 @@ public class Updater implements Injectable {
 				}
 			}
 		}
-		catch(SocketTimeoutException ex) {
-
+		catch(SocketTimeoutException ex)
+		{
 			logger.warn(PREFIX + "Server is not reachable!");
 		}
-		catch(Exception ex) {
-
+		catch(Exception ex)
+		{
 			logger.error(PREFIX + "Update software failed!", ex);
 		}
 	}
 
-	private String getPublicIPAddress() {
-
-		try {
-
+	private String getPublicIPAddress()
+	{
+		try
+		{
 			URL url = new URL(CHECKIP);
 			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 
 			return in.readLine();
 		}
-		catch(Exception e) {
-
+		catch(Exception e)
+		{
 			logger.error(PREFIX + "Server is not reachable! IP-Address: " + CHECKIP);
 		}
 

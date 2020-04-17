@@ -3,46 +3,45 @@ package com.prototype.type;
 import com.prototype.http.constants.MediaType;
 
 
-public class FormData {
-
+public class FormData
+{
 	private MediaType type;
 	private String disposition;
 	private byte[] data;
 
-	public FormData(MediaType type, String disposition) {
-
+	public FormData(MediaType type, String disposition)
+	{
 		this.type = type;
 		this.disposition = disposition;
 	}
 
-	public MediaType getType() {
-
+	public MediaType getType()
+	{
 		return type;
 	}
 
-	public void setType(MediaType type) {
-
+	public void setType(MediaType type)
+	{
 		this.type = type;
 	}
 
-	public String getDisposition() {
-
+	public String getDisposition()
+	{
 		return disposition;
 	}
 
-	public void setDisposition(String disposition) {
-
+	public void setDisposition(String disposition)
+	{
 		this.disposition = disposition;
 	}
 
-	public byte[] getData() {
-
+	public byte[] getData()
+	{
 		return data;
 	}
 
-	public void setData(byte[] data) {
-
+	public void setData(byte[] data)
+	{
 		this.data = data;
 	}
-
 }

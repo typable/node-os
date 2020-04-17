@@ -4,23 +4,23 @@ package com.prototype.http.constants;
  * HTTP defines a set of request methods to indicate the desired action to be
  * performed for a given resource.
  */
-public enum RequestMethod {
-
+public enum RequestMethod
+{
 	/**
-	 * The GET method requests a representation of the specified resource. Requests
-	 * using GET should only retrieve data.
+	 * The GET method requests a representation of the specified resource.
+	 * Requests using GET should only retrieve data.
 	 */
 	GET,
 
 	/**
-	 * The HEAD method asks for a response identical to that of a GET request, but
-	 * without the response body.
+	 * The HEAD method asks for a response identical to that of a GET request,
+	 * but without the response body.
 	 */
 	HEAD,
 
 	/**
-	 * The POST method is used to submit an entity to the specified resource, often
-	 * causing a change in state or side effects on the server.
+	 * The POST method is used to submit an entity to the specified resource,
+	 * often causing a change in state or side effects on the server.
 	 */
 	POST,
 

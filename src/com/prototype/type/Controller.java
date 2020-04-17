@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
 @Target(TYPE)
-public @interface Controller {
+public @interface Controller
+{
 
 }

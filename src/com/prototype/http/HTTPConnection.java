@@ -23,41 +23,41 @@ import com.prototype.type.Parameter;
 import com.prototype.util.HTTPUtils;
 
 
-public class HTTPConnection extends Connection implements Injectable {
-
+public class HTTPConnection extends Connection implements Injectable
+{
 	@Inject(code = Formatter.CODE)
 	private Formatter formatter;
 
 	@Inject(code = HTTPServer.CODE)
 	private HTTPServer server;
 
-	public HTTPConnection(Socket socket) {
-
+	public HTTPConnection(Socket socket)
+	{
 		super(socket);
 
 		inject(this, Core.environment);
 	}
 
-	public HTTPRequest request() throws HTTPException, Exception {
-
+	public HTTPRequest request() throws HTTPException, Exception
+	{
 		HTTPRequest request = new HTTPRequest();
 
 		String line;
 
-		while((line = readLine()) != null && !line.isBlank()) {
-
+		while((line = readLine()) != null && !line.isBlank())
+		{
 			String[] args = line.split(" ");
 
-			if(args.length == 3 && args[2].startsWith("HTTP/")) {
-
+			if(args.length == 3 && args[2].startsWith("HTTP/"))
+			{
 				String[] query = Formatter.parseURL(args[1]).split("\\?");
 
-				if(query.length == 2) {
-
+				if(query.length == 2)
+				{
 					request.setParameters(Formatter.parseQuery(query[1]));
 				}
-				else {
-
+				else
+				{
 					request.setParameters(new Property<>());
 				}
 
@@ -65,13 +65,13 @@ public class HTTPConnection extends Connection implements Injectable {
 				RequestMethod method = RequestMethod.valueOf(args[0]);
 				Double version = Double.valueOf(args[2].split("/")[1]);
 
-				if(version != 1.1) {
-
+				if(version != 1.1)
+				{
 					throw new HTTPException(HTTPError.UNSUPPORTED_HTTP_VERSION);
 				}
 
-				if(!(method == RequestMethod.GET || method == RequestMethod.POST)) {
-
+				if(!(method == RequestMethod.GET || method == RequestMethod.POST))
+				{
 					throw new HTTPException(HTTPError.UNSUPPORTED_REQUEST_METHOD);
 				}
 
@@ -79,31 +79,31 @@ public class HTTPConnection extends Connection implements Injectable {
 				request.setMethod(method);
 				request.setVersion(version);
 			}
-			else {
-
+			else
+			{
 				HTTPUtils.addAttribute(request.getHeaders(), ": ", line);
 			}
 		}
 
-		if(request.getMethod() == RequestMethod.POST) {
-
+		if(request.getMethod() == RequestMethod.POST)
+		{
 			String contentLength = request.getHeaders().get(Header.CONTENT_LENGTH.getCode());
 			String contentType = request.getHeaders().get(Header.CONTENT_TYPE.getCode());
 			MediaType type = null;
 			String body = null;
 
-			if(contentType != null) {
-
+			if(contentType != null)
+			{
 				String[] typeArgs = contentType.split("; ");
 
 				type = MediaType.ofType(typeArgs[0]);
 
-				if(contentLength != null) {
-
+				if(contentLength != null)
+				{
 					Integer length = Integer.parseInt(contentLength);
 
-					if(type == MediaType.MULTIPART_FORM_DATA) {
-
+					if(type == MediaType.MULTIPART_FORM_DATA)
+					{
 						String boundary = typeArgs[1].split("=")[1];
 
 						byte[] data = read(length);
@@ -113,40 +113,44 @@ public class HTTPConnection extends Connection implements Injectable {
 
 						List<FormData> formDataList = new ArrayList<>();
 
-						for(int i = 0; i < args.length; i++) {
-
+						for(int i = 0; i < args.length; i++)
+						{
 							String arg = args[i];
 
-							if(i > 0) {
-
+							if(i > 0)
+							{
 								FormData formData = null;
 
 								String[] sect = arg.split("\\r\\n\\r\\n", 2);
 
 								String formDataHeader = sect[0];
-								String formDataDisposition = formDataHeader.split("\\r\\n")[0].split(": ")[1];
+								String formDataDisposition = formDataHeader.split("\\r\\n")[0]
+								      .split(": ")[1];
 								String formDataContentType = null;
 
-								if(formDataHeader.split("\\r\\n").length >= 2) {
-
+								if(formDataHeader.split("\\r\\n").length >= 2)
+								{
 									formDataContentType = formDataHeader.split("\\r\\n")[1].split(": ")[1];
 								}
 
 								String formDataData = sect[1];
 
-								formData = new FormData(MediaType.ofType(formDataContentType), formDataDisposition);
+								formData = new FormData(MediaType
+								      .ofType(formDataContentType), formDataDisposition);
 
-								if(i < args.length - 1) {
-
+								if(i < args.length - 1)
+								{
 									String _data = formDataData;
 
-									formData.setData(_data.substring(0, _data.length() - "\r\n".length()).getBytes(CHARSET));
+									formData.setData(_data.substring(0, _data.length() - "\r\n".length())
+									      .getBytes(CHARSET));
 								}
-								else {
-
+								else
+								{
 									String _data = formDataData.replace("--" + boundary + "--" + CRLF, "");
 
-									formData.setData(_data.substring(0, _data.length() - "\r\n".length()).getBytes(CHARSET));
+									formData.setData(_data.substring(0, _data.length() - "\r\n".length())
+									      .getBytes(CHARSET));
 								}
 
 								formDataList.add(formData);
@@ -155,12 +159,13 @@ public class HTTPConnection extends Connection implements Injectable {
 
 						Property<Parameter> params = new Property<>();
 
-						for(FormData form : formDataList) {
+						for(FormData form : formDataList)
+						{
+							String key = form.getDisposition().split("; ")[1].split("=")[1]
+							      .replaceAll("\"", "");
 
-							String key = form.getDisposition().split("; ")[1].split("=")[1].replaceAll("\"", "");
-
-							if(!form.getDisposition().contains("filename=") && form.getData() != null) {
-
+							if(!form.getDisposition().contains("filename=") && form.getData() != null)
+							{
 								String value = new String(form.getData(), CHARSET);
 
 								value = Formatter.parseURL(value);
@@ -170,9 +175,10 @@ public class HTTPConnection extends Connection implements Injectable {
 
 								params.put(key, param);
 							}
-							else if(form.getDisposition().contains("filename=")) {
-
-								String fileName = form.getDisposition().split("; ")[2].split("=")[1].replaceAll("\"", "");
+							else if(form.getDisposition().contains("filename="))
+							{
+								String fileName = form.getDisposition().split("; ")[2].split("=")[1]
+								      .replaceAll("\"", "");
 
 								Property<byte[]> files = new Property<>();
 
@@ -180,10 +186,10 @@ public class HTTPConnection extends Connection implements Injectable {
 
 								Parameter param = new Parameter(key);
 
-								if(params.has(key)) {
-
-									for(String fileKey : params.get(key).getFiles().keys()) {
-
+								if(params.has(key))
+								{
+									for(String fileKey : params.get(key).getFiles().keys())
+									{
 										files.put(fileKey, params.get(key).getFiles().get(fileKey));
 									}
 								}
@@ -196,8 +202,8 @@ public class HTTPConnection extends Connection implements Injectable {
 						request.setParameters(params);
 						request.setBody(data);
 					}
-					else {
-
+					else
+					{
 						body = new String(read(length), CHARSET);
 
 						body = Formatter.parseURL(body);
@@ -209,29 +215,29 @@ public class HTTPConnection extends Connection implements Injectable {
 			}
 		}
 
-		if(request.getHeaders().has(Header.COOKIE.getCode())) {
-
+		if(request.getHeaders().has(Header.COOKIE.getCode()))
+		{
 			String cookies = request.getHeader(Header.COOKIE);
 
-			if(cookies.contains("; ")) {
-
-				for(String arg : cookies.split("; ")) {
-
+			if(cookies.contains("; "))
+			{
+				for(String arg : cookies.split("; "))
+				{
 					String[] cookie_args = arg.split("=");
 
-					if(cookie_args.length == 2) {
-
+					if(cookie_args.length == 2)
+					{
 						Cookie cookie = new Cookie(cookie_args[0], cookie_args[1]);
 						request.getCookies().put(cookie_args[0], cookie);
 					}
 				}
 			}
-			else {
-
+			else
+			{
 				String[] cookie_args = cookies.split("=");
 
-				if(cookie_args.length == 2) {
-
+				if(cookie_args.length == 2)
+				{
 					Cookie cookie = new Cookie(cookie_args[0], cookie_args[1]);
 					request.getCookies().put(cookie_args[0], cookie);
 				}
@@ -241,55 +247,57 @@ public class HTTPConnection extends Connection implements Injectable {
 		return request;
 	}
 
-	public void commit(HTTPResponse response) throws Exception {
-
-		if(response.getStatus() != null) {
-
+	public void commit(HTTPResponse response) throws Exception
+	{
+		if(response.getStatus() != null)
+		{
 			emit("HTTP/" + response.getVersion() + " " + response.getStatus().getMessage());
 
-			if(response.getType() != null) {
-
+			if(response.getType() != null)
+			{
 				response.getHeaders().put(Header.CONTENT_TYPE.getCode(), response.getType().getType());
 			}
-			else {
-
-				response.getHeaders().put(Header.CONTENT_TYPE.getCode(), MediaType.TEXT_PLAIN.getType());
+			else
+			{
+				response.getHeaders()
+				      .put(Header.CONTENT_TYPE.getCode(), MediaType.TEXT_PLAIN.getType());
 			}
 
 			byte[] body = null;
 
-			if(response.getBody() != null) {
-
-				if(response.getType() == MediaType.TEXT_HTML) {
-
+			if(response.getBody() != null)
+			{
+				if(response.getType() == MediaType.TEXT_HTML)
+				{
 					String formattedBody = new String(response.getBody(), CHARSET);
 
 					formattedBody = formatter.parse(formattedBody, response.getAttributes(), true);
 
 					body = formattedBody.getBytes(CHARSET);
 				}
-				else {
-
+				else
+				{
 					body = response.getBody();
 				}
 
 				response.getHeaders().put(Header.CONTENT_LENGTH.getCode(), String.valueOf(body.length));
 			}
 
-			if(!response.getCookies().isEmpty()) {
-
+			if(!response.getCookies().isEmpty())
+			{
 				String cookies = "";
 
-				for(String key : response.getCookies().keys()) {
-
+				for(String key : response.getCookies().keys())
+				{
 					Cookie cookie = response.getCookies().get(key);
 
-					if(cookie.getAge() != -1) {
-
-						cookies += cookie.getKey() + "=" + cookie.getValue() + "; Expires=" + cookie.getAge() + "; Max-Age=" + cookie.getAge();
+					if(cookie.getAge() != -1)
+					{
+						cookies += cookie.getKey() + "=" + cookie.getValue() + "; Expires=" + cookie
+						      .getAge() + "; Max-Age=" + cookie.getAge();
 					}
-					else {
-
+					else
+					{
 						cookies += cookie.getKey() + "=" + cookie.getValue() + "; Expires=0; Max-Age=0";
 					}
 				}
@@ -297,29 +305,29 @@ public class HTTPConnection extends Connection implements Injectable {
 				emit(Header.SET_COOKIE.getCode() + ": " + cookies);
 			}
 
-			if(!response.getHeaders().isEmpty()) {
-
-				for(String key : response.getHeaders().keys()) {
-
-					if(server.isSSL() && Condition.equals(key, Header.LOCATION.getCode())) {
-
+			if(!response.getHeaders().isEmpty())
+			{
+				for(String key : response.getHeaders().keys())
+				{
+					if(server.isSSL() && Condition.equals(key, Header.LOCATION.getCode()))
+					{
 						emit(key + ":" + response.getHeaders().get(key) + "\r\n");
 					}
-					else {
-
+					else
+					{
 						emit(key + ": " + response.getHeaders().get(key));
 					}
 				}
 			}
 
-			if(response.getBody() != null) {
-
+			if(response.getBody() != null)
+			{
 				emit("");
 				emit(body);
 			}
 		}
-		else {
-
+		else
+		{
 			emit("HTTP/" + response.getVersion() + " " + Status.BAD_REQUEST.getMessage());
 		}
 

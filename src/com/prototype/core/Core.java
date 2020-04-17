@@ -23,8 +23,8 @@ import com.prototype.update.Updater;
 import com.prototype.util.HTTPUtils;
 
 
-public class Core implements Runnable {
-
+public class Core implements Runnable
+{
 	public static final String CODE = "core";
 
 	public static Property<Object> environment;
@@ -44,8 +44,8 @@ public class Core implements Runnable {
 
 	public HTTPServer server;
 
-	public Core() {
-
+	public Core()
+	{
 		environment = new Property<>();
 		configurations = new Property<>();
 		messages = new Property<>();
@@ -55,8 +55,8 @@ public class Core implements Runnable {
 		templates = new ArrayList<>();
 	}
 
-	public void init() throws Exception {
-
+	public void init() throws Exception
+	{
 		Prototype.PATH = new File(".").getCanonicalPath();
 
 		logger = new Logger(Prototype.path(Constants.PATHS.LOG_PATH));
@@ -80,17 +80,17 @@ public class Core implements Runnable {
 	}
 
 	@Override
-	public void run() {
-
-		try {
-
+	public void run()
+	{
+		try
+		{
 			loader.loadConfigurations(configurations);
 			environment.put("configurations", configurations);
 
 			File configFile = Prototype.path("/" + Constants.FILES.CONFIG_FILE).toFile();
 
-			if(!configFile.exists()) {
-
+			if(!configFile.exists())
+			{
 				logger.warn("Project must be initialized!");
 
 				return;
@@ -98,15 +98,15 @@ public class Core implements Runnable {
 
 			Boolean debug = configurations.get("log.debug", Boolean.class);
 
-			if(Condition.isNotNull(debug)) {
-
+			if(Condition.isNotNull(debug))
+			{
 				logger.setDebug(debug);
 			}
 
 			Boolean save = configurations.get("log.save", Boolean.class);
 
-			if(Condition.isNotNull(save)) {
-
+			if(Condition.isNotNull(save))
+			{
 				logger.setSave(save);
 			}
 
@@ -127,15 +127,15 @@ public class Core implements Runnable {
 
 			Boolean ssl = configurations.get("ssl", Boolean.class);
 
-			if(Condition.isNotNull(ssl)) {
-
+			if(Condition.isNotNull(ssl))
+			{
 				String key = configurations.get("ssl.key", true);
 				String password = configurations.get("ssl.password", true);
 
 				server = HTTPServerFactory.create(port, ssl, Prototype.path(key), password);
 			}
-			else {
-
+			else
+			{
 				server = HTTPServerFactory.create(port);
 			}
 
@@ -145,14 +145,14 @@ public class Core implements Runnable {
 
 			server.run();
 		}
-		catch(Exception ex) {
-
+		catch(Exception ex)
+		{
 			ex.printStackTrace();
 		}
 	}
 
-	public void setup() throws Exception {
-
+	public void setup() throws Exception
+	{
 		// TODO setup()
 		File sourceDirectory = Prototype.path(Constants.PATHS.SOURCE_PATH).toFile();
 		sourceDirectory.mkdir();
@@ -195,19 +195,19 @@ public class Core implements Runnable {
 		logger.info("Project successfully initialized");
 	}
 
-	public void update() {
-
+	public void update()
+	{
 		Boolean updateSoftware = configurations.get("update.software", Boolean.class);
 
-		if(Condition.isNotNull(updateSoftware) && Condition.isTrue(updateSoftware)) {
-
+		if(Condition.isNotNull(updateSoftware) && Condition.isTrue(updateSoftware))
+		{
 			updater.updateSoftware();
 		}
 
 		Boolean updateDomain = configurations.get("update.domain", Boolean.class);
 
-		if(Condition.isNotNull(updateDomain) && Condition.isTrue(updateDomain)) {
-
+		if(Condition.isNotNull(updateDomain) && Condition.isTrue(updateDomain))
+		{
 			String domain = configurations.get("dns.domain", true);
 			String password = configurations.get("dns.password", true);
 			String server = configurations.get("dns.server", true);
@@ -218,10 +218,10 @@ public class Core implements Runnable {
 		}
 	}
 
-	private void inject() throws Exception {
-
-		for(String key : environment.keys()) {
-
+	private void inject() throws Exception
+	{
+		for(String key : environment.keys())
+		{
 			Reflect.inject(environment.get(key), environment);
 		}
 	}

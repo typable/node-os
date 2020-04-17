@@ -8,12 +8,12 @@ import com.core.util.Utils;
 import com.prototype.type.Parameter;
 
 
-public class HTTPUtils extends Utils {
-
-	public static void addParameter(Property<Parameter> params, String delimiter, String code) {
-
-		if(code.contains(delimiter)) {
-
+public class HTTPUtils extends Utils
+{
+	public static void addParameter(Property<Parameter> params, String delimiter, String code)
+	{
+		if(code.contains(delimiter))
+		{
 			String[] args = code.split(delimiter, -1);
 
 			Parameter param = new Parameter(args[0]);
@@ -23,8 +23,8 @@ public class HTTPUtils extends Utils {
 		}
 	}
 
-	public static String encode(String value) {
-
+	public static String encode(String value)
+	{
 		return Base64.getEncoder().encodeToString(value.getBytes(StandardCharsets.ISO_8859_1));
 	}
 }
